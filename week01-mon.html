@@ -1,1 +1,725 @@
-file:///C:/Users/ASUS/Desktop/%E6%99%82%E9%96%93%E6%B4%BE/youtube/20260413/dopamine_desire_tool.html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慾望清單分類器｜Steven × 時間派</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --surface3: #23232c;
+    --border: #2a2a35;
+    --orange: #ff6b2b;
+    --orange-dim: rgba(255,107,43,0.12);
+    --teal: #2dd4bf;
+    --teal-dim: rgba(45,212,191,0.10);
+    --text: #e8e8ee;
+    --text-dim: #7a7a90;
+    --text-mid: #b0b0c8;
+    --red: #ff4d6d;
+    --yellow: #f5c542;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 100px;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 200;
+  }
+  .logo { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 15px; color: var(--orange); }
+  .logo span { color: var(--text-dim); font-weight: 300; font-size: 12px; }
+  .badge { background: var(--orange-dim); border: 1px solid var(--orange); color: var(--orange); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 1px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px 16px;
+  }
+  .steps-row {
+    max-width: 680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 0;
+    padding-top: 16px;
+  }
+  .step-dot {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    flex: 1;
+    cursor: default;
+  }
+  .dot-circle {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--text-dim);
+    transition: all .3s;
+    position: relative; z-index: 1;
+  }
+  .dot-label { font-size: 10px; color: var(--text-dim); letter-spacing: .3px; white-space: nowrap; }
+  .step-dot.active .dot-circle { border-color: var(--orange); background: var(--orange); color: #fff; }
+  .step-dot.active .dot-label { color: var(--orange); }
+  .step-dot.done .dot-circle { border-color: var(--teal); background: var(--teal); color: #111; }
+  .step-dot.done .dot-label { color: var(--teal); }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; margin-bottom: 22px; transition: background .3s; }
+  .step-line.done { background: var(--teal); }
+
+  /* ── HERO ── */
+  .hero { padding: 40px 24px 28px; max-width: 680px; margin: 0 auto; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--orange); text-transform: uppercase; margin-bottom: 12px; border-left: 3px solid var(--orange); padding-left: 10px; }
+  .hero h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(24px, 5.5vw, 36px); font-weight: 900; line-height: 1.35; margin-bottom: 12px; }
+  .hero h1 em { font-style: normal; color: var(--orange); }
+  .hero p { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+
+  /* ── GUIDE CARDS ── */
+  .guide { max-width: 680px; margin: 0 auto 28px; padding: 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .guide-card { border-radius: 12px; padding: 16px; border: 1px solid var(--border); }
+  .guide-card.consume { background: rgba(255,77,109,0.07); border-color: rgba(255,77,109,0.3); }
+  .guide-card.build { background: var(--teal-dim); border-color: rgba(45,212,191,0.3); }
+  .guide-letter { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+  .consume .guide-letter { color: var(--red); }
+  .build .guide-letter { color: var(--teal); }
+  .guide-name { font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+  .consume .guide-name { color: var(--red); }
+  .build .guide-name { color: var(--teal); }
+  .guide-desc { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ── SECTION WRAP ── */
+  .section { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+  .section-title { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── STEP 1: DESIRE ROWS ── */
+  .desire-row {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+    animation: fadeUp .25s ease;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .row-num { width: 22px; height: 22px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); font-size: 10px; color: var(--text-dim); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; }
+  .desire-input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .desire-input:focus { border-color: var(--orange); }
+  .desire-input::placeholder { color: var(--text-dim); }
+  .type-toggle { display: flex; gap: 5px; flex-shrink: 0; }
+  .type-btn { width: 36px; height: 36px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text-dim); font-size: 11px; font-weight: 800; cursor: pointer; transition: all .15s; font-family: 'Noto Sans TC', sans-serif; }
+  .type-btn:hover { border-color: var(--text-dim); }
+  .type-btn.active-c { background: rgba(255,77,109,.2); border-color: var(--red); color: var(--red); }
+  .type-btn.active-b { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); }
+  .delete-btn { width: 26px; height: 26px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; flex-shrink: 0; border-radius: 6px; transition: all .15s; display: flex; align-items: center; justify-content: center; }
+  .delete-btn:hover { background: rgba(255,77,109,.15); color: var(--red); }
+  .add-row-btn { width: 100%; background: none; border: 1.5px dashed var(--border); border-radius: 10px; padding: 11px; color: var(--text-dim); font-size: 12px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; margin-top: 4px; transition: all .2s; letter-spacing: .5px; }
+  .add-row-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+  /* ── PRIMARY BTN ── */
+  .primary-btn { width: 100%; margin-top: 20px; padding: 15px; background: var(--orange); border: none; border-radius: 12px; color: #fff; font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 900; cursor: pointer; letter-spacing: 1px; transition: all .2s; }
+  .primary-btn:hover { background: #ff7f45; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,107,43,.35); }
+  .primary-btn:disabled { background: var(--surface2); color: var(--text-dim); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ── STEP 2: REFLECT ── */
+  #step2 { display: none; }
+  .reflect-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    animation: fadeUp .3s ease;
+  }
+  .reflect-header {
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .reflect-badge { font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 3px 9px; border-radius: 4px; flex-shrink: 0; }
+  .reflect-badge.c { background: rgba(255,77,109,.15); color: var(--red); }
+  .reflect-badge.b { background: var(--teal-dim); color: var(--teal); }
+  .reflect-text { font-size: 14px; color: var(--text); font-weight: 500; }
+  .reflect-body { padding: 16px 18px; }
+
+  .q-block { margin-bottom: 14px; }
+  .q-block:last-child { margin-bottom: 0; }
+  .q-label { font-size: 12px; color: var(--orange); font-weight: 700; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 6px; line-height: 1.5; }
+  .q-label .q-icon { font-size: 14px; flex-shrink: 0; }
+
+  /* radio-style option buttons */
+  .opt-group { display: flex; flex-direction: column; gap: 6px; }
+  .opt-btn {
+    width: 100%;
+    background: var(--surface3);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 14px;
+    color: var(--text-mid);
+    font-size: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    text-align: left;
+    cursor: pointer;
+    transition: all .15s;
+    line-height: 1.5;
+  }
+  .opt-btn:hover { border-color: var(--orange); color: var(--text); }
+  .opt-btn.selected { border-color: var(--orange); background: var(--orange-dim); color: var(--text); }
+
+  /* insight bubble that appears after answering */
+  .insight-bubble {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.7;
+    animation: fadeUp .3s ease;
+  }
+  .insight-bubble.show { display: block; }
+  .insight-bubble.neutral { background: rgba(245,197,66,.08); border: 1px solid rgba(245,197,66,.3); color: var(--yellow); }
+  .insight-bubble.flip { background: rgba(45,212,191,.07); border: 1px solid rgba(45,212,191,.3); color: var(--teal); }
+  .insight-bubble.confirm { background: var(--orange-dim); border: 1px solid rgba(255,107,43,.3); color: #ffb38a; }
+
+  /* ── STEP 3: RESULT ── */
+  #step3 { display: none; }
+  .result-header-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 14px; }
+  .result-bars { display: flex; gap: 4px; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 14px; }
+  .bar-c { background: var(--red); }
+  .bar-b { background: var(--teal); }
+  .bar-e { background: var(--border); flex: 1; }
+  .result-stats { display: flex; gap: 10px; margin-bottom: 14px; }
+  .stat { flex: 1; background: var(--surface); border-radius: 10px; padding: 12px; text-align: center; }
+  .stat-num { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 900; line-height: 1; }
+  .stat.c-stat .stat-num { color: var(--red); }
+  .stat.b-stat .stat-num { color: var(--teal); }
+  .stat-label { font-size: 10px; color: var(--text-dim); margin-top: 3px; letter-spacing: .3px; }
+  .result-insight { background: var(--orange-dim); border: 1px solid rgba(255,107,43,.3); border-radius: 10px; padding: 13px 15px; font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+  .result-insight strong { color: var(--orange); }
+
+  /* flipped items callout */
+  .flip-section { background: rgba(45,212,191,.06); border: 1px solid rgba(45,212,191,.25); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .flip-section h4 { font-size: 12px; font-weight: 700; color: var(--teal); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .flip-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+  .flip-item:last-child { margin-bottom: 0; }
+  .flip-arrow { color: var(--teal); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .flip-detail { color: var(--text-mid); line-height: 1.6; }
+  .flip-detail strong { color: var(--text); }
+
+  .items-review { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+  .items-review-title { padding: 12px 18px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+  .item-row { padding: 12px 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .item-row:last-child { border-bottom: none; }
+  .item-badge { font-size: 10px; font-weight: 800; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+  .item-badge.c { background: rgba(255,77,109,.15); color: var(--red); }
+  .item-badge.b { background: var(--teal-dim); color: var(--teal); }
+  .item-badge.none { background: var(--surface); color: var(--text-dim); }
+  .item-label { flex: 1; color: var(--text-mid); }
+  .item-revised { font-size: 10px; color: var(--teal); margin-left: 4px; }
+
+  .next-card { background: linear-gradient(135deg, rgba(255,107,43,.07), rgba(45,212,191,.05)); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .next-card h3 { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 900; margin-bottom: 14px; }
+  .next-step-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .step-icon { font-size: 16px; flex-shrink: 0; }
+  .step-text { font-size: 12px; color: var(--text-mid); line-height: 1.7; }
+  .step-text strong { color: var(--text); }
+
+  .reset-btn { display: block; margin: 14px auto 0; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; color: var(--text-dim); font-size: 11px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; letter-spacing: .5px; }
+  .reset-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+  footer { max-width: 680px; margin: 40px auto 0; padding: 0 24px; text-align: center; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; line-height: 1.8; }
+
+  @media (max-width: 480px) {
+    .guide { grid-template-columns: 1fr; }
+    .result-stats { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">時間派 <span>× Steven</span></div>
+  <div class="badge">SKOOL 工具</div>
+</header>
+
+<!-- Progress -->
+<div class="progress-wrap">
+  <div class="steps-row">
+    <div class="step-dot active" id="dot1">
+      <div class="dot-circle">1</div>
+      <div class="dot-label">列出慾望</div>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot" id="dot2">
+      <div class="dot-circle">2</div>
+      <div class="dot-label">反思問答</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot" id="dot3">
+      <div class="dot-circle">3</div>
+      <div class="dot-label">看清結構</div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">週一工具 · 能量管理</div>
+  <h1>你的慾望，<br>是<em>消費</em>還是<em>建造</em>？</h1>
+  <p>列出來只是第一步。更重要的是：你知道自己為什麼想要嗎？<br>這個工具會追問你，幫你看清楚慾望背後真正的驅動力。</p>
+</div>
+
+<!-- Type guide -->
+<div class="guide">
+  <div class="guide-card consume">
+    <div class="guide-letter">C</div>
+    <div class="guide-name">消費型 Consume</div>
+    <div class="guide-desc">你想「擁有」某個結果或東西。多巴胺一次性爆發，得到後動力消失。</div>
+  </div>
+  <div class="guide-card build">
+    <div class="guide-letter">B</div>
+    <div class="guide-name">建造型 Build</div>
+    <div class="guide-desc">你想「成為」某種人或建立某種能力。多巴胺緩釋，每天累積動力。</div>
+  </div>
+</div>
+
+<!-- ══ STEP 1 ══ -->
+<div class="section" id="step1">
+  <div class="section-title">Step 1 &nbsp;列出你的慾望，直覺標記 C 或 B</div>
+  <div id="rows-container"></div>
+  <button class="add-row-btn" onclick="addRow()">＋ 再加一條</button>
+  <button class="primary-btn" id="to-step2-btn" onclick="goToStep2()">下一步：逐一反思 →</button>
+</div>
+
+<!-- ══ STEP 2 ══ -->
+<div class="section" id="step2">
+  <div class="section-title">Step 2 &nbsp;逐一回答，看看你想的跟真相是否一樣</div>
+  <div id="reflect-container"></div>
+  <button class="primary-btn" id="to-step3-btn" onclick="goToStep3()">看我的慾望結構分析 →</button>
+</div>
+
+<!-- ══ STEP 3 ══ -->
+<div class="section" id="step3">
+  <div class="section-title">Step 3 &nbsp;你的慾望結構</div>
+
+  <div class="result-header-card">
+    <div class="result-bars" id="result-bars"><div class="bar-e"></div></div>
+    <div class="result-stats">
+      <div class="stat c-stat"><div class="stat-num" id="c-count">0</div><div class="stat-label">消費型 C</div></div>
+      <div class="stat b-stat"><div class="stat-num" id="b-count">0</div><div class="stat-label">建造型 B</div></div>
+      <div class="stat"><div class="stat-num" id="n-count" style="color:var(--text-dim)">0</div><div class="stat-label">未標記</div></div>
+    </div>
+    <div class="result-insight" id="result-insight"></div>
+  </div>
+
+  <div class="flip-section" id="flip-section" style="display:none">
+    <h4>⚡ 反思後，這幾項可能跟你想的不一樣</h4>
+    <div id="flip-list"></div>
+  </div>
+
+  <div class="items-review">
+    <div class="items-review-title">你的清單（含反思後調整）</div>
+    <div id="items-list"></div>
+  </div>
+
+  <div class="next-card">
+    <h3>接下來，你可以做什麼？</h3>
+    <div class="next-step-item">
+      <div class="step-icon">🎯</div>
+      <div class="step-text"><strong>不需要刪掉消費型慾望。</strong>先問自己：「這個 C，背後有沒有一個 B 版本？」「我想買課程（C）」的 B 版本是「我想養成每週練習的習慣」。</div>
+    </div>
+    <div class="next-step-item">
+      <div class="step-icon">📌</div>
+      <div class="step-text"><strong>本週挑一個 B，給它一個最小行動。</strong>小到不需要意志力的那種——10 分鐘、一頁、一次。</div>
+    </div>
+    <div class="next-step-item">
+      <div class="step-icon">🔁</div>
+      <div class="step-text"><strong>每週五做一次覆盤。</strong>觀察你的慾望結構是否在往健康的方向移動。</div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">重新開始</button>
+</div>
+
+<footer>
+  Steven × 時間派｜人生決策與時間設計實驗室<br>
+  靈感來自 Anna Lembke《多巴胺國度》× 週一直播主題
+</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────
+let rowCount = 0;
+const rowTypes = {};   // id -> 'c'|'b'|null
+const rowTexts = {};   // id -> string
+
+// Q&A answers per item: { q1: 'a'|'b'|null, q2: 'a'|'b'|null }
+const answers = {};
+
+// Revised types after reflection
+const revisedTypes = {};
+
+// ─── STEP 1 HELPERS ──────────────────────────────────
+function addRow(placeholder) {
+  rowCount++;
+  const id = rowCount;
+  rowTypes[id] = null;
+
+  const ph = placeholder || '輸入你想要的事、物或狀態…';
+  const container = document.getElementById('rows-container');
+  const div = document.createElement('div');
+  div.className = 'desire-row';
+  div.id = `row-${id}`;
+  div.innerHTML = `
+    <div class="row-num">${id}</div>
+    <input class="desire-input" id="input-${id}" type="text" placeholder="${ph}" maxlength="60" />
+    <div class="type-toggle">
+      <button class="type-btn" id="c-${id}" onclick="setType(${id},'c')">C</button>
+      <button class="type-btn" id="b-${id}" onclick="setType(${id},'b')">B</button>
+    </div>
+    <button class="delete-btn" onclick="removeRow(${id})">✕</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeRow(id) {
+  const el = document.getElementById(`row-${id}`);
+  if (el) el.remove();
+  delete rowTypes[id];
+  renumber();
+}
+
+function renumber() {
+  document.querySelectorAll('.desire-row').forEach((r, i) => {
+    const n = r.querySelector('.row-num');
+    if (n) n.textContent = i + 1;
+  });
+}
+
+function setType(id, t) {
+  rowTypes[id] = rowTypes[id] === t ? null : t;
+  document.getElementById(`c-${id}`).className = 'type-btn' + (rowTypes[id]==='c' ? ' active-c' : '');
+  document.getElementById(`b-${id}`).className = 'type-btn' + (rowTypes[id]==='b' ? ' active-b' : '');
+}
+
+// ─── STEP 2 BUILD ────────────────────────────────────
+/*
+  Question logic:
+  C items → Q1: "如果今天就得到這個，一個月後你還會在意嗎？"
+              A: 不太會 / B: 還是會很在意
+            Q2: "這件事背後，你真正想成為什麼樣的人？"
+              A: 我沒有特別想成為誰，就只是想要 / B: 其實背後有個我想成為的樣子
+
+  B items → Q1: "你有沒有曾經為這件事採取過任何實際行動？"
+              A: 還沒有，目前只是想 / B: 有，哪怕只是很小的一步
+            Q2: "如果一直看不到結果，你還會繼續做嗎？"
+              A: 應該會放棄 / B: 應該還是會繼續，因為過程本身就有意義
+
+  Insight logic:
+  C + Q1=A + Q2=A → confirm C："這是一個典型的消費型慾望，沒有不好，但要小心它消耗了你太多精力。"
+  C + Q1=B + Q2=B → flip to B："等等——這件事對你的影響可能比你想的深。這聽起來更像一個建造型慾望，只是你把它包裝成消費型了。"
+  C + mixed       → neutral："這介於兩者之間。問問自己：我願意為這件事每天做一點點嗎？如果願意，它就是 B。"
+
+  B + Q1=B + Q2=B → confirm B："這是一個真正的建造型慾望，你不只是在想，你已經在做了。繼續。"
+  B + Q1=A + Q2=A → flip to C："小心——這可能是一個穿著 B 外衣的 C。你還沒行動，結果消失你就放棄。這不是批評，是提醒你先找到它的最小行動。"
+  B + mixed       → neutral："動力有，但還需要一個起點。試著給這件事一個 5 分鐘就能完成的最小行動，讓多巴胺開始為它工作。"
+*/
+
+const questions = {
+  c: [
+    {
+      label: '如果今天就得到這個，一個月後你還會在意嗎？',
+      icon: '⏳',
+      opts: [
+        { val: 'a', text: '不太會，可能得到就滿足了' },
+        { val: 'b', text: '還是會很在意，它對我影響很深' }
+      ]
+    },
+    {
+      label: '這件事背後，你有沒有一個想成為的樣子？',
+      icon: '🪞',
+      opts: [
+        { val: 'a', text: '沒有，就是單純想要或想擁有' },
+        { val: 'b', text: '有，得到這個是因為我想成為某種人' }
+      ]
+    }
+  ],
+  b: [
+    {
+      label: '你有沒有曾經為這件事採取過實際行動？',
+      icon: '🏃',
+      opts: [
+        { val: 'a', text: '還沒有，目前只停留在「想」的階段' },
+        { val: 'b', text: '有，哪怕只是非常小的一步' }
+      ]
+    },
+    {
+      label: '如果一直看不到結果，你還會繼續做嗎？',
+      icon: '🔥',
+      opts: [
+        { val: 'a', text: '應該會放棄，我需要看到成果才有動力' },
+        { val: 'b', text: '應該還是會繼續，過程本身就有意義' }
+      ]
+    }
+  ]
+};
+
+function getInsight(type, q1, q2) {
+  if (type === 'c') {
+    if (q1 === 'b' && q2 === 'b') return { kind: 'flip', msg: '等等——這件事對你的影響可能比你想的深。這聽起來更像一個<strong>建造型慾望</strong>，只是你把它包裝成消費型了。試著把它重新定義成「我想成為⋯⋯」。', revised: 'b' };
+    if (q1 === 'a' && q2 === 'a') return { kind: 'confirm', msg: '這是一個典型的消費型慾望，很正常。但要小心它消耗了你太多的多巴胺預算——得到之後，空虛感往往會比你預期的快到來。', revised: 'c' };
+    return { kind: 'neutral', msg: '這介於兩者之間。問問自己：我願意為這件事每天做一點點嗎？如果願意，它就是 B；如果只是想得到結果，它就是 C。', revised: 'c' };
+  } else {
+    if (q1 === 'b' && q2 === 'b') return { kind: 'confirm', msg: '這是一個<strong>真正的建造型慾望</strong>。你不只是在想，你已經在做了。繼續，多巴胺正在為你的成長工作。', revised: 'b' };
+    if (q1 === 'a' && q2 === 'a') return { kind: 'flip', msg: '小心——這可能是一個<strong>穿著 B 外衣的 C</strong>。你還沒行動，結果一旦消失你就放棄。這不是批評，是提醒你：先找到它的一個最小行動，才能讓它真正變成 B。', revised: 'c' };
+    return { kind: 'neutral', msg: '動力有，但還需要一個起點。給這件事一個 5 分鐘就能完成的最小行動，讓多巴胺開始為它緩釋工作。', revised: 'b' };
+  }
+}
+
+function buildReflectCards(items) {
+  const container = document.getElementById('reflect-container');
+  container.innerHTML = '';
+
+  items.forEach((item, idx) => {
+    const t = item.type; // 'c' | 'b' | null
+    answers[item.id] = { q1: null, q2: null };
+    revisedTypes[item.id] = t;
+
+    const card = document.createElement('div');
+    card.className = 'reflect-card';
+    card.id = `reflect-${item.id}`;
+
+    const badgeTxt = t === 'c' ? '消費 C' : t === 'b' ? '建造 B' : '未標記';
+    const badgeClass = t === 'c' ? 'c' : t === 'b' ? 'b' : 'none';
+
+    let bodyHTML = '';
+    if (!t) {
+      // No type selected — just a prompt
+      bodyHTML = `<div class="reflect-body"><p style="font-size:13px;color:var(--text-dim);line-height:1.7">你還沒有標記這條慾望的類型。先問問自己：「我是想<strong style="color:var(--red)">擁有</strong>它，還是想透過它<strong style="color:var(--teal)">成為某種人</strong>？」</p></div>`;
+    } else {
+      const qs = questions[t];
+      bodyHTML = `<div class="reflect-body">
+        ${qs.map((q, qi) => `
+          <div class="q-block" id="qblock-${item.id}-${qi}">
+            <div class="q-label"><span class="q-icon">${q.icon}</span>${q.label}</div>
+            <div class="opt-group">
+              ${q.opts.map(o => `<button class="opt-btn" id="opt-${item.id}-${qi}-${o.val}" onclick="selectOpt(${item.id},${qi},'${o.val}')">${o.text}</button>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+        <div class="insight-bubble" id="insight-${item.id}"></div>
+      </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="reflect-header">
+        <span class="reflect-badge ${badgeClass}">${badgeTxt}</span>
+        <span class="reflect-text">${item.text || '（未填寫）'}</span>
+      </div>
+      ${bodyHTML}
+    `;
+    container.appendChild(card);
+  });
+
+  updateStep3Btn();
+}
+
+function selectOpt(itemId, qi, val) {
+  // Update answer
+  if (qi === 0) answers[itemId].q1 = val;
+  if (qi === 1) answers[itemId].q2 = val;
+
+  // Visual update
+  const type = rowTypes[itemId] || 'c';
+  const qs = questions[type];
+  qs.forEach((q, i) => {
+    q.opts.forEach(o => {
+      const btn = document.getElementById(`opt-${itemId}-${i}-${o.val}`);
+      if (btn) btn.className = 'opt-btn' + (answers[itemId][`q${i+1}`] === o.val ? ' selected' : '');
+    });
+  });
+
+  // Show insight once both answered
+  if (answers[itemId].q1 && answers[itemId].q2) {
+    const insight = getInsight(type, answers[itemId].q1, answers[itemId].q2);
+    const bubble = document.getElementById(`insight-${itemId}`);
+    if (bubble) {
+      bubble.className = `insight-bubble ${insight.kind} show`;
+      bubble.innerHTML = insight.msg;
+    }
+    revisedTypes[itemId] = insight.revised;
+    updateStep3Btn();
+  }
+}
+
+function allReflected(items) {
+  return items.every(item => {
+    if (!item.type) return true; // no type = skip
+    return answers[item.id] && answers[item.id].q1 && answers[item.id].q2;
+  });
+}
+
+function updateStep3Btn() {
+  // always enabled — just labeling
+}
+
+// ─── NAV ─────────────────────────────────────────────
+let currentItems = [];
+
+function goToStep2() {
+  const rows = document.querySelectorAll('.desire-row');
+  if (!rows.length) { alert('請先列出至少一條慾望！'); return; }
+
+  currentItems = [];
+  rows.forEach(row => {
+    const id = parseInt(row.id.replace('row-', ''));
+    const inputEl = document.getElementById(`input-${id}`);
+    currentItems.push({ id, text: inputEl ? inputEl.value.trim() : '', type: rowTypes[id] || null });
+  });
+
+  buildReflectCards(currentItems);
+
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  setStep(2);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToStep3() {
+  buildResult();
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'block';
+  setStep(3);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById(`dot${i}`);
+    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+  });
+  [1,2].forEach(i => {
+    const line = document.getElementById(`line${i}`);
+    line.className = 'step-line' + (i < n ? ' done' : '');
+  });
+}
+
+// ─── RESULT ──────────────────────────────────────────
+function buildResult() {
+  const items = currentItems;
+
+  // Count using revised types
+  let cCount = 0, bCount = 0, nCount = 0;
+  const flipped = [];
+
+  items.forEach(item => {
+    const orig = item.type;
+    const rev = revisedTypes[item.id] !== undefined ? revisedTypes[item.id] : orig;
+    if (rev === 'c') cCount++;
+    else if (rev === 'b') bCount++;
+    else nCount++;
+
+    if (orig && rev && orig !== rev) {
+      flipped.push({ text: item.text || '（未填寫）', from: orig, to: rev });
+    }
+  });
+
+  const total = items.length;
+
+  // Stats
+  document.getElementById('c-count').textContent = cCount;
+  document.getElementById('b-count').textContent = bCount;
+  document.getElementById('n-count').textContent = nCount;
+
+  // Bars
+  const barsEl = document.getElementById('result-bars');
+  barsEl.innerHTML = '';
+  const cPct = total > 0 ? Math.round((cCount / total) * 100) : 0;
+  const bPct = total > 0 ? Math.round((bCount / total) * 100) : 0;
+  if (cPct > 0) { const b = document.createElement('div'); b.className='bar-c'; b.style.width=cPct+'%'; barsEl.appendChild(b); }
+  if (bPct > 0) { const b = document.createElement('div'); b.className='bar-b'; b.style.width=bPct+'%'; barsEl.appendChild(b); }
+  if (cPct + bPct < 100) { const b = document.createElement('div'); b.className='bar-e'; barsEl.appendChild(b); }
+
+  // Insight text
+  const insightEl = document.getElementById('result-insight');
+  let insight = '';
+  if (bPct === 0 && cPct > 0) {
+    insight = `<strong>你的清單目前全是消費型。</strong>這說明你的多巴胺系統幾乎都在被「擁有」驅動。試著問自己：清單裡哪一項，其實你可以每天做一點點的？那一項，就是你的 B 種子。`;
+  } else if (cPct >= 70) {
+    insight = `<strong>消費型佔多數（${cPct}%）。</strong>你知道自己想要什麼，但大部分停在「終點」上。本週挑一個 B，給它最小行動，讓多巴胺開始緩釋。`;
+  } else if (bPct >= 60) {
+    insight = `<strong>建造型佔多數（${bPct}%），結構健康！</strong>現在的任務是把 B 轉化成具體的每日系統，讓多巴胺穩定運作，而不是靠靈感爆發。`;
+  } else if (bPct > 0 && cPct > 0) {
+    insight = `<strong>C：${cPct}% ／ B：${bPct}%</strong>——結構開始平衡。繼續培養建造型慾望，讓「我想成為」的比重逐漸超過「我想擁有」。`;
+  } else {
+    insight = `觀察你的清單，問自己：哪一條帶給你最持久的動力感？那就是你的 B。`;
+  }
+  insightEl.innerHTML = insight;
+
+  // Flipped items
+  const flipSection = document.getElementById('flip-section');
+  const flipList = document.getElementById('flip-list');
+  if (flipped.length > 0) {
+    flipSection.style.display = 'block';
+    flipList.innerHTML = flipped.map(f => `
+      <div class="flip-item">
+        <div class="flip-arrow">↔</div>
+        <div class="flip-detail">
+          <strong>${f.text}</strong><br>
+          你標記了 <span style="color:${f.from==='c'?'var(--red)':'var(--teal)'}">${f.from.toUpperCase()}</span>，
+          反思後比較像 <span style="color:${f.to==='c'?'var(--red)':'var(--teal)'}">${f.to.toUpperCase()}</span>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    flipSection.style.display = 'none';
+  }
+
+  // Items list
+  const listEl = document.getElementById('items-list');
+  listEl.innerHTML = items.map(item => {
+    const orig = item.type;
+    const rev = revisedTypes[item.id] !== undefined ? revisedTypes[item.id] : orig;
+    const badgeClass = rev === 'c' ? 'c' : rev === 'b' ? 'b' : 'none';
+    const badgeTxt = rev === 'c' ? '消費 C' : rev === 'b' ? '建造 B' : '未標記';
+    const wasFlipped = orig && rev && orig !== rev;
+    return `<div class="item-row">
+      <span class="item-badge ${badgeClass}">${badgeTxt}</span>
+      <span class="item-label">${item.text || '（未填寫）'}${wasFlipped ? '<span class="item-revised">↔ 反思後調整</span>' : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+// ─── RESET ───────────────────────────────────────────
+function resetAll() {
+  rowCount = 0;
+  Object.keys(rowTypes).forEach(k => delete rowTypes[k]);
+  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.keys(revisedTypes).forEach(k => delete revisedTypes[k]);
+  currentItems = [];
+  document.getElementById('rows-container').innerHTML = '';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+  setStep(1);
+  initRows();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── INIT ─────────────────────────────────────────────
+function initRows() {
+  const phs = ['例如：我想要買一套線上課程','例如：我想要每天早起一小時','例如：我想要存到 50 萬','例如：我想要建立讀書的習慣','例如：我想要換一份更好的工作'];
+  phs.forEach(p => addRow(p));
+}
+initRows();
+</script>
+</body>
+</html>
+
