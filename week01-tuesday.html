@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>兩層防火牆工作表｜Steven × 時間派</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --surface3: #1f2a3c;
+    --border: #2a3a55;
+    --blue: #3b82f6;
+    --blue-dim: rgba(59,130,246,0.12);
+    --orange: #f97316;
+    --orange-dim: rgba(249,115,22,0.12);
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.10);
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text-mid: #94a3b8;
+    --text-dim: #475569;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 15px; color: var(--blue); }
+  .logo span { color: var(--text-dim); font-weight: 300; font-size: 12px; }
+  .badge { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 1px; }
+
+  /* ── HERO ── */
+  .hero { padding: 36px 24px 24px; max-width: 680px; margin: 0 auto; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; margin-bottom: 12px; border-left: 3px solid var(--blue); padding-left: 10px; }
+  .hero h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(22px, 5vw, 34px); font-weight: 900; line-height: 1.35; margin-bottom: 10px; }
+  .hero h1 em { font-style: normal; color: var(--blue); }
+  .hero p { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+
+  /* ── DATE BAR ── */
+  .date-bar { max-width: 680px; margin: 0 auto 20px; padding: 0 24px; }
+  .date-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+  .date-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+  .date-input { background: none; border: none; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 14px; font-weight: 700; outline: none; flex: 1; }
+
+  /* ── SECTION ── */
+  .section { max-width: 680px; margin: 0 auto 20px; padding: 0 24px; }
+  .section-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .section-icon { font-size: 18px; }
+  .section-title-text { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 900; }
+  .section-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .section-body { padding: 18px 20px; }
+
+  /* ── FIREWALL 1: CHECKLIST ── */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; cursor: pointer; }
+  .check-item:last-child { margin-bottom: 0; }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); background: var(--surface3); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+  .check-box.checked { background: var(--green); border-color: var(--green); }
+  .check-box.checked::after { content: '✓'; color: #111; font-size: 13px; font-weight: 900; }
+  .check-content { flex: 1; }
+  .check-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; transition: color .2s; }
+  .check-item.done .check-title { color: var(--text-dim); text-decoration: line-through; }
+  .check-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+  /* one big thing */
+  .one-thing-wrap { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .one-thing-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+  .one-thing-input { width: 100%; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 700; outline: none; transition: border-color .2s; }
+  .one-thing-input:focus { border-color: var(--orange); }
+  .one-thing-input::placeholder { color: var(--text-dim); font-weight: 400; font-size: 13px; font-family: 'Noto Sans TC', sans-serif; }
+
+  /* firewall indicator */
+  .firewall-status { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: var(--surface3); font-size: 12px; transition: all .3s; }
+  .firewall-status.active { background: var(--green-dim); border: 1px solid rgba(34,197,94,.3); color: var(--green); }
+  .firewall-status.inactive { border: 1px solid var(--border); color: var(--text-dim); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); transition: background .3s; }
+  .firewall-status.active .status-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+  /* ── FIREWALL 2: 90/20 BLOCKS ── */
+  .blocks-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .blocks-header span { font-size: 12px; color: var(--text-dim); }
+  .add-block-btn { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; transition: all .15s; }
+  .add-block-btn:hover { background: rgba(59,130,246,.2); }
+
+  .time-block { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; animation: fadeUp .25s ease; }
+  .time-block:last-child { margin-bottom: 0; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  .block-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .block-num { width: 22px; height: 22px; border-radius: 50%; background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .block-time-row { display: flex; gap: 8px; flex: 1; }
+  .time-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 12px; outline: none; width: 80px; text-align: center; }
+  .time-sep { color: var(--text-dim); font-size: 12px; display: flex; align-items: center; }
+  .del-block { width: 22px; height: 22px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+  .del-block:hover { background: rgba(239,68,68,.15); color: var(--red); }
+  .block-task { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .block-task:focus { border-color: var(--blue); }
+  .block-task::placeholder { color: var(--text-dim); }
+
+  .block-done-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .done-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: var(--text-dim); transition: color .2s; }
+  .done-toggle input { display: none; }
+  .toggle-box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: center; transition: all .2s; }
+  .done-toggle input:checked + .toggle-box { background: var(--green); border-color: var(--green); }
+  .done-toggle input:checked + .toggle-box::after { content: '✓'; color: #111; font-size: 10px; font-weight: 900; }
+  .done-toggle input:checked ~ span { color: var(--green); }
+
+  .blocks-summary { margin-top: 14px; padding: 12px 14px; background: var(--surface3); border-radius: 8px; font-size: 12px; color: var(--text-mid); display: flex; gap: 16px; }
+  .summary-item strong { color: var(--blue); font-size: 16px; font-family: 'Noto Serif TC', serif; }
+
+  /* ── DISTRACTION LOG ── */
+  .distraction-intro { font-size: 12px; color: var(--text-mid); line-height: 1.7; margin-bottom: 14px; padding: 10px 14px; background: var(--surface3); border-radius: 8px; border-left: 3px solid var(--orange); }
+  .distraction-intro strong { color: var(--orange); }
+
+  .distraction-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; animation: fadeUp .25s ease; }
+  .distraction-input { flex: 1; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 13px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .distraction-input:focus { border-color: var(--orange); }
+  .distraction-input::placeholder { color: var(--text-dim); }
+  .distraction-done { width: 34px; height: 34px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--surface3); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+  .distraction-done.resolved { background: var(--green-dim); border-color: var(--green); }
+  .distraction-del { width: 28px; height: 28px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+  .distraction-del:hover { background: rgba(239,68,68,.15); color: var(--red); }
+  .add-distraction-btn { width: 100%; background: none; border: 1.5px dashed var(--border); border-radius: 9px; padding: 10px; color: var(--text-dim); font-size: 12px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; margin-top: 4px; }
+  .add-distraction-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+  .distraction-insight { display: none; margin-top: 12px; padding: 12px 14px; background: var(--orange-dim); border: 1px solid rgba(249,115,22,.3); border-radius: 8px; font-size: 12px; color: #fdba74; line-height: 1.7; }
+  .distraction-insight.show { display: block; animation: fadeUp .3s ease; }
+
+  /* ── RESET ── */
+  .reset-btn { display: block; margin: 20px auto 0; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; color: var(--text-dim); font-size: 11px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; max-width: 680px; }
+  .reset-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+  footer { max-width: 680px; margin: 30px auto 0; padding: 0 24px; text-align: center; font-size: 10px; color: var(--text-dim); line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">時間派 <span>× Steven</span></div>
+  <div class="badge">週二工具</div>
+</header>
+
+<div class="hero">
+  <div class="tag">週二工具 · 高效工作</div>
+  <h1>兩層<em>防火牆</em><br>工作表</h1>
+  <p>分心不是意志力的問題，是環境設計的問題。<br>每天開工前花兩分鐘，建立你的工作結界。</p>
+</div>
+
+<!-- DATE -->
+<div class="date-bar">
+  <div class="date-card">
+    <span class="date-label">今天日期</span>
+    <input class="date-input" id="date-input" type="text" placeholder="例：2026/04/14" />
+  </div>
+</div>
+
+<!-- ══ SECTION 1: 環境防火牆 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">🧱</div>
+      <div>
+        <div class="section-title-text">第一層｜環境防火牆</div>
+        <div class="section-sub">開工前花 2 分鐘，勾選三個框</div>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="check-item" id="check1" onclick="toggleCheck(1)">
+        <div class="check-box" id="box1"></div>
+        <div class="check-content">
+          <div class="check-title">① 關閉所有通知</div>
+          <div class="check-desc">手機翻面或放進抽屜，電腦通知全關。真正的緊急事件，一年大概發生兩次。</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="check2" onclick="toggleCheck(2)">
+        <div class="check-box" id="box2"></div>
+        <div class="check-content">
+          <div class="check-title">② 只開今天需要的視窗</div>
+          <div class="check-desc">不需要的分頁全關，桌面清空。亂的桌面就是亂的大腦。</div>
+        </div>
+      </div>
+
+      <div class="check-item" id="check3" onclick="toggleCheck(3)">
+        <div class="check-box" id="box3"></div>
+        <div class="check-content">
+          <div class="check-title">③ 寫下今天最重要的一件事</div>
+          <div class="check-desc">就一件，不是清單。這件事沒完成之前，其他都是次要的。</div>
+        </div>
+      </div>
+
+      <div class="one-thing-wrap">
+        <div class="one-thing-label">今天最重要的一件事</div>
+        <input class="one-thing-input" id="one-thing" type="text" placeholder="寫下它，貼在螢幕旁邊…" maxlength="60" />
+      </div>
+
+      <div class="firewall-status inactive" id="firewall-status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">環境防火牆尚未啟動——勾選三個項目後啟動</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 2: 時間防火牆 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">⏱️</div>
+      <div>
+        <div class="section-title-text">第二層｜時間防火牆</div>
+        <div class="section-sub">90 分鐘專注 + 20 分鐘合法分心</div>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="blocks-header">
+        <span>今天的專注塊計畫</span>
+        <button class="add-block-btn" onclick="addBlock()">＋ 新增專注塊</button>
+      </div>
+
+      <div id="blocks-container"></div>
+
+      <div class="blocks-summary" id="blocks-summary">
+        <div class="summary-item"><strong id="total-blocks">0</strong><br>個專注塊</div>
+        <div class="summary-item"><strong id="total-focus">0</strong><br>分鐘專注</div>
+        <div class="summary-item"><strong id="done-blocks">0</strong><br>個已完成</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 3: 分心紀錄 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">💭</div>
+      <div>
+        <div class="section-title-text">分心紀錄｜先記下來，別馬上去做</div>
+        <div class="section-sub">等 20 分鐘合法時間再處理</div>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="distraction-intro">
+        工作途中突然冒出「我要去查那個」或「我要回那封信」——<strong>不要馬上去做</strong>，把它寫在這裡，繼續工作。等你的合法分心時間到了，再來處理。<br>
+        大部分你覺得「很急」的事，等 90 分鐘後你會發現根本不急了。
+      </div>
+
+      <div id="distraction-container"></div>
+      <button class="add-distraction-btn" onclick="addDistraction()">＋ 記錄一個分心念頭</button>
+
+      <div class="distraction-insight" id="distraction-insight"></div>
+
+    </div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">清空今天的紀錄，重新開始</button>
+
+<footer>
+  Steven × 時間派｜人生決策與時間設計實驗室<br>
+  靈感來自 BJ Fogg《行為設計學》× 週二直播主題
+</footer>
+
+<script>
+// ─── CHECK STATE ─────────────────────────────────────
+const checks = { 1: false, 2: false, 3: false };
+
+function toggleCheck(n) {
+  checks[n] = !checks[n];
+  const box = document.getElementById(`box${n}`);
+  const item = document.getElementById(`check${n}`);
+  box.className = 'check-box' + (checks[n] ? ' checked' : '');
+  item.className = 'check-item' + (checks[n] ? ' done' : '');
+  updateFirewallStatus();
+}
+
+function updateFirewallStatus() {
+  const all = checks[1] && checks[2] && checks[3];
+  const status = document.getElementById('firewall-status');
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  if (all) {
+    status.className = 'firewall-status active';
+    text.textContent = '🔒 環境防火牆已啟動——開始你的第一個 90 分鐘';
+  } else {
+    const done = Object.values(checks).filter(Boolean).length;
+    status.className = 'firewall-status inactive';
+    text.textContent = `環境防火牆尚未啟動——已完成 ${done}/3 項`;
+  }
+}
+
+// ─── BLOCKS ──────────────────────────────────────────
+let blockCount = 0;
+const blockDone = {};
+
+function addBlock() {
+  blockCount++;
+  const id = blockCount;
+  blockDone[id] = false;
+
+  const container = document.getElementById('blocks-container');
+  const div = document.createElement('div');
+  div.className = 'time-block';
+  div.id = `block-${id}`;
+  div.innerHTML = `
+    <div class="block-header">
+      <div class="block-num">${id}</div>
+      <div class="block-time-row">
+        <input class="time-input" id="start-${id}" type="text" placeholder="09:00" maxlength="5" oninput="updateSummary()" />
+        <span class="time-sep">→</span>
+        <input class="time-input" id="end-${id}" type="text" placeholder="10:30" maxlength="5" oninput="updateSummary()" />
+      </div>
+      <button class="del-block" onclick="delBlock(${id})">✕</button>
+    </div>
+    <input class="block-task" id="task-${id}" type="text" placeholder="這 90 分鐘要完成什麼？" maxlength="60" />
+    <div class="block-done-row">
+      <label class="done-toggle">
+        <input type="checkbox" id="done-${id}" onchange="toggleBlockDone(${id})" />
+        <div class="toggle-box"></div>
+        <span>完成了</span>
+      </label>
+    </div>
+  `;
+  container.appendChild(div);
+  updateSummary();
+}
+
+function delBlock(id) {
+  const el = document.getElementById(`block-${id}`);
+  if (el) el.remove();
+  delete blockDone[id];
+  renumberBlocks();
+  updateSummary();
+}
+
+function renumberBlocks() {
+  document.querySelectorAll('.time-block').forEach((b, i) => {
+    const num = b.querySelector('.block-num');
+    if (num) num.textContent = i + 1;
+  });
+}
+
+function toggleBlockDone(id) {
+  const cb = document.getElementById(`done-${id}`);
+  blockDone[id] = cb.checked;
+  updateSummary();
+}
+
+function updateSummary() {
+  const blocks = document.querySelectorAll('.time-block');
+  const total = blocks.length;
+  const done = Object.values(blockDone).filter(Boolean).length;
+  document.getElementById('total-blocks').textContent = total;
+  document.getElementById('total-focus').textContent = total * 90;
+  document.getElementById('done-blocks').textContent = done;
+}
+
+// ─── DISTRACTIONS ────────────────────────────────────
+let dCount = 0;
+let dResolved = {};
+
+function addDistraction() {
+  dCount++;
+  const id = dCount;
+  dResolved[id] = false;
+
+  const container = document.getElementById('distraction-container');
+  const div = document.createElement('div');
+  div.className = 'distraction-row';
+  div.id = `d-${id}`;
+  div.innerHTML = `
+    <input class="distraction-input" id="di-${id}" type="text" placeholder="腦袋冒出了什麼念頭？" maxlength="60" />
+    <button class="distraction-done" id="dd-${id}" onclick="resolveDistraction(${id})" title="標記為已處理">💭</button>
+    <button class="distraction-del" onclick="delDistraction(${id})">✕</button>
+  `;
+  container.appendChild(div);
+  updateDistractionInsight();
+}
+
+function resolveDistraction(id) {
+  dResolved[id] = !dResolved[id];
+  const btn = document.getElementById(`dd-${id}`);
+  const input = document.getElementById(`di-${id}`);
+  if (dResolved[id]) {
+    btn.className = 'distraction-done resolved';
+    btn.textContent = '✓';
+    if (input) input.style.opacity = '.4';
+  } else {
+    btn.className = 'distraction-done';
+    btn.textContent = '💭';
+    if (input) input.style.opacity = '1';
+  }
+  updateDistractionInsight();
+}
+
+function delDistraction(id) {
+  const el = document.getElementById(`d-${id}`);
+  if (el) el.remove();
+  delete dResolved[id];
+  updateDistractionInsight();
+}
+
+function updateDistractionInsight() {
+  const total = document.querySelectorAll('.distraction-row').length;
+  const resolved = Object.values(dResolved).filter(Boolean).length;
+  const insight = document.getElementById('distraction-insight');
+
+  if (total === 0) { insight.className = 'distraction-insight'; return; }
+
+  let msg = '';
+  if (total >= 5 && resolved < total) {
+    msg = `你今天已經記錄了 ${total} 個分心念頭，其中 ${resolved} 個已處理。這說明你的大腦一直在找出口——這很正常。每記錄一次，就是告訴你的大腦「我知道了，但現在不是時候」。`;
+  } else if (resolved === total && total > 0) {
+    msg = `所有分心念頭都處理完了。你有沒有發現，其中有幾個等你「有空」去做的時候，你反而不想做了？那就是多巴胺在說謊的證明。`;
+  } else if (total > 0) {
+    msg = `記下來就好，別擔心有沒有處理。這個動作本身就在告訴你的大腦：「先放著，我記得了」——大腦收到這個訊號，就會停止提醒你。`;
+  }
+
+  if (msg) {
+    insight.className = 'distraction-insight show';
+    insight.textContent = msg;
+  }
+}
+
+// ─── RESET ───────────────────────────────────────────
+function resetAll() {
+  if (!confirm('確定要清空今天所有紀錄嗎？')) return;
+  [1,2,3].forEach(n => { checks[n] = false; document.getElementById(`box${n}`).className = 'check-box'; document.getElementById(`check${n}`).className = 'check-item'; });
+  document.getElementById('one-thing').value = '';
+  updateFirewallStatus();
+  document.getElementById('blocks-container').innerHTML = '';
+  blockCount = 0;
+  Object.keys(blockDone).forEach(k => delete blockDone[k]);
+  updateSummary();
+  document.getElementById('distraction-container').innerHTML = '';
+  dCount = 0;
+  Object.keys(dResolved).forEach(k => delete dResolved[k]);
+  updateDistractionInsight();
+}
+
+// ─── INIT ─────────────────────────────────────────────
+// Set today's date
+const today = new Date();
+const dateStr = `${today.getFullYear()}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getDate()).padStart(2,'0')}`;
+document.getElementById('date-input').value = dateStr;
+
+// Add 2 default blocks
+addBlock();
+addBlock();
+</script>
+</body>
+</html>
