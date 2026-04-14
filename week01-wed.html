@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痛快平衡檢查表｜Steven × 時間派</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0f0a1e;
+    --surface: #160f2a;
+    --surface2: #1e1535;
+    --surface3: #251c3f;
+    --border: #312555;
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --orange: #fb923c;
+    --orange-dim: rgba(251,146,60,0.12);
+    --teal: #34d399;
+    --teal-dim: rgba(52,211,153,0.10);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.10);
+    --text: #ede9fe;
+    --text-mid: #a89ec0;
+    --text-dim: #5b4f7a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 15px; color: var(--purple); }
+  .logo span { color: var(--text-dim); font-weight: 300; font-size: 12px; }
+  .badge { background: var(--purple-dim); border: 1px solid var(--purple); color: var(--purple); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 1px; }
+
+  .hero { padding: 36px 24px 24px; max-width: 680px; margin: 0 auto; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin-bottom: 12px; border-left: 3px solid var(--purple); padding-left: 10px; }
+  .hero h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(22px, 5vw, 34px); font-weight: 900; line-height: 1.35; margin-bottom: 10px; }
+  .hero h1 em.pain { font-style: normal; color: var(--red); }
+  .hero h1 em.joy { font-style: normal; color: var(--teal); }
+  .hero p { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+
+  /* seesaw visual */
+  .seesaw-wrap { max-width: 680px; margin: 0 auto 20px; padding: 0 24px; }
+  .seesaw-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ss-side { flex: 1; text-align: center; }
+  .ss-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .ss-side.borrowed .ss-label { color: var(--red); }
+  .ss-side.earned .ss-label { color: var(--teal); }
+  .ss-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+  .ss-arrow { font-size: 11px; color: var(--text-dim); text-align: center; flex-shrink: 0; line-height: 1.6; }
+  .ss-icon { font-size: 28px; margin-bottom: 4px; }
+
+  .section { max-width: 680px; margin: 0 auto 16px; padding: 0 24px; }
+  .section-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .section-icon { font-size: 18px; }
+  .section-title-text { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 900; }
+  .section-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .section-body { padding: 18px 20px; }
+
+  /* ── SECTION 1: 昨天回顧 ── */
+  .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .col-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .col-label.borrowed { color: var(--red); }
+  .col-label.earned { color: var(--teal); }
+  .tag-input-wrap { display: flex; gap: 6px; margin-bottom: 6px; }
+  .tag-input { flex: 1; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 12px; outline: none; transition: border-color .2s; }
+  .borrowed-col .tag-input:focus { border-color: var(--red); }
+  .earned-col .tag-input:focus { border-color: var(--teal); }
+  .tag-input::placeholder { color: var(--text-dim); }
+  .add-tag-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface3); color: var(--text-dim); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+  .borrowed-col .add-tag-btn:hover { border-color: var(--red); color: var(--red); }
+  .earned-col .add-tag-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .tags-list { display: flex; flex-wrap: wrap; gap: 5px; min-height: 28px; }
+  .tag-chip { display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: default; animation: fadeUp .2s ease; }
+  .tag-chip.borrowed { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
+  .tag-chip.earned { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(52,211,153,.25); }
+  .chip-del { background: none; border: none; color: inherit; cursor: pointer; font-size: 12px; opacity: .6; padding: 0; line-height: 1; }
+  .chip-del:hover { opacity: 1; }
+  @keyframes fadeUp { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:scale(1); } }
+
+  .balance-bar-wrap { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .balance-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .balance-bar { height: 8px; border-radius: 4px; background: var(--surface3); overflow: hidden; display: flex; }
+  .bar-borrowed { background: var(--red); transition: width .4s ease; }
+  .bar-earned { background: var(--teal); transition: width .4s ease; }
+  .balance-insight { margin-top: 8px; font-size: 11px; color: var(--text-mid); line-height: 1.6; }
+
+  /* ── SECTION 2: 今天先苦後樂 ── */
+  .earn-row { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; animation: fadeUp .25s ease; }
+  .earn-row-top { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .earn-num { width: 22px; height: 22px; border-radius: 50%; background: var(--purple-dim); border: 1px solid var(--purple); color: var(--purple); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .earn-input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .earn-input:focus { border-color: var(--purple); }
+  .earn-input::placeholder { color: var(--text-dim); }
+  .del-earn { width: 24px; height: 24px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+  .del-earn:hover { color: var(--red); }
+
+  /* resistance meter */
+  .resist-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .resist-label span:last-child { color: var(--purple); font-weight: 700; }
+  .resist-slider { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: var(--surface2); outline: none; }
+  .resist-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--purple); cursor: pointer; border: 2px solid var(--bg); box-shadow: 0 0 6px rgba(167,139,250,.5); }
+  .resist-hint { margin-top: 6px; font-size: 11px; color: var(--text-dim); line-height: 1.5; min-height: 16px; }
+
+  .done-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .done-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: var(--text-dim); }
+  .done-label input { display: none; }
+  .done-box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: center; transition: all .2s; }
+  .done-label input:checked + .done-box { background: var(--teal); border-color: var(--teal); }
+  .done-label input:checked + .done-box::after { content: '✓'; color: #111; font-size: 10px; font-weight: 900; }
+  .done-label input:checked ~ span { color: var(--teal); }
+
+  .add-earn-btn { width: 100%; background: none; border: 1.5px dashed var(--border); border-radius: 10px; padding: 11px; color: var(--text-dim); font-size: 12px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; margin-top: 4px; }
+  .add-earn-btn:hover { border-color: var(--purple); color: var(--purple); }
+
+  /* ── SECTION 3: 今日反思 ── */
+  .reflect-q { margin-bottom: 16px; }
+  .reflect-q:last-child { margin-bottom: 0; }
+  .reflect-q-label { font-size: 12px; font-weight: 700; color: var(--purple); margin-bottom: 6px; }
+  .reflect-textarea { width: 100%; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; resize: none; line-height: 1.7; transition: border-color .2s; min-height: 72px; }
+  .reflect-textarea:focus { border-color: var(--purple); }
+  .reflect-textarea::placeholder { color: var(--text-dim); }
+
+  .reset-btn { display: block; margin: 16px auto 0; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; color: var(--text-dim); font-size: 11px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; }
+  .reset-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+  footer { max-width: 680px; margin: 30px auto 0; padding: 0 24px; text-align: center; font-size: 10px; color: var(--text-dim); line-height: 1.8; }
+
+  @media(max-width:480px){ .two-cols{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">時間派 <span>× Steven</span></div>
+  <div class="badge">週三工具</div>
+</header>
+
+<div class="hero">
+  <div class="tag">週三工具 · 心理韌性</div>
+  <h1><em class="pain">痛</em>與<em class="joy">快樂</em>的<br>平衡檢查表</h1>
+  <p>借來的快樂先爽後空虛，賺來的快樂先苦後真實。<br>每天花三分鐘，看清楚你的蹺蹺板往哪邊傾。</p>
+</div>
+
+<!-- seesaw -->
+<div class="seesaw-wrap">
+  <div class="seesaw-card">
+    <div class="ss-side borrowed">
+      <div class="ss-icon">📱</div>
+      <div class="ss-label">借來的快樂</div>
+      <div class="ss-desc">先拿快樂<br>後還痛苦<br>越來越空虛</div>
+    </div>
+    <div class="ss-arrow">⚖️<br>蹺蹺板<br>原理</div>
+    <div class="ss-side earned">
+      <div class="ss-icon">🏃</div>
+      <div class="ss-label">賺來的快樂</div>
+      <div class="ss-desc">先付痛苦<br>後得快樂<br>越來越有力</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 1: 昨天回顧 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">⏮️</div>
+      <div>
+        <div class="section-title-text">昨天的蹺蹺板｜如實記錄，不評判</div>
+        <div class="section-sub">輸入後按 Enter 新增</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="two-cols">
+        <div class="borrowed-col">
+          <div class="col-label borrowed">借來的快樂 📱</div>
+          <div class="tag-input-wrap">
+            <input class="tag-input" id="b-input" type="text" placeholder="例：滑了 30 分鐘 IG" maxlength="20" onkeydown="if(event.key==='Enter')addTag('b')" />
+            <button class="add-tag-btn" onclick="addTag('b')">+</button>
+          </div>
+          <div class="tags-list" id="b-tags"></div>
+        </div>
+        <div class="earned-col">
+          <div class="col-label earned">賺來的快樂 🏃</div>
+          <div class="tag-input-wrap">
+            <input class="tag-input" id="e-input" type="text" placeholder="例：出門走了 20 分鐘" maxlength="20" onkeydown="if(event.key==='Enter')addTag('e')" />
+            <button class="add-tag-btn" onclick="addTag('e')">+</button>
+          </div>
+          <div class="tags-list" id="e-tags"></div>
+        </div>
+      </div>
+
+      <div class="balance-bar-wrap">
+        <div class="balance-label">
+          <span>昨天的比例</span>
+          <span id="balance-pct">—</span>
+        </div>
+        <div class="balance-bar">
+          <div class="bar-borrowed" id="bar-b" style="width:50%"></div>
+          <div class="bar-earned" id="bar-e" style="width:50%"></div>
+        </div>
+        <div class="balance-insight" id="balance-insight">填入昨天的快樂，看看你的蹺蹺板往哪邊傾。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 2: 今天先苦後樂 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-title-text">今天的先苦後樂清單</div>
+        <div class="section-sub">寫下來，再為每件事的抗拒感打分數</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div id="earn-container"></div>
+      <button class="add-earn-btn" onclick="addEarnItem()">＋ 新增一件先苦後樂的事</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 3: 今日反思 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">🪞</div>
+      <div>
+        <div class="section-title-text">今日反思｜睡前填</div>
+        <div class="section-sub">不需要寫很多，一句話就夠</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="reflect-q">
+        <div class="reflect-q-label">今天做完之後，哪件事讓你感覺最值得？</div>
+        <textarea class="reflect-textarea" placeholder="寫下那件事，以及那個「值得」的感覺是什麼…" rows="2"></textarea>
+      </div>
+      <div class="reflect-q">
+        <div class="reflect-q-label">今天你的蹺蹺板往哪邊傾？明天你想調整什麼？</div>
+        <textarea class="reflect-textarea" placeholder="不需要評判，就是觀察…" rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">清空今天的紀錄，重新開始</button>
+
+<footer>
+  Steven × 時間派｜人生決策與時間設計實驗室<br>
+  靈感來自 Anna Lembke《多巴胺國度》× 週三直播主題
+</footer>
+
+<script>
+// ── TAGS ──────────────────────────────────────────────
+const bTags = [], eTags = [];
+
+function addTag(type) {
+  const input = document.getElementById(`${type}-input`);
+  const val = input.value.trim();
+  if (!val) return;
+  const arr = type === 'b' ? bTags : eTags;
+  arr.push(val);
+  input.value = '';
+  renderTags();
+  updateBalance();
+}
+
+function removeTag(type, idx) {
+  const arr = type === 'b' ? bTags : eTags;
+  arr.splice(idx, 1);
+  renderTags();
+  updateBalance();
+}
+
+function renderTags() {
+  ['b','e'].forEach(type => {
+    const arr = type === 'b' ? bTags : eTags;
+    const el = document.getElementById(`${type}-tags`);
+    el.innerHTML = arr.map((t, i) => `
+      <div class="tag-chip ${type === 'b' ? 'borrowed' : 'earned'}">
+        ${t}
+        <button class="chip-del" onclick="removeTag('${type}',${i})">×</button>
+      </div>
+    `).join('');
+  });
+}
+
+function updateBalance() {
+  const b = bTags.length, e = eTags.length, total = b + e;
+  const barB = document.getElementById('bar-b');
+  const barE = document.getElementById('bar-e');
+  const pct = document.getElementById('balance-pct');
+  const insight = document.getElementById('balance-insight');
+
+  if (total === 0) {
+    barB.style.width = '50%'; barE.style.width = '50%';
+    pct.textContent = '—';
+    insight.textContent = '填入昨天的快樂，看看你的蹺蹺板往哪邊傾。';
+    return;
+  }
+
+  const bPct = Math.round((b / total) * 100);
+  const ePct = 100 - bPct;
+  barB.style.width = bPct + '%';
+  barE.style.width = ePct + '%';
+  pct.textContent = `借 ${bPct}% ／ 賺 ${ePct}%`;
+
+  let msg = '';
+  if (bPct >= 80) msg = `借來的快樂佔了 ${bPct}%——你的蹺蹺板一直在還債。試著今天加入一件賺來的快樂，哪怕只是五分鐘的散步。`;
+  else if (bPct >= 60) msg = `借來的佔多數（${bPct}%）。這很常見，不需要自責。今天先平衡一件就好。`;
+  else if (ePct >= 60) msg = `賺來的快樂佔多數（${ePct}%）——你的蹺蹺板在往對的方向傾。繼續。`;
+  else msg = `比例相當平衡。觀察今天哪一邊讓你感覺更真實、更有力量。`;
+  insight.textContent = msg;
+}
+
+// ── EARN ITEMS ────────────────────────────────────────
+let earnCount = 0;
+
+function addEarnItem() {
+  earnCount++;
+  const id = earnCount;
+  const container = document.getElementById('earn-container');
+  const div = document.createElement('div');
+  div.className = 'earn-row';
+  div.id = `earn-${id}`;
+  div.innerHTML = `
+    <div class="earn-row-top">
+      <div class="earn-num">${id}</div>
+      <input class="earn-input" id="ei-${id}" type="text" placeholder="今天你打算做什麼先苦後樂的事？" maxlength="40" />
+      <button class="del-earn" onclick="delEarn(${id})">✕</button>
+    </div>
+    <div class="resist-label">
+      <span>抗拒感</span>
+      <span id="rv-${id}">5 / 10</span>
+    </div>
+    <input class="resist-slider" id="rs-${id}" type="range" min="1" max="10" value="5"
+      oninput="updateResist(${id})" />
+    <div class="resist-hint" id="rh-${id}">抗拒感越高，做完之後往往越值得。</div>
+    <div class="done-row">
+      <label class="done-label">
+        <input type="checkbox" id="ed-${id}" />
+        <div class="done-box"></div>
+        <span>完成了，蹺蹺板往快樂傾了 ✓</span>
+      </label>
+    </div>
+  `;
+  container.appendChild(div);
+  updateResist(id);
+  renumberEarns();
+}
+
+function delEarn(id) {
+  const el = document.getElementById(`earn-${id}`);
+  if (el) el.remove();
+  renumberEarns();
+}
+
+function renumberEarns() {
+  document.querySelectorAll('.earn-row').forEach((r, i) => {
+    const n = r.querySelector('.earn-num');
+    if (n) n.textContent = i + 1;
+  });
+}
+
+function updateResist(id) {
+  const val = document.getElementById(`rs-${id}`).value;
+  document.getElementById(`rv-${id}`).textContent = `${val} / 10`;
+  const hints = {
+    1:'幾乎沒有阻力，輕鬆就能做到。',
+    2:'非常輕鬆，幾乎不需要意志力。',
+    3:'有一點點不想，但還算容易開始。',
+    4:'需要一點推力，但不難。',
+    5:'抗拒感中等，需要提醒自己去做。',
+    6:'明顯不想做，需要刻意克服。',
+    7:'很強的抗拒，但做完通常很值得。',
+    8:'非常強烈的抗拒，這件事很重要。',
+    9:'極度不想做——往往是最需要做的事。',
+    10:'幾乎想放棄——但你知道做了會不一樣。'
+  };
+  document.getElementById(`rh-${id}`).textContent = hints[val] || '';
+}
+
+// ── RESET ─────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('確定要清空今天所有紀錄嗎？')) return;
+  bTags.length = 0; eTags.length = 0;
+  renderTags(); updateBalance();
+  document.getElementById('earn-container').innerHTML = '';
+  earnCount = 0;
+  document.querySelectorAll('.reflect-textarea').forEach(t => t.value = '');
+}
+
+// ── INIT ──────────────────────────────────────────────
+addEarnItem();
+addEarnItem();
+</script>
+</body>
+</html>
