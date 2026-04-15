@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>購物車觸發點分析器｜Steven × 時間派</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0f0a;
+    --surface: #0f1a0f;
+    --surface2: #162016;
+    --surface3: #1c281c;
+    --border: #253525;
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.10);
+    --orange: #fb923c;
+    --orange-dim: rgba(251,146,60,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.10);
+    --yellow: #fbbf24;
+    --yellow-dim: rgba(251,191,36,0.10);
+    --blue: #60a5fa;
+    --text: #ecfdf5;
+    --text-mid: #86efac;
+    --text-dim: #4b6f4b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; min-height: 100vh; padding: 0 0 80px; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 15px; color: var(--green); }
+  .logo span { color: var(--text-dim); font-weight: 300; font-size: 12px; }
+  .badge { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 1px; }
+
+  .hero { padding: 36px 24px 24px; max-width: 680px; margin: 0 auto; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 12px; border-left: 3px solid var(--green); padding-left: 10px; }
+  .hero h1 { font-family: 'Noto Serif TC', serif; font-size: clamp(22px, 5vw, 34px); font-weight: 900; line-height: 1.35; margin-bottom: 10px; }
+  .hero h1 em { font-style: normal; color: var(--orange); }
+  .hero p { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+
+  /* trigger guide */
+  .trigger-guide { max-width: 680px; margin: 0 auto 16px; padding: 0 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .tg-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 8px; text-align: center; }
+  .tg-icon { font-size: 18px; margin-bottom: 4px; }
+  .tg-key { font-size: 13px; font-weight: 900; font-family: 'Noto Serif TC', serif; }
+  .tg-name { font-size: 10px; margin-top: 2px; }
+  .tg-card.E { border-color: rgba(251,146,60,.4); } .tg-card.E .tg-key { color: var(--orange); }
+  .tg-card.F { border-color: rgba(248,113,113,.4); } .tg-card.F .tg-key { color: var(--red); }
+  .tg-card.I { border-color: rgba(251,191,36,.4); } .tg-card.I .tg-key { color: var(--yellow); }
+  .tg-card.N { border-color: rgba(74,222,128,.4); } .tg-card.N .tg-key { color: var(--green); }
+  .tg-name { color: var(--text-dim); }
+
+  .section { max-width: 680px; margin: 0 auto 16px; padding: 0 24px; }
+  .section-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .section-icon { font-size: 18px; }
+  .section-title-text { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 900; }
+  .section-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .section-body { padding: 18px 20px; }
+
+  /* ── SECTION 1: 購物車掃描 ── */
+  .cart-add-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .cart-input { flex: 1; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .cart-input:focus { border-color: var(--green); }
+  .cart-input::placeholder { color: var(--text-dim); }
+  .cart-add-btn { background: var(--green-dim); border: 1.5px solid var(--green); color: var(--green); font-size: 13px; font-weight: 700; padding: 0 16px; border-radius: 10px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; white-space: nowrap; transition: all .15s; }
+  .cart-add-btn:hover { background: rgba(74,222,128,.2); }
+
+  .cart-item { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; animation: fadeUp .25s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .cart-item-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cart-item-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); }
+  .del-cart { width: 24px; height: 24px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 13px; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+  .del-cart:hover { color: var(--red); }
+
+  .trigger-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .trigger-btn { padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 11px; font-weight: 700; cursor: pointer; transition: all .15s; font-family: 'Noto Sans TC', sans-serif; }
+  .trigger-btn:hover { border-color: var(--text-dim); }
+  .trigger-btn.sel-E { background: var(--orange-dim); border-color: var(--orange); color: var(--orange); }
+  .trigger-btn.sel-F { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .trigger-btn.sel-I { background: var(--yellow-dim); border-color: var(--yellow); color: var(--yellow); }
+  .trigger-btn.sel-N { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+  .trigger-reflection { display: none; margin-top: 8px; font-size: 12px; line-height: 1.6; padding: 8px 12px; border-radius: 8px; }
+  .trigger-reflection.show { display: block; animation: fadeUp .2s ease; }
+  .ref-E { background: var(--orange-dim); color: #fdba74; border: 1px solid rgba(251,146,60,.3); }
+  .ref-F { background: var(--red-dim); color: #fca5a5; border: 1px solid rgba(248,113,113,.3); }
+  .ref-I { background: var(--yellow-dim); color: #fde68a; border: 1px solid rgba(251,191,36,.3); }
+  .ref-N { background: var(--green-dim); color: var(--green); border: 1px solid rgba(74,222,128,.3); }
+
+  .cart-summary { margin-top: 14px; padding: 12px 14px; background: var(--surface3); border-radius: 10px; font-size: 12px; color: var(--text-mid); }
+  .cart-summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .cart-summary-row:last-child { margin-bottom: 0; }
+
+  /* ── SECTION 2: 72小時清單 ── */
+  .wait-intro { font-size: 12px; color: var(--text-mid); line-height: 1.7; margin-bottom: 14px; padding: 10px 14px; background: var(--surface3); border-radius: 8px; border-left: 3px solid var(--orange); }
+  .wait-intro strong { color: var(--orange); }
+
+  .threshold-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .threshold-label { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+  .threshold-input { width: 100px; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 10px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; font-weight: 700; outline: none; text-align: center; }
+  .threshold-unit { font-size: 12px; color: var(--text-dim); }
+
+  .wait-add-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .wait-input { flex: 1; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .wait-input:focus { border-color: var(--orange); }
+  .wait-input::placeholder { color: var(--text-dim); }
+  .wait-add-btn { background: var(--orange-dim); border: 1.5px solid var(--orange); color: var(--orange); font-size: 12px; font-weight: 700; padding: 0 14px; border-radius: 10px; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; white-space: nowrap; }
+
+  .wait-item { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; animation: fadeUp .25s ease; }
+  .wait-item-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .wait-item-name { flex: 1; font-size: 13px; font-weight: 500; }
+  .del-wait { width: 22px; height: 22px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 12px; border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .del-wait:hover { color: var(--red); }
+  .timer-row { display: flex; align-items: center; gap: 10px; }
+  .timer-display { font-family: 'Noto Serif TC', serif; font-size: 18px; font-weight: 900; color: var(--orange); min-width: 80px; }
+  .timer-display.done { color: var(--green); }
+  .timer-btn { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; font-family: 'Noto Sans TC', sans-serif; color: var(--text-dim); transition: all .15s; }
+  .timer-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .timer-question { display: none; margin-top: 10px; padding: 10px 12px; background: var(--green-dim); border: 1px solid rgba(74,222,128,.3); border-radius: 8px; font-size: 12px; color: var(--green); line-height: 1.6; }
+  .timer-question.show { display: block; animation: fadeUp .3s ease; }
+
+  /* ── SECTION 3: 月度覆盤 ── */
+  .monthly-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .monthly-stat { background: var(--surface3); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+  .monthly-num { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 900; color: var(--green); line-height: 1; }
+  .monthly-label { font-size: 10px; color: var(--text-dim); margin-top: 4px; letter-spacing: .3px; }
+  .monthly-input-num { width: 100%; background: none; border: none; color: var(--green); font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 900; text-align: center; outline: none; }
+  .monthly-input-num::placeholder { color: var(--text-dim); font-size: 20px; }
+
+  .reset-btn { display: block; margin: 16px auto 0; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; color: var(--text-dim); font-size: 11px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; }
+  .reset-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+  footer { max-width: 680px; margin: 30px auto 0; padding: 0 24px; text-align: center; font-size: 10px; color: var(--text-dim); line-height: 1.8; }
+
+  @media(max-width:480px){ .trigger-guide{grid-template-columns:repeat(2,1fr);} .monthly-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">時間派 <span>× Steven</span></div>
+  <div class="badge">週四工具</div>
+</header>
+
+<div class="hero">
+  <div class="tag">週四工具 · 理財思維</div>
+  <h1>購物車<em>觸發點</em><br>分析器</h1>
+  <p>衝動消費不是自制力問題，是多巴胺被觸發了。<br>認出觸發點，是防禦衝動消費的第一步。</p>
+</div>
+
+<!-- trigger guide -->
+<div class="trigger-guide">
+  <div class="tg-card E"><div class="tg-icon">😔</div><div class="tg-key">E</div><div class="tg-name">情緒觸發</div></div>
+  <div class="tg-card F"><div class="tg-icon">⏰</div><div class="tg-key">F</div><div class="tg-name">FOMO 觸發</div></div>
+  <div class="tg-card I"><div class="tg-icon">👑</div><div class="tg-key">I</div><div class="tg-name">身份觸發</div></div>
+  <div class="tg-card N"><div class="tg-icon">✅</div><div class="tg-key">N</div><div class="tg-name">真正需要</div></div>
+</div>
+
+<!-- ══ SECTION 1: 購物車掃描 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">🛒</div>
+      <div>
+        <div class="section-title-text">購物車掃描｜標記每件東西的觸發點</div>
+        <div class="section-sub">打開你的購物車，一件一件輸入進來</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="cart-add-row">
+        <input class="cart-input" id="cart-input" type="text" placeholder="輸入購物車裡的商品名稱…" maxlength="30" onkeydown="if(event.key==='Enter')addCartItem()" />
+        <button class="cart-add-btn" onclick="addCartItem()">新增</button>
+      </div>
+      <div id="cart-container"></div>
+      <div class="cart-summary" id="cart-summary" style="display:none">
+        <div class="cart-summary-row"><span>😔 情緒觸發</span><span id="sum-E">0 件</span></div>
+        <div class="cart-summary-row"><span>⏰ FOMO 觸發</span><span id="sum-F">0 件</span></div>
+        <div class="cart-summary-row"><span>👑 身份觸發</span><span id="sum-I">0 件</span></div>
+        <div class="cart-summary-row"><span>✅ 真正需要</span><span id="sum-N">0 件</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 2: 72小時冷靜清單 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">⏳</div>
+      <div>
+        <div class="section-title-text">72 小時冷靜清單</div>
+        <div class="section-sub">想買？先等三天，讓多巴胺退潮</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="wait-intro">
+        每次想買超過門檻金額的東西，記錄在這裡，按下倒數。<br>
+        <strong>72 小時後</strong>，問自己：「三個月後的我，會感謝今天的決定嗎？」
+      </div>
+      <div class="threshold-row">
+        <span class="threshold-label">我的冷靜門檻：超過</span>
+        <input class="threshold-input" id="threshold" type="number" placeholder="500" />
+        <span class="threshold-unit">元就啟動 72 小時</span>
+      </div>
+      <div class="wait-add-row">
+        <input class="wait-input" id="wait-input" type="text" placeholder="想買什麼？輸入商品名稱…" maxlength="30" onkeydown="if(event.key==='Enter')addWaitItem()" />
+        <button class="wait-add-btn" onclick="addWaitItem()">啟動冷靜</button>
+      </div>
+      <div id="wait-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 3: 月度覆盤 ══ -->
+<div class="section">
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <div class="section-title-text">本月消費覆盤</div>
+        <div class="section-sub">每月底填一次，看清楚你省了多少</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="monthly-grid">
+        <div class="monthly-stat">
+          <input class="monthly-input-num" type="number" placeholder="0" id="m-total" />
+          <div class="monthly-label">次冷靜倒數</div>
+        </div>
+        <div class="monthly-stat">
+          <input class="monthly-input-num" type="number" placeholder="0" id="m-bought" />
+          <div class="monthly-label">件真正買了</div>
+        </div>
+        <div class="monthly-stat">
+          <input class="monthly-input-num" type="number" placeholder="0" id="m-saved" />
+          <div class="monthly-label">元省下來了</div>
+        </div>
+      </div>
+      <div id="monthly-insight" style="font-size:12px;color:var(--text-mid);line-height:1.7;padding:10px 14px;background:var(--surface3);border-radius:8px;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">清空所有紀錄，重新開始</button>
+
+<footer>
+  Steven × 時間派｜人生決策與時間設計實驗室<br>
+  靈感來自《多巴胺國度》× 週四直播主題
+</footer>
+
+<script>
+// ── CART ──────────────────────────────────────────────
+let cartCount = 0;
+const cartTriggers = {};
+const triggerReflections = {
+  E: '這是情緒觸發——你可能現在有點焦慮、無聊或壓力大。先問問自己：我的情緒狀態今天幾分？如果低於 6 分，現在不適合購物。',
+  F: '這是 FOMO 觸發——那個「限時」和「只剩幾件」，很可能是假的。72 小時後如果還賣得到，它就不緊急；如果賣完了，你大概也不會在意太久。',
+  I: '這是身份觸發——你買的其實是「那個更好版本的自己」的想像。問自己：不買這個，我還可以用什麼方式成為那個人？',
+  N: '這是真正需要的東西。✓ 可以考慮購買，但還是建議用 72 小時確認一下，確保不是合理化後的衝動。'
+};
+
+function addCartItem() {
+  const input = document.getElementById('cart-input');
+  const val = input.value.trim();
+  if (!val) return;
+  cartCount++;
+  const id = cartCount;
+  cartTriggers[id] = null;
+  input.value = '';
+
+  const container = document.getElementById('cart-container');
+  const div = document.createElement('div');
+  div.className = 'cart-item';
+  div.id = `ci-${id}`;
+  div.innerHTML = `
+    <div class="cart-item-top">
+      <div class="cart-item-name">${val}</div>
+      <button class="del-cart" onclick="delCartItem(${id})">✕</button>
+    </div>
+    <div class="trigger-btns">
+      <button class="trigger-btn" id="tb-${id}-E" onclick="setTrigger(${id},'E')">😔 情緒</button>
+      <button class="trigger-btn" id="tb-${id}-F" onclick="setTrigger(${id},'F')">⏰ FOMO</button>
+      <button class="trigger-btn" id="tb-${id}-I" onclick="setTrigger(${id},'I')">👑 身份</button>
+      <button class="trigger-btn" id="tb-${id}-N" onclick="setTrigger(${id},'N')">✅ 真正需要</button>
+    </div>
+    <div class="trigger-reflection" id="tr-${id}"></div>
+  `;
+  container.appendChild(div);
+  updateCartSummary();
+}
+
+function setTrigger(id, t) {
+  cartTriggers[id] = cartTriggers[id] === t ? null : t;
+  ['E','F','I','N'].forEach(k => {
+    const btn = document.getElementById(`tb-${id}-${k}`);
+    if (btn) btn.className = 'trigger-btn' + (cartTriggers[id] === k ? ` sel-${k}` : '');
+  });
+  const ref = document.getElementById(`tr-${id}`);
+  if (cartTriggers[id] && ref) {
+    ref.className = `trigger-reflection ref-${cartTriggers[id]} show`;
+    ref.textContent = triggerReflections[cartTriggers[id]];
+  } else if (ref) {
+    ref.className = 'trigger-reflection';
+  }
+  updateCartSummary();
+}
+
+function delCartItem(id) {
+  const el = document.getElementById(`ci-${id}`);
+  if (el) el.remove();
+  delete cartTriggers[id];
+  updateCartSummary();
+}
+
+function updateCartSummary() {
+  const vals = Object.values(cartTriggers).filter(Boolean);
+  const summary = document.getElementById('cart-summary');
+  if (vals.length === 0) { summary.style.display = 'none'; return; }
+  summary.style.display = 'block';
+  ['E','F','I','N'].forEach(k => {
+    const count = vals.filter(v => v === k).length;
+    document.getElementById(`sum-${k}`).textContent = `${count} 件`;
+  });
+}
+
+// ── WAIT LIST ─────────────────────────────────────────
+let waitCount = 0;
+const waitTimers = {};
+
+function addWaitItem() {
+  const input = document.getElementById('wait-input');
+  const val = input.value.trim();
+  if (!val) return;
+  waitCount++;
+  const id = waitCount;
+  input.value = '';
+  waitTimers[id] = null;
+
+  const container = document.getElementById('wait-container');
+  const div = document.createElement('div');
+  div.className = 'wait-item';
+  div.id = `wi-${id}`;
+  div.innerHTML = `
+    <div class="wait-item-top">
+      <div class="wait-item-name">${val}</div>
+      <button class="del-wait" onclick="delWaitItem(${id})">✕</button>
+    </div>
+    <div class="timer-row">
+      <div class="timer-display" id="td-${id}">72:00:00</div>
+      <button class="timer-btn" id="tbtn-${id}" onclick="startTimer(${id})">啟動倒數</button>
+    </div>
+    <div class="timer-question" id="tq-${id}">
+      ⏰ 72 小時到了！現在問自己：<strong>「三個月後的我，會感謝今天買了這個嗎？」</strong><br>
+      如果答案不確定，再等一週。如果答案是「會」，那就是真的值得。
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function startTimer(id) {
+  if (waitTimers[id]) return;
+  const endTime = Date.now() + 72 * 60 * 60 * 1000;
+  const btn = document.getElementById(`tbtn-${id}`);
+  if (btn) { btn.textContent = '倒數中…'; btn.style.opacity = '.5'; btn.disabled = true; }
+
+  waitTimers[id] = setInterval(() => {
+    const remaining = endTime - Date.now();
+    const display = document.getElementById(`td-${id}`);
+    if (!display) { clearInterval(waitTimers[id]); return; }
+    if (remaining <= 0) {
+      clearInterval(waitTimers[id]);
+      display.className = 'timer-display done';
+      display.textContent = '時間到！';
+      const q = document.getElementById(`tq-${id}`);
+      if (q) q.className = 'timer-question show';
+      return;
+    }
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    display.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 1000);
+}
+
+function delWaitItem(id) {
+  if (waitTimers[id]) clearInterval(waitTimers[id]);
+  delete waitTimers[id];
+  const el = document.getElementById(`wi-${id}`);
+  if (el) el.remove();
+}
+
+// ── MONTHLY INSIGHT ───────────────────────────────────
+['m-total','m-bought','m-saved'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateMonthlyInsight);
+});
+
+function updateMonthlyInsight() {
+  const total = parseInt(document.getElementById('m-total').value) || 0;
+  const bought = parseInt(document.getElementById('m-bought').value) || 0;
+  const saved = parseInt(document.getElementById('m-saved').value) || 0;
+  const insight = document.getElementById('monthly-insight');
+  if (total === 0) { insight.style.display = 'none'; return; }
+
+  const resistRate = total > 0 ? Math.round(((total - bought) / total) * 100) : 0;
+  let msg = '';
+  if (saved > 0) msg += `這個月你啟動了 ${total} 次冷靜倒數，最終只買了 ${bought} 件，省下了 ${saved.toLocaleString()} 元。`;
+  if (resistRate >= 70) msg += ` 抵制率 ${resistRate}%，非常好——你的多巴胺系統已經開始被你管理，而不是管理你。`;
+  else if (resistRate >= 40) msg += ` 抵制率 ${resistRate}%，進步中。繼續觀察哪個觸發點最容易讓你破防。`;
+  else if (resistRate > 0) msg += ` 抵制率 ${resistRate}%，還在起步，但你已經開始有意識地記錄了——這本身就是改變的開始。`;
+
+  if (msg) { insight.style.display = 'block'; insight.textContent = msg; }
+}
+
+// ── RESET ─────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('確定要清空所有紀錄嗎？')) return;
+  document.getElementById('cart-container').innerHTML = '';
+  cartCount = 0; Object.keys(cartTriggers).forEach(k => delete cartTriggers[k]);
+  updateCartSummary();
+  Object.values(waitTimers).forEach(t => { if(t) clearInterval(t); });
+  document.getElementById('wait-container').innerHTML = '';
+  waitCount = 0; Object.keys(waitTimers).forEach(k => delete waitTimers[k]);
+  ['m-total','m-bought','m-saved'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('monthly-insight').style.display = 'none';
+}
+</script>
+</body>
+</html>
