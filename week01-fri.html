@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>資訊排毒 × 五日覆盤｜Steven × 時間派</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #080c14;
+    --surface: #0d1421;
+    --surface2: #131d2e;
+    --surface3: #192438;
+    --border: #1e2f47;
+    --gold: #f59e0b;
+    --gold-dim: rgba(245,158,11,0.12);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.10);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.10);
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.10);
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --text: #f0f6ff;
+    --text-mid: #94a3b8;
+    --text-dim: #3d5470;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; min-height: 100vh; padding: 0 0 80px; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 15px; color: var(--gold); }
+  .logo span { color: var(--text-dim); font-weight: 300; font-size: 12px; }
+  .badge { background: var(--gold-dim); border: 1px solid var(--gold); color: var(--gold); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 1px; }
+
+  /* tab nav */
+  .tab-nav { max-width: 680px; margin: 0 auto; padding: 20px 24px 0; display: flex; gap: 8px; }
+  .tab-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--text-mid); font-family: 'Noto Sans TC', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; text-align: center; }
+  .tab-btn.active { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .hero { padding: 28px 24px 20px; max-width: 680px; margin: 0 auto; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; border-left: 3px solid var(--gold); padding-left: 10px; }
+  .hero h2 { font-family: 'Noto Serif TC', serif; font-size: clamp(20px, 4.5vw, 30px); font-weight: 900; line-height: 1.4; margin-bottom: 8px; }
+  .hero h2 em { font-style: normal; color: var(--gold); }
+  .hero p { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+
+  .section { max-width: 680px; margin: 0 auto 14px; padding: 0 24px; }
+  .section-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .section-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .section-icon { font-size: 16px; }
+  .section-title-text { font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 900; }
+  .section-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .section-body { padding: 16px 18px; }
+
+  /* ── TAB 1: 資訊健檢 ── */
+  .app-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .app-rank { width: 22px; height: 22px; border-radius: 50%; background: var(--surface3); border: 1px solid var(--border); font-size: 10px; font-weight: 800; color: var(--text-dim); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .app-input { flex: 1; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 12px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; transition: border-color .2s; }
+  .app-input:focus { border-color: var(--gold); }
+  .app-input::placeholder { color: var(--text-dim); }
+  .app-type { display: flex; gap: 5px; flex-shrink: 0; }
+  .atype-btn { padding: 5px 9px; border-radius: 6px; border: 1.5px solid var(--border); background: var(--surface3); font-size: 10px; font-weight: 700; cursor: pointer; transition: all .15s; font-family: 'Noto Sans TC', sans-serif; color: var(--text-dim); }
+  .atype-btn.active-passive { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .atype-btn.active-active { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+  .time-slider-wrap { margin-top: 8px; }
+  .time-slider-label { font-size: 11px; color: var(--text-dim); margin-bottom: 5px; display: flex; justify-content: space-between; }
+  .time-slider-label span:last-child { color: var(--gold); font-weight: 700; }
+  .time-slider { width: 100%; -webkit-appearance: none; height: 5px; border-radius: 3px; background: var(--surface3); outline: none; }
+  .time-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--gold); cursor: pointer; border: 2px solid var(--bg); }
+
+  .health-result { margin-top: 16px; padding: 14px; background: var(--surface3); border-radius: 10px; }
+  .health-bars { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+  .hbar-passive { background: var(--red); transition: width .4s; }
+  .hbar-active { background: var(--green); transition: width .4s; }
+  .hbar-empty { background: var(--border); flex: 1; }
+  .health-stats { display: flex; gap: 10px; margin-bottom: 8px; }
+  .hstat { flex: 1; text-align: center; }
+  .hstat-num { font-family: 'Noto Serif TC', serif; font-size: 22px; font-weight: 900; line-height: 1; }
+  .hstat.passive .hstat-num { color: var(--red); }
+  .hstat.active .hstat-num { color: var(--green); }
+  .hstat-label { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
+  .health-insight { font-size: 12px; color: var(--text-mid); line-height: 1.7; }
+
+  .reflect-q { margin-bottom: 14px; }
+  .reflect-q:last-child { margin-bottom: 0; }
+  .reflect-q-label { font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 6px; }
+  .reflect-textarea { width: 100%; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 13px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; resize: none; line-height: 1.7; transition: border-color .2s; min-height: 68px; }
+  .reflect-textarea:focus { border-color: var(--gold); }
+  .reflect-textarea::placeholder { color: var(--text-dim); }
+
+  /* ── TAB 2: 五日覆盤 ── */
+  .week-strip { display: flex; gap: 6px; max-width: 680px; margin: 0 auto 14px; padding: 0 24px; }
+  .day-chip { flex: 1; padding: 8px 4px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 8px; text-align: center; cursor: pointer; transition: all .2s; }
+  .day-chip.sel { border-color: var(--gold); background: var(--gold-dim); }
+  .day-chip-icon { font-size: 14px; }
+  .day-chip-label { font-size: 9px; color: var(--text-dim); margin-top: 2px; letter-spacing: .3px; }
+  .day-chip.sel .day-chip-label { color: var(--gold); }
+
+  .day-panel { display: none; max-width: 680px; margin: 0 auto; padding: 0 24px; }
+  .day-panel.active { display: block; animation: fadeUp .25s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  .day-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+  .day-card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .day-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .day-card-title { font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 900; }
+  .day-card-subtitle { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .day-card-body { padding: 16px 18px; }
+
+  .review-q { margin-bottom: 14px; }
+  .review-q:last-child { margin-bottom: 0; }
+  .review-q-label { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .review-textarea { width: 100%; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 9px; padding: 9px 12px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 12px; outline: none; resize: none; line-height: 1.7; transition: border-color .2s; min-height: 60px; }
+  .review-textarea:focus { border-color: var(--gold); }
+  .review-textarea::placeholder { color: var(--text-dim); }
+
+  .next-action-input { width: 100%; background: var(--surface3); border: 1.5px solid var(--gold); border-radius: 9px; padding: 10px 12px; color: var(--text); font-family: 'Noto Serif TC', serif; font-size: 13px; font-weight: 700; outline: none; transition: border-color .2s; }
+  .next-action-input::placeholder { color: var(--text-dim); font-weight: 400; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; }
+
+  /* week summary */
+  .week-summary { max-width: 680px; margin: 0 auto 14px; padding: 0 24px; }
+  .week-summary-card { background: linear-gradient(135deg, rgba(245,158,11,.08), rgba(96,165,250,.06)); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .week-summary-card h3 { font-family: 'Noto Serif TC', serif; font-size: 15px; font-weight: 900; margin-bottom: 14px; color: var(--gold); }
+  .week-big-q { font-size: 13px; color: var(--text-mid); margin-bottom: 10px; font-weight: 500; }
+  .week-answer { width: 100%; background: var(--surface3); border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 13px; color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-size: 13px; outline: none; resize: none; line-height: 1.7; transition: border-color .2s; min-height: 68px; margin-bottom: 14px; }
+  .week-answer:focus { border-color: var(--gold); }
+  .week-answer::placeholder { color: var(--text-dim); }
+
+  .reset-btn { display: block; margin: 14px auto 0; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; color: var(--text-dim); font-size: 11px; font-family: 'Noto Sans TC', sans-serif; cursor: pointer; transition: all .2s; }
+  .reset-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+  footer { max-width: 680px; margin: 30px auto 0; padding: 0 24px; text-align: center; font-size: 10px; color: var(--text-dim); line-height: 1.8; }
+
+  @media(max-width:480px){ .week-strip{gap:4px;} .day-chip-label{display:none;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">時間派 <span>× Steven</span></div>
+  <div class="badge">週五工具</div>
+</header>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('info')">📱 資訊健檢</button>
+  <button class="tab-btn" onclick="switchTab('review')">📋 五日覆盤</button>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 1: 資訊健檢 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-info">
+
+  <div class="hero">
+    <div class="tag">週五工具 · 知識覆盤</div>
+    <h2>資訊輸入<em>健檢表</em></h2>
+    <p>你以為你在獲取資訊，其實你的大腦在被機器刺激。<br>花三分鐘，看清楚昨天你的資訊食譜長什麼樣。</p>
+  </div>
+
+  <!-- App使用 -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <div>
+          <div class="section-title-text">昨天使用最多的 App</div>
+          <div class="section-sub">進手機的「螢幕使用時間」查一下，填入前三名</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="app-rows"></div>
+        <div class="health-result">
+          <div class="health-bars">
+            <div class="hbar-passive" id="hbar-p" style="width:50%"></div>
+            <div class="hbar-active" id="hbar-a" style="width:50%"></div>
+          </div>
+          <div class="health-stats">
+            <div class="hstat passive"><div class="hstat-num" id="passive-hrs">—</div><div class="hstat-label">小時被動輸入</div></div>
+            <div class="hstat active"><div class="hstat-num" id="active-hrs">—</div><div class="hstat-label">小時主動輸入</div></div>
+          </div>
+          <div class="health-insight" id="health-insight">標記每個 App 是被動還是主動輸入，看清楚你的資訊食譜。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三個反思問題 -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-icon">🪞</div>
+        <div>
+          <div class="section-title-text">三個反思問題</div>
+          <div class="section-sub">不需要完美答案，感受一下那個落差就夠了</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="reflect-q">
+          <div class="reflect-q-label">① 昨天讓你花最多時間的 App，你有多少時間是主動打開的？多少是被通知拉進去的？</div>
+          <textarea class="reflect-textarea" placeholder="回想一下…"></textarea>
+        </div>
+        <div class="reflect-q">
+          <div class="reflect-q-label">② 你的被動輸入裡，有哪些資訊讓你感覺更好？有哪些讓你更焦慮或空虛？</div>
+          <textarea class="reflect-textarea" placeholder="這個問題的答案往往讓人驚訝…"></textarea>
+        </div>
+        <div class="reflect-q">
+          <div class="reflect-q-label">③ 如果把昨天被動輸入的時間換成主動學習，你可以學到什麼？</div>
+          <textarea class="reflect-textarea" placeholder="不需要精確計算，就感受一下那個落差…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下週行動 -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-icon">⚡</div>
+        <div>
+          <div class="section-title-text">下週資訊排毒行動</div>
+          <div class="section-sub">三個動作，選一個先做</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="reflect-q">
+          <div class="reflect-q-label">我下週要關掉哪些 App 的通知？</div>
+          <textarea class="reflect-textarea" placeholder="列出來，今天就去設定…" style="min-height:52px"></textarea>
+        </div>
+        <div class="reflect-q">
+          <div class="reflect-q-label">我的「主動資訊時間」要設在每天幾點到幾點？</div>
+          <textarea class="reflect-textarea" placeholder="例：每天早上 7:30～8:00" style="min-height:52px"></textarea>
+        </div>
+        <div class="reflect-q">
+          <div class="reflect-q-label">這個月我的主動輸入清單是什麼？（我想學什麼？）</div>
+          <textarea class="reflect-textarea" placeholder="寫下來，讓這份清單決定你看什麼…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TAB 2: 五日覆盤 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-review">
+
+  <div class="hero">
+    <div class="tag">本週覆盤 · 五天收尾</div>
+    <h2>這週你<em>學到</em>了什麼？</h2>
+    <p>一週五個主題，每天一個洞察。把它們整理成你自己的行動計畫。</p>
+  </div>
+
+  <!-- day selector -->
+  <div class="week-strip">
+    <div class="day-chip sel" onclick="selectDay('mon')"><div class="day-chip-icon">⚡</div><div class="day-chip-label">週一</div></div>
+    <div class="day-chip" onclick="selectDay('tue')"><div class="day-chip-icon">🧱</div><div class="day-chip-label">週二</div></div>
+    <div class="day-chip" onclick="selectDay('wed')"><div class="day-chip-icon">⚖️</div><div class="day-chip-label">週三</div></div>
+    <div class="day-chip" onclick="selectDay('thu')"><div class="day-chip-icon">🛒</div><div class="day-chip-label">週四</div></div>
+    <div class="day-chip" onclick="selectDay('fri')"><div class="day-chip-icon">📱</div><div class="day-chip-label">週五</div></div>
+  </div>
+
+  <!-- MON -->
+  <div class="day-panel active" id="panel-mon">
+    <div class="day-card">
+      <div class="day-card-header">
+        <div class="day-color-dot" style="background:#fb923c"></div>
+        <div>
+          <div class="day-card-title">週一｜多巴胺與慾望清單</div>
+          <div class="day-card-subtitle">消費型 vs 建造型</div>
+        </div>
+      </div>
+      <div class="day-card-body">
+        <div class="review-q">
+          <div class="review-q-label" style="color:#fb923c">你的慾望清單，C 和 B 的比例怎麼樣？</div>
+          <textarea class="review-textarea" placeholder="填完週一工具之後，你觀察到什麼？"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:#fb923c">這週你最大的「建造型慾望」是什麼？</div>
+          <textarea class="review-textarea" placeholder="那個你真正想成為的樣子…"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:var(--gold)">⚡ 下週具體行動</div>
+          <input class="next-action-input" type="text" placeholder="為那個 B，我下週要採取的一個最小行動是…" maxlength="60" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUE -->
+  <div class="day-panel" id="panel-tue">
+    <div class="day-card">
+      <div class="day-card-header">
+        <div class="day-color-dot" style="background:#60a5fa"></div>
+        <div>
+          <div class="day-card-title">週二｜減少分心的工作流</div>
+          <div class="day-card-subtitle">兩層防火牆工作法</div>
+        </div>
+      </div>
+      <div class="day-card-body">
+        <div class="review-q">
+          <div class="review-q-label" style="color:#60a5fa">你有沒有設立緊急開關？家人知道怎麼聯絡你嗎？</div>
+          <textarea class="review-textarea" placeholder="這步做了嗎？如果還沒，卡在哪裡？"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:#60a5fa">這週你最大的分心來源是什麼？如何改善？</div>
+          <textarea class="review-textarea" placeholder="回想一下，哪個觸發點最常讓你分心…"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:var(--gold)">⚡ 下週具體行動</div>
+          <input class="next-action-input" type="text" placeholder="下週開工前，我要做的三個防火牆動作是…" maxlength="60" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WED -->
+  <div class="day-panel" id="panel-wed">
+    <div class="day-card">
+      <div class="day-card-header">
+        <div class="day-color-dot" style="background:#a78bfa"></div>
+        <div>
+          <div class="day-card-title">週三｜痛與快樂的平衡法</div>
+          <div class="day-card-subtitle">借來的快樂 vs 賺來的快樂</div>
+        </div>
+      </div>
+      <div class="day-card-body">
+        <div class="review-q">
+          <div class="review-q-label" style="color:#a78bfa">這週你做了哪些「賺來的快樂」？做完感覺如何？</div>
+          <textarea class="review-textarea" placeholder="哪件事做完之後讓你最有成就感？"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:#a78bfa">有沒有一件你一直在逃避、但知道做了會很值得的事？</div>
+          <textarea class="review-textarea" placeholder="那個抗拒感最高的事，往往最值得…"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:var(--gold)">⚡ 下週具體行動</div>
+          <input class="next-action-input" type="text" placeholder="下週我要做的一件先苦後樂的事是…" maxlength="60" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THU -->
+  <div class="day-panel" id="panel-thu">
+    <div class="day-card">
+      <div class="day-card-header">
+        <div class="day-color-dot" style="background:#4ade80"></div>
+        <div>
+          <div class="day-card-title">週四｜衝動消費的成癮性</div>
+          <div class="day-card-subtitle">72 小時冷靜法則</div>
+        </div>
+      </div>
+      <div class="day-card-body">
+        <div class="review-q">
+          <div class="review-q-label" style="color:#4ade80">這週你的購物車裡，哪些是觸發點驅動的？</div>
+          <textarea class="review-textarea" placeholder="情緒/FOMO/身份，哪個最常觸發你？"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:#4ade80">你有沒有用 72 小時法則擋住一次衝動消費？</div>
+          <textarea class="review-textarea" placeholder="有的話，72 小時後你還想買嗎？"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:var(--gold)">⚡ 下週具體行動</div>
+          <input class="next-action-input" type="text" placeholder="我的冷靜門檻設在多少元？下週遇到衝動消費我要…" maxlength="60" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRI -->
+  <div class="day-panel" id="panel-fri">
+    <div class="day-card">
+      <div class="day-card-header">
+        <div class="day-color-dot" style="background:#f59e0b"></div>
+        <div>
+          <div class="day-card-title">週五｜資訊輸入排毒</div>
+          <div class="day-card-subtitle">主動輸入 vs 被動輸入</div>
+        </div>
+      </div>
+      <div class="day-card-body">
+        <div class="review-q">
+          <div class="review-q-label" style="color:#f59e0b">你昨天的資訊消費，主動和被動各佔多少？</div>
+          <textarea class="review-textarea" placeholder="做完健檢之後你觀察到什麼？"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:#f59e0b">你下週要關掉哪些通知？主動資訊時間設在幾點？</div>
+          <textarea class="review-textarea" placeholder="具體一點，寫下來才會做到…"></textarea>
+        </div>
+        <div class="review-q">
+          <div class="review-q-label" style="color:var(--gold)">⚡ 下週具體行動</div>
+          <input class="next-action-input" type="text" placeholder="我這個月的主動輸入清單第一條是…" maxlength="60" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 本週總結 -->
+  <div class="week-summary">
+    <div class="week-summary-card">
+      <h3>🏁 本週總結</h3>
+      <div class="week-big-q">這週五天，哪一個主題對你衝擊最大？為什麼？</div>
+      <textarea class="week-answer" placeholder="不需要長篇大論，一兩句話就夠了…"></textarea>
+      <div class="week-big-q">如果這週只帶走一個行動，你會選什麼？</div>
+      <textarea class="week-answer" placeholder="寫下來，就是你下週的錨點…"></textarea>
+      <div class="week-big-q">給下週的自己一句話：</div>
+      <textarea class="week-answer" placeholder="你會說什麼？" style="min-height:52px"></textarea>
+    </div>
+  </div>
+
+</div>
+
+<button class="reset-btn" onclick="resetAll()">清空所有紀錄</button>
+
+<footer>
+  Steven × 時間派｜人生決策與時間設計實驗室<br>
+  Week 01 收尾 · 下週繼續 · 多巴胺系列完整版
+</footer>
+
+<script>
+// ── TABS ──────────────────────────────────────────────
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.className = 'tab-btn' + (i === (t==='info'?0:1) ? ' active' : ''));
+  document.getElementById('tab-info').className = 'tab-content' + (t==='info'?' active':'');
+  document.getElementById('tab-review').className = 'tab-content' + (t==='review'?' active':'');
+}
+
+// ── APP ROWS ──────────────────────────────────────────
+const appData = [
+  { placeholder: '使用時間最長的 App', hours: 1.5 },
+  { placeholder: '第二名 App', hours: 1.0 },
+  { placeholder: '第三名 App', hours: 0.5 },
+];
+const appTypes = { 0: null, 1: null, 2: null };
+const appHours = { 0: 1.5, 1: 1.0, 2: 0.5 };
+
+function initAppRows() {
+  const container = document.getElementById('app-rows');
+  appData.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '14px';
+    div.innerHTML = `
+      <div class="app-row" style="margin-bottom:8px">
+        <div class="app-rank">${i+1}</div>
+        <input class="app-input" id="app-name-${i}" type="text" placeholder="${a.placeholder}" maxlength="20" />
+        <div class="app-type">
+          <button class="atype-btn" id="atype-p-${i}" onclick="setAppType(${i},'passive')">被動</button>
+          <button class="atype-btn" id="atype-a-${i}" onclick="setAppType(${i},'active')">主動</button>
+        </div>
+      </div>
+      <div class="time-slider-wrap">
+        <div class="time-slider-label"><span>昨天用了多久</span><span id="ahr-${i}">${a.hours} 小時</span></div>
+        <input class="time-slider" type="range" min="0" max="5" step="0.5" value="${a.hours}" oninput="setAppHours(${i},this.value)" />
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function setAppType(i, t) {
+  appTypes[i] = appTypes[i] === t ? null : t;
+  document.getElementById(`atype-p-${i}`).className = 'atype-btn' + (appTypes[i]==='passive'?' active-passive':'');
+  document.getElementById(`atype-a-${i}`).className = 'atype-btn' + (appTypes[i]==='active'?' active-active':'');
+  updateHealth();
+}
+
+function setAppHours(i, v) {
+  appHours[i] = parseFloat(v);
+  document.getElementById(`ahr-${i}`).textContent = `${v} 小時`;
+  updateHealth();
+}
+
+function updateHealth() {
+  let passiveH = 0, activeH = 0;
+  for (let i = 0; i < 3; i++) {
+    if (appTypes[i] === 'passive') passiveH += appHours[i];
+    else if (appTypes[i] === 'active') activeH += appHours[i];
+  }
+  const total = passiveH + activeH;
+  const pPct = total > 0 ? Math.round((passiveH/total)*100) : 50;
+  const aPct = 100 - pPct;
+
+  document.getElementById('hbar-p').style.width = (total>0?pPct:50)+'%';
+  document.getElementById('hbar-a').style.width = (total>0?aPct:50)+'%';
+  document.getElementById('passive-hrs').textContent = passiveH > 0 ? passiveH.toFixed(1) : '—';
+  document.getElementById('active-hrs').textContent = activeH > 0 ? activeH.toFixed(1) : '—';
+
+  const insight = document.getElementById('health-insight');
+  if (total === 0) { insight.textContent = '標記每個 App 是被動還是主動輸入，看清楚你的資訊食譜。'; return; }
+
+  let msg = '';
+  if (pPct >= 80) msg = `被動輸入佔了 ${pPct}%——你的大腦大部分時間都在被演算法餵食，而不是主動攝取。下週試著把被動輸入的時間減少三分之一。`;
+  else if (pPct >= 60) msg = `被動輸入佔多數（${pPct}%）。設定一個「主動資訊時間」，讓你的大腦有一段時間是你在主導，而不是演算法。`;
+  else if (aPct >= 60) msg = `主動輸入佔多數（${aPct}%），你的資訊食譜相對健康。繼續培養主動選擇的習慣，讓它的比例越來越高。`;
+  else msg = `主被動各半，是一個不錯的起點。思考一下：那些被動輸入的時間，有多少真的有價值？`;
+  insight.textContent = msg;
+}
+
+// ── DAY SELECTOR ──────────────────────────────────────
+function selectDay(d) {
+  document.querySelectorAll('.day-chip').forEach(c => c.className = 'day-chip');
+  const days = ['mon','tue','wed','thu','fri'];
+  const icons = ['⚡','🧱','⚖️','🛒','📱'];
+  days.forEach((day, i) => {
+    if (day === d) document.querySelectorAll('.day-chip')[i].className = 'day-chip sel';
+    document.getElementById(`panel-${day}`).className = 'day-panel' + (day===d?' active':'');
+  });
+}
+
+// ── RESET ─────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('確定要清空所有紀錄嗎？')) return;
+  document.querySelectorAll('textarea, input[type="text"], input[type="number"]').forEach(el => el.value = '');
+  Object.keys(appTypes).forEach(k => { appTypes[k] = null; });
+  ['p','a'].forEach(t => [0,1,2].forEach(i => { const b = document.getElementById(`atype-${t}-${i}`); if(b) b.className='atype-btn'; }));
+  updateHealth();
+}
+
+// ── INIT ──────────────────────────────────────────────
+initAppRows();
+</script>
+</body>
+</html>
