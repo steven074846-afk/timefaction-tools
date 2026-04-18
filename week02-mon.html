@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晝夜節律調整工具｜時間派 × Steven</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0d0d1a;
+    --bg2: #13132a;
+    --bg3: #1a1a35;
+    --card: #1e1e38;
+    --border: #2a2a50;
+    --orange: #f97316;
+    --orange-dim: rgba(249,115,22,0.15);
+    --cyan: #06b6d4;
+    --cyan-dim: rgba(6,182,212,0.12);
+    --text: #e8e8f0;
+    --text-dim: #8888aa;
+    --text-muted: #555570;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(180deg, #0a0a18 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: 120px;
+    background: radial-gradient(ellipse, rgba(249,115,22,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--orange);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: 1px solid var(--orange);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+    opacity: 0.85;
+  }
+  .header h1 {
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .header h1 span { color: var(--orange); }
+  .header p {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+  }
+
+  /* Nav tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1;
+    min-width: 90px;
+    padding: 14px 10px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .tab:hover { color: var(--text-dim); }
+  .tab.active {
+    color: var(--orange);
+    border-bottom-color: var(--orange);
+    background: var(--orange-dim);
+  }
+  .tab-icon { display: block; font-size: 18px; margin-bottom: 3px; }
+
+  /* Sections */
+  .section { display: none; padding: 20px 16px; max-width: 520px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  /* Input */
+  .input-group { margin-bottom: 16px; }
+  .input-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .time-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-size: 28px;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 2px;
+  }
+  .time-input:focus { border-color: var(--orange); }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--orange);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn:hover { background: #ea6d0e; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 10px;
+  }
+  .btn-outline:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+
+  /* Results */
+  .results { margin-top: 16px; }
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .result-item:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+  .result-item.selected { border-color: var(--orange); background: var(--orange-dim); }
+  .result-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cyan);
+    min-width: 75px;
+  }
+  .result-item.selected .result-time { color: var(--orange); }
+  .result-info { flex: 1; }
+  .result-cycles {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+  .result-note {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .result-best {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    color: var(--orange);
+    background: var(--orange-dim);
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--orange);
+    letter-spacing: 1px;
+  }
+
+  /* Cycle visual */
+  .cycle-bar {
+    display: flex;
+    gap: 3px;
+    margin-top: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .cycle-seg {
+    height: 6px;
+    border-radius: 3px;
+    flex: 1;
+    min-width: 20px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .cycle-seg.active { background: var(--cyan); }
+  .cycle-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* Checklist */
+  .day-row {
+    margin-bottom: 12px;
+  }
+  .day-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .day-checks {
+    display: flex;
+    gap: 8px;
+  }
+  .check-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .check-item:hover { border-color: var(--text-muted); }
+  .check-item.checked { border-color: var(--green); background: var(--green-dim); }
+  .check-icon { font-size: 18px; }
+  .check-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .check-item.checked .check-label { color: var(--green); }
+
+  /* Progress */
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--orange), var(--cyan));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Energy tracker */
+  .energy-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .energy-day {
+    text-align: center;
+  }
+  .energy-day-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .energy-score {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .energy-score.has-score { color: var(--text); }
+
+  /* Score picker */
+  .score-picker {
+    display: none;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .score-picker.visible { display: flex; }
+  .score-picker-title {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .score-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .score-btn:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+
+  /* Chart */
+  .chart-wrap {
+    margin-top: 8px;
+    padding: 16px;
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .chart-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 70px;
+  }
+  .chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .chart-bar {
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    background: var(--border);
+    transition: height 0.4s ease, background 0.3s;
+    min-height: 3px;
+  }
+  .chart-bar.filled { background: linear-gradient(180deg, var(--cyan), var(--orange)); }
+  .chart-day {
+    font-size: 8px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Info box */
+  .info-box {
+    background: var(--cyan-dim);
+    border: 1px solid rgba(6,182,212,0.25);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--cyan);
+    line-height: 1.6;
+  }
+  .info-box strong { font-weight: 700; }
+
+  /* Today highlight */
+  .today-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-family: 'Space Mono', monospace;
+    color: var(--orange);
+    background: var(--orange-dim);
+    border: 1px solid var(--orange);
+    padding: 1px 6px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--orange);
+    display: block;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 24px 20px 0;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+  }
+  .footer a { color: var(--orange); text-decoration: none; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--card);
+    border: 1px solid var(--orange);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--orange);
+    font-family: 'Space Mono', monospace;
+    transition: transform 0.3s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">時間派 × Steven</div>
+  <h1>晝夜節律<span>調整工具</span></h1>
+  <p>睡夠了還是很累？問題不在時間，在時機</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('calc')">
+    <span class="tab-icon">🌙</span>睡眠計算
+  </div>
+  <div class="tab" onclick="switchTab('check')">
+    <span class="tab-icon">☀️</span>校準打卡
+  </div>
+  <div class="tab" onclick="switchTab('energy')">
+    <span class="tab-icon">⚡</span>能量紀錄
+  </div>
+</div>
+
+<!-- TAB 1: 睡眠週期計算機 -->
+<div class="section active" id="tab-calc">
+  <div class="card">
+    <div class="card-title">睡眠週期計算機</div>
+    <div class="card-desc">輸入明天的起床時間，工具幫你算出最佳入睡時間。以90分鐘為一個完整週期，一晚建議4~6個週期（6~9小時）。在週期結束時醒來，比睡滿8小時但中途被打斷還要清醒。</div>
+    <div class="input-group">
+      <label class="input-label">明天要幾點起床？</label>
+      <input type="time" class="time-input" id="wake-time" value="07:00">
+    </div>
+    <button class="btn" onclick="calcSleep()">計算最佳入睡時間</button>
+  </div>
+
+  <div class="results" id="sleep-results" style="display:none">
+    <div class="card">
+      <div class="card-title">建議入睡時間</div>
+      <div class="info-box">點選最接近你習慣的時間，不需要一次改太多。</div>
+      <div id="result-list"></div>
+      <div class="cycle-bar" id="cycle-bar" style="display:none; margin-top:16px">
+        <div style="width:100%">
+          <div style="display:flex; gap:3px" id="cycle-segs"></div>
+          <div class="cycle-label" id="cycle-label"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="selected-card" style="display:none">
+      <div class="card-title">你選擇了</div>
+      <div style="display:flex; align-items:center; gap:16px">
+        <div style="font-family:'Space Mono',monospace; font-size:36px; font-weight:700; color:var(--orange)" id="selected-time">—</div>
+        <div>
+          <div style="font-size:13px; color:var(--text-dim)" id="selected-cycles">—</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px">記得睡前90分鐘調暗燈光</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: 三校準點打卡 -->
+<div class="section" id="tab-check">
+  <div class="card">
+    <div class="card-title">三個校準點打卡表</div>
+    <div class="card-desc">每天完成三個動作，連續7天。每天只要30秒打卡。</div>
+    <div class="info-box">
+      <strong>☀️ 起床後20分鐘</strong>：自然光照眼睛<br>
+      <strong>☕ 起床後90分鐘</strong>：再喝第一杯咖啡<br>
+      <strong>🌙 睡前90分鐘</strong>：調暗所有燈光
+    </div>
+    <div id="checklist-container"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-text">
+      <span id="progress-count">0 / 21 項完成</span>
+      <span id="progress-pct">0%</span>
+    </div>
+  </div>
+  <div class="stats-row" id="check-stats">
+    <div class="stat-box">
+      <span class="stat-number" id="stat-light">0</span>
+      <div class="stat-label">曬光天數</div>
+    </div>
+    <div class="stat-box">
+      <span class="stat-number" id="stat-coffee">0</span>
+      <div class="stat-label">咖啡等待</div>
+    </div>
+    <div class="stat-box">
+      <span class="stat-number" id="stat-dark">0</span>
+      <div class="stat-label">暗光準備</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: 能量紀錄 -->
+<div class="section" id="tab-energy">
+  <div class="card">
+    <div class="card-title">每日起床能量紀錄</div>
+    <div class="card-desc">起床後，給自己的精神狀態打一個分數。1分=快死了，10分=精神飽滿。不需要解釋，只記數字。</div>
+    <div class="energy-grid" id="energy-grid"></div>
+    <div id="score-picker-wrap">
+      <div class="score-picker" id="score-picker">
+        <div class="score-picker-title" id="picker-title">選擇今天的能量分數</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="chart-wrap">
+      <div class="chart-title">7天能量趨勢</div>
+      <div class="chart-bars" id="energy-chart"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-number" id="avg-score">—</span>
+        <div class="stat-label">平均分數</div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number" id="best-day">—</span>
+        <div class="stat-label">最佳天</div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number" id="days-logged">0</span>
+        <div class="stat-label">已記錄天</div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-outline" onclick="resetEnergy()">清除紀錄，重新開始</button>
+</div>
+
+<div class="footer">
+  時間派 × Steven｜晝夜節律調整工具<br>
+  <span style="color:var(--text-muted); font-size:10px; margin-top:4px; display:block">早晨直播每天 08:00 ｜Skool社群模板教學 08:30</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ───────────────────────────────────────────
+const DAYS = ['週一','週二','週三','週四','週五','週六','週日'];
+const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+const CHECKS = [
+  { key:'light', icon:'☀️', label:'曬光\n20分鐘' },
+  { key:'coffee', icon:'☕', label:'咖啡\n等90分' },
+  { key:'dark', icon:'🌙', label:'暗光\n90分鐘' },
+];
+
+function loadState(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; }
+}
+function saveState(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+let checkData = loadState('circadian_checks', {});
+let energyData = loadState('circadian_energy', {});
+let selectedSleepIdx = null;
+let pickerDay = null;
+
+// ─── Tab Switch ───────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['calc','check','energy'][i] === id);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (id === 'check') renderChecklist();
+  if (id === 'energy') renderEnergy();
+}
+
+// ─── Sleep Calculator ──────────────────────────────────
+function calcSleep() {
+  const val = document.getElementById('wake-time').value;
+  if (!val) return;
+  const [wh, wm] = val.split(':').map(Number);
+  const wakeMin = wh * 60 + wm;
+  const options = [];
+  // 4~6個週期（6~9小時），依書中建議最少4個週期
+  for (let cycles = 6; cycles >= 4; cycles--) {
+    let sleepMin = wakeMin - cycles * 90 - 14; // 14分鐘入睡時間
+    while (sleepMin < 0) sleepMin += 24 * 60;
+    sleepMin = sleepMin % (24 * 60);
+    const sh = Math.floor(sleepMin / 60) % 24;
+    const sm = sleepMin % 60;
+    options.push({ cycles, time: `${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`, mins: sleepMin });
+  }
+  renderResults(options);
+  document.getElementById('sleep-results').style.display = 'block';
+}
+
+function renderResults(options) {
+  const list = document.getElementById('result-list');
+  list.innerHTML = '';
+  options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.onclick = () => selectSleep(div, opt, i);
+    const hours = (opt.cycles * 90) / 60;
+    // 5個週期（7.5小時）是多數人的最佳點，標為推薦
+    const best = opt.cycles === 5;
+    const label = opt.cycles === 6 ? '充足' : opt.cycles === 5 ? '最佳' : '最少';
+    div.innerHTML = `
+      <div class="result-time">${opt.time}</div>
+      <div class="result-info">
+        <div class="result-cycles">${opt.cycles} 個睡眠週期 · ${hours} 小時</div>
+        <div class="result-note">${opt.cycles === 4 ? '⚠️ 最低建議量，長期不足夠' : opt.cycles === 5 ? '✓ 多數人的最佳睡眠時長' : '✓ 充足睡眠，適合高壓期'}</div>
+      </div>
+      ${best ? '<div class="result-best">推薦</div>' : `<div class="result-best" style="opacity:0.5; border-color:var(--text-muted); color:var(--text-muted)">${label}</div>`}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function selectSleep(el, opt, idx) {
+  document.querySelectorAll('.result-item').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSleepIdx = idx;
+  document.getElementById('selected-time').textContent = opt.time;
+  document.getElementById('selected-cycles').textContent = `${opt.cycles} 個睡眠週期 · ${(opt.cycles*90/60)}小時睡眠`;
+  document.getElementById('selected-card').style.display = 'block';
+  // cycle bar
+  const bar = document.getElementById('cycle-bar');
+  bar.style.display = 'block';
+  const segs = document.getElementById('cycle-segs');
+  segs.innerHTML = '';
+  for (let i = 0; i < opt.cycles; i++) {
+    ['淺眠','深眠','REM'].forEach((_, j) => {
+      const s = document.createElement('div');
+      s.className = 'cycle-seg active';
+      s.style.background = j === 2 ? 'var(--orange)' : j === 1 ? 'var(--cyan)' : 'var(--border)';
+      segs.appendChild(s);
+    });
+  }
+  document.getElementById('cycle-label').textContent = `${opt.cycles} 個完整週期 ／ 淺眠 · 深眠 · REM`;
+  showToast(`選擇 ${opt.time} 入睡，${opt.cycles} 個完整週期`);
+}
+
+// ─── Checklist ────────────────────────────────────────
+function renderChecklist() {
+  const c = document.getElementById('checklist-container');
+  c.innerHTML = '';
+  const today = new Date().getDay();
+  // 0=sun, convert to mon-first
+  const todayIdx = today === 0 ? 6 : today - 1;
+
+  DAY_KEYS.forEach((dayKey, di) => {
+    const row = document.createElement('div');
+    row.className = 'day-row';
+    const isToday = di === todayIdx;
+    row.innerHTML = `<div class="day-label">${DAYS[di]}${isToday ? '<span class="today-badge">TODAY</span>' : ''}</div>`;
+    const checks = document.createElement('div');
+    checks.className = 'day-checks';
+    CHECKS.forEach(ch => {
+      const item = document.createElement('div');
+      item.className = 'check-item' + (checkData[dayKey + '_' + ch.key] ? ' checked' : '');
+      item.innerHTML = `<div class="check-icon">${ch.icon}</div><div class="check-label">${ch.label}</div>`;
+      item.onclick = () => toggleCheck(item, dayKey, ch.key);
+      checks.appendChild(item);
+    });
+    row.appendChild(checks);
+    c.appendChild(row);
+  });
+  updateProgress();
+}
+
+function toggleCheck(el, dayKey, checkKey) {
+  const k = dayKey + '_' + checkKey;
+  checkData[k] = !checkData[k];
+  el.classList.toggle('checked', checkData[k]);
+  saveState('circadian_checks', checkData);
+  updateProgress();
+}
+
+function updateProgress() {
+  let total = 0, done = 0;
+  let lights = 0, coffees = 0, darks = 0;
+  DAY_KEYS.forEach(dk => {
+    CHECKS.forEach(ch => {
+      total++;
+      if (checkData[dk + '_' + ch.key]) {
+        done++;
+        if (ch.key === 'light') lights++;
+        if (ch.key === 'coffee') coffees++;
+        if (ch.key === 'dark') darks++;
+      }
+    });
+  });
+  const pct = Math.round(done / total * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-count').textContent = `${done} / ${total} 項完成`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('stat-light').textContent = lights;
+  document.getElementById('stat-coffee').textContent = coffees;
+  document.getElementById('stat-dark').textContent = darks;
+}
+
+// ─── Energy ───────────────────────────────────────────
+function renderEnergy() {
+  const grid = document.getElementById('energy-grid');
+  grid.innerHTML = '';
+  const today = new Date().getDay();
+  const todayIdx = today === 0 ? 6 : today - 1;
+
+  DAY_KEYS.forEach((dk, i) => {
+    const col = document.createElement('div');
+    col.className = 'energy-day';
+    const isToday = i === todayIdx;
+    const score = energyData[dk];
+    col.innerHTML = `
+      <span class="energy-day-label">${DAYS[i].replace('週','')}</span>
+      <div class="energy-score${score ? ' has-score' : ''}" onclick="openPicker('${dk}', ${i})" id="escore-${dk}">
+        ${score || '—'}
+      </div>
+    `;
+    grid.appendChild(col);
+  });
+
+  renderChart();
+  updateEnergyStats();
+}
+
+function openPicker(dk, di) {
+  pickerDay = dk;
+  const picker = document.getElementById('score-picker');
+  const title = document.getElementById('picker-title');
+  title.textContent = `${DAYS[di]} 能量分數`;
+  picker.innerHTML = `<div class="score-picker-title">${DAYS[di]} 能量分數</div>`;
+  for (let s = 1; s <= 10; s++) {
+    const btn = document.createElement('button');
+    btn.className = 'score-btn';
+    btn.textContent = s;
+    btn.onclick = () => setScore(dk, s);
+    picker.appendChild(btn);
+  }
+  // clear btn
+  const clr = document.createElement('button');
+  clr.className = 'score-btn';
+  clr.textContent = '✕';
+  clr.style.color = 'var(--text-muted)';
+  clr.onclick = () => clearScore(dk);
+  picker.appendChild(clr);
+  picker.classList.add('visible');
+}
+
+function setScore(dk, score) {
+  energyData[dk] = score;
+  saveState('circadian_energy', energyData);
+  document.getElementById('score-picker').classList.remove('visible');
+  renderEnergy();
+  showToast(`記錄完成：${score} 分`);
+}
+
+function clearScore(dk) {
+  delete energyData[dk];
+  saveState('circadian_energy', energyData);
+  document.getElementById('score-picker').classList.remove('visible');
+  renderEnergy();
+}
+
+function resetEnergy() {
+  if (!confirm('確定清除所有能量紀錄？')) return;
+  energyData = {};
+  saveState('circadian_energy', energyData);
+  renderEnergy();
+  showToast('紀錄已清除');
+}
+
+function renderChart() {
+  const chart = document.getElementById('energy-chart');
+  chart.innerHTML = '';
+  DAY_KEYS.forEach((dk, i) => {
+    const score = energyData[dk] || 0;
+    const col = document.createElement('div');
+    col.className = 'chart-col';
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar' + (score ? ' filled' : '');
+    bar.style.height = score ? (score / 10 * 100) + '%' : '3px';
+    const label = document.createElement('div');
+    label.className = 'chart-day';
+    label.textContent = DAYS[i].replace('週','');
+    col.appendChild(bar);
+    col.appendChild(label);
+    chart.appendChild(col);
+  });
+}
+
+function updateEnergyStats() {
+  const scores = DAY_KEYS.map(dk => energyData[dk]).filter(Boolean);
+  const logged = scores.length;
+  document.getElementById('days-logged').textContent = logged;
+  if (logged === 0) {
+    document.getElementById('avg-score').textContent = '—';
+    document.getElementById('best-day').textContent = '—';
+    return;
+  }
+  const avg = (scores.reduce((a,b) => a+b, 0) / logged).toFixed(1);
+  document.getElementById('avg-score').textContent = avg;
+  let bestScore = 0, bestDayIdx = 0;
+  DAY_KEYS.forEach((dk, i) => {
+    if ((energyData[dk] || 0) > bestScore) { bestScore = energyData[dk]; bestDayIdx = i; }
+  });
+  document.getElementById('best-day').textContent = DAYS[bestDayIdx].replace('週','');
+}
+
+// ─── Toast ─────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─── Init ──────────────────────────────────────────────
+renderChecklist();
+</script>
+</body>
+</html>
