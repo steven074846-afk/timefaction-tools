@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大腦清醒時段排程工具 | Week 02 · Tue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f5f0e8;
+    --cream: #ece5d5;
+    --amber: #c8832a;
+    --amber-light: #e8a94a;
+    --amber-pale: #f7e8c8;
+    --rust: #a04020;
+    --forest: #2a4a30;
+    --muted: #7a7060;
+    --border: #d0c5a8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    background: var(--cream);
+  }
+
+  h1 {
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-top: 20px;
+  }
+
+  h1 span {
+    display: block;
+    font-weight: 300;
+    font-size: 0.55em;
+    letter-spacing: 0.04em;
+    color: var(--amber);
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+
+  .subtitle {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+    font-weight: 300;
+  }
+
+  /* ─── Clock Visual ─── */
+  .clock-banner {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .clock-icon {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--amber);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+
+  .clock-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 22px;
+    background: var(--amber);
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(-60deg);
+  }
+
+  .clock-icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 16px;
+    background: var(--paper);
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(90deg);
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(200,131,42,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(200,131,42,0); }
+  }
+
+  .clock-text h2 {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .clock-text p {
+    font-size: 14px;
+    color: rgba(245,240,232,0.65);
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  /* ─── Section Labels ─── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── Cards ─── */
+  .card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .card.filled {
+    border-color: var(--amber);
+    box-shadow: 4px 4px 0 var(--amber-pale);
+  }
+
+  .card-number {
+    position: absolute;
+    top: -14px;
+    left: 24px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .card .card-hint {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  /* ─── Time Picker ─── */
+  .time-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .time-row span {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .time-input {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    background: var(--cream);
+    color: var(--ink);
+    padding: 8px 14px;
+    width: 110px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .time-input:focus {
+    border-color: var(--amber);
+  }
+
+  .duration-display {
+    margin-top: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--forest);
+    background: #e8f0e8;
+    padding: 6px 14px;
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .duration-display.visible { opacity: 1; }
+
+  /* ─── Text Input / Textarea ─── */
+  .field-input {
+    width: 100%;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 16px;
+    border: 2px solid var(--border);
+    background: var(--cream);
+    color: var(--ink);
+    padding: 12px 14px;
+    outline: none;
+    resize: vertical;
+    min-height: 52px;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  .field-input:focus { border-color: var(--amber); }
+  .field-input::placeholder { color: var(--muted); font-style: italic; }
+
+  /* ─── Ritual Chips ─── */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .chip {
+    border: 1.5px solid var(--border);
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 13px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .chip:hover { border-color: var(--amber); background: var(--amber-pale); }
+  .chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* ─── Score Meter ─── */
+  .score-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .score-btn {
+    width: 38px;
+    height: 38px;
+    border: 1.5px solid var(--border);
+    background: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-btn:hover { border-color: var(--amber); }
+  .score-btn.active { background: var(--amber); color: #fff; border-color: var(--amber); }
+  .score-btn.active-low { background: var(--rust); color: #fff; border-color: var(--rust); }
+
+  .score-label {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  /* ─── Divider ─── */
+  .divider {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 32px 0;
+  }
+
+  /* ─── Summary Card ─── */
+  .summary {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 32px;
+    margin-top: 40px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+    pointer-events: none;
+  }
+
+  .summary.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .summary-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(245,240,232,0.15);
+  }
+
+  .summary-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+
+  .summary-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--amber);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .summary-content label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: rgba(245,240,232,0.5);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .summary-content .value {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* ─── CTA Button ─── */
+  .btn-generate {
+    width: 100%;
+    background: var(--amber);
+    color: var(--ink);
+    border: none;
+    padding: 18px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    margin-top: 28px;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn-generate:hover { background: var(--amber-light); }
+  .btn-generate:active { transform: scale(0.99); }
+
+  .btn-copy {
+    width: 100%;
+    background: transparent;
+    color: var(--paper);
+    border: 1.5px solid rgba(245,240,232,0.3);
+    padding: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    margin-top: 14px;
+    transition: border-color 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-copy:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ─── Tracker ─── */
+  .tracker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .tracker-day {
+    border: 1.5px solid var(--border);
+    padding: 14px 12px;
+    text-align: center;
+    background: var(--cream);
+  }
+
+  .tracker-day .day-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .tracker-day .fill-bar {
+    height: 4px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tracker-day .fill-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--amber);
+    width: var(--fill, 0%);
+    transition: width 0.5s;
+  }
+
+  .tracker-day.done {
+    border-color: var(--amber);
+    background: var(--amber-pale);
+  }
+
+  .tracker-day .check {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  /* ─── Progress ─── */
+  .progress-bar-wrap {
+    height: 6px;
+    background: var(--border);
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--amber);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 6px;
+  }
+
+  /* ─── Quote ─── */
+  .quote-box {
+    border-left: 3px solid var(--amber);
+    padding: 16px 20px;
+    background: var(--amber-pale);
+    margin: 32px 0;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+
+  .quote-box cite {
+    display: block;
+    font-style: normal;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+
+  .footer-brand {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-book {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  @media (max-width: 540px) {
+    .header { flex-direction: column; align-items: flex-start; }
+    .time-row { flex-direction: column; align-items: flex-start; }
+    .tracker-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Header -->
+  <header class="header">
+    <div>
+      <div class="badge">Week 02 · Tue · 4/21</div>
+      <h1>
+        <span>《睡得更聰明》× 工作效能</span>
+        大腦清醒<br>時段排程工具
+      </h1>
+      <p class="subtitle">你每天只有 2～4 小時的認知高峰期。<br>這個工具幫你找到它——然後保護它。</p>
+    </div>
+  </header>
+
+  <!-- Intro Banner -->
+  <div class="clock-banner">
+    <div class="clock-icon"></div>
+    <div class="clock-text">
+      <h2>你的大腦每天只清醒幾小時</h2>
+      <p>你把它用在哪裡——決定你今天完成了什麼</p>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 3 欄位完成</div>
+
+  <!-- Quote -->
+  <div class="quote-box">
+    大多數人把最貴的時間，拿去做最便宜的事。<br>回信、開會、刷通知——然後在下午問自己：我今天到底做了什麼？
+    <cite>— Steven，《睡得更聰明》讀書週 Week 02</cite>
+  </div>
+
+  <!-- ─── CARD 1: Time Window ─── -->
+  <div class="section-label">Step 01</div>
+  <div class="card" id="card1">
+    <div class="card-number">欄位 01</div>
+    <h3>🧠 你的清醒時段</h3>
+    <p class="card-hint">你預估今天幾點到幾點，思考最清楚？（不需要精確，跟著感覺走）</p>
+
+    <div class="time-row">
+      <input type="time" class="time-input" id="startTime" value="09:00" oninput="updateDuration()">
+      <span>到</span>
+      <input type="time" class="time-input" id="endTime" value="11:00" oninput="updateDuration()">
+    </div>
+    <div class="duration-display visible" id="durationDisplay">⏱ 持續 2 小時</div>
+
+    <div style="margin-top:20px;">
+      <div class="section-label" style="margin-bottom:10px;">目前思考狀態評分（1 = 糊，10 = 清晰）</div>
+      <div class="score-row" id="scoreRow"></div>
+      <div class="score-label" id="scoreLabel">點選現在的狀態</div>
+    </div>
+  </div>
+
+  <!-- ─── CARD 2: The One Thing ─── -->
+  <div class="section-label">Step 02</div>
+  <div class="card" id="card2">
+    <div class="card-number">欄位 02</div>
+    <h3>🎯 今天那一件事</h3>
+    <p class="card-hint">今天做完，你會覺得「這一天值了」的事。只填一件。</p>
+    <textarea class="field-input" id="oneThing" rows="2" placeholder="例：完成提案第一頁的草稿" oninput="checkFields()"></textarea>
+
+    <div style="margin-top: 16px;">
+      <div class="section-label" style="margin-bottom:8px;">這件事屬於哪個類型？</div>
+      <div class="chips" id="typeChips">
+        <div class="chip" onclick="selectChip(this,'type')">深度思考</div>
+        <div class="chip" onclick="selectChip(this,'type')">創作輸出</div>
+        <div class="chip" onclick="selectChip(this,'type')">問題解決</div>
+        <div class="chip" onclick="selectChip(this,'type')">決策判斷</div>
+        <div class="chip" onclick="selectChip(this,'type')">學習吸收</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CARD 3: Ritual ─── -->
+  <div class="section-label">Step 03</div>
+  <div class="card" id="card3">
+    <div class="card-number">欄位 03</div>
+    <h3>🔔 你的入場儀式</h3>
+    <p class="card-hint">用什麼動作告訴大腦「清醒時段開始了」？每次一樣，大腦就會記住這個開關。</p>
+
+    <div class="chips" id="ritualChips">
+      <div class="chip" onclick="selectRitual(this)">☕ 泡咖啡／茶</div>
+      <div class="chip" onclick="selectRitual(this)">🎧 戴上耳機</div>
+      <div class="chip" onclick="selectRitual(this)">📵 手機靜音翻面</div>
+      <div class="chip" onclick="selectRitual(this)">✍️ 手寫兩分鐘</div>
+      <div class="chip" onclick="selectRitual(this)">🌿 深呼吸三次</div>
+      <div class="chip" onclick="selectRitual(this)">💧 喝一杯水</div>
+    </div>
+
+    <input class="field-input" type="text" id="ritualCustom" placeholder="或自訂你的儀式…" style="margin-top:10px;" oninput="checkFields()">
+  </div>
+
+  <!-- CTA -->
+  <button class="btn-generate" onclick="generateSummary()">
+    <span>▶</span> 產出我的今日清醒排程
+  </button>
+
+  <hr class="divider">
+
+  <!-- ─── SUMMARY ─── -->
+  <div class="summary" id="summary">
+    <div class="summary-header">📋 今日清醒時段排程 · 4月21日 週二</div>
+
+    <div class="summary-row">
+      <div class="summary-icon">🧠</div>
+      <div class="summary-content">
+        <label>清醒時段</label>
+        <div class="value" id="s-time">—</div>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-icon">🎯</div>
+      <div class="summary-content">
+        <label>今天那件事</label>
+        <div class="value" id="s-thing">—</div>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-icon">🔔</div>
+      <div class="summary-content">
+        <label>入場儀式</label>
+        <div class="value" id="s-ritual">—</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; padding-top:16px; border-top: 1px solid rgba(245,240,232,0.15);">
+      <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--amber); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">今日提醒</div>
+      <p id="s-reminder" style="font-size:14px; color:rgba(245,240,232,0.75); line-height:1.8; font-weight:300;"></p>
+    </div>
+
+    <button class="btn-copy" onclick="copySchedule()">複製排程 · 貼到 Skool 社群</button>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ─── 3-Day Tracker ─── -->
+  <div class="section-label">本週挑戰</div>
+  <p style="font-size:14px; color:var(--muted); margin-bottom:14px; font-style:italic;">連續三天填寫清醒時段排程——每天打卡一次。</p>
+
+  <div class="tracker-grid">
+    <div class="tracker-day" id="track1">
+      <div class="check" id="check1">○</div>
+      <div class="day-label">Day 1 · 今天</div>
+      <div class="fill-bar" style="--fill:0%" id="bar1"></div>
+    </div>
+    <div class="tracker-day" id="track2">
+      <div class="check" id="check2">○</div>
+      <div class="day-label">Day 2 · 明天</div>
+      <div class="fill-bar" style="--fill:0%" id="bar2"></div>
+    </div>
+    <div class="tracker-day" id="track3">
+      <div class="check" id="check3">○</div>
+      <div class="day-label">Day 3 · 後天</div>
+      <div class="fill-bar" style="--fill:0%" id="bar3"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-brand">WEEK 02 · TUE · STEVEN'S MORNING LIVE</div>
+    <div class="footer-book">《睡得更聰明》Shawn Stevenson</div>
+  </footer>
+
+</div>
+
+<script>
+  // Score buttons
+  const scoreRow = document.getElementById('scoreRow');
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'score-btn';
+    btn.textContent = i;
+    btn.onclick = () => {
+      document.querySelectorAll('.score-btn').forEach(b => b.className = 'score-btn');
+      btn.className = i <= 4 ? 'score-btn active-low' : 'score-btn active';
+      const labels = ['', '非常模糊', '很模糊', '模糊', '有點糊', '普通', '稍微清楚', '清楚', '很清楚', '非常清楚', '🔥 完全清醒'];
+      document.getElementById('scoreLabel').textContent = `${i} 分 — ${labels[i]}`;
+      checkFields();
+    };
+    scoreRow.appendChild(btn);
+  }
+
+  function updateDuration() {
+    const s = document.getElementById('startTime').value;
+    const e = document.getElementById('endTime').value;
+    const el = document.getElementById('durationDisplay');
+    if (s && e) {
+      const [sh, sm] = s.split(':').map(Number);
+      const [eh, em] = e.split(':').map(Number);
+      const mins = (eh * 60 + em) - (sh * 60 + sm);
+      if (mins > 0) {
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        el.textContent = `⏱ 持續 ${h > 0 ? h + ' 小時' : ''}${m > 0 ? ' ' + m + ' 分鐘' : ''}`;
+        el.classList.add('visible');
+        const good = mins >= 90 && mins <= 240;
+        el.style.background = good ? '#e8f0e8' : '#f0e8e8';
+        el.style.color = good ? '#2a4a30' : '#a04020';
+        if (!good && mins > 0) el.textContent += mins > 240 ? ' （建議不超過 4 小時）' : ' （建議至少 90 分鐘）';
+      } else {
+        el.textContent = '⚠ 結束時間需晚於開始時間';
+        el.style.background = '#f0e8e8';
+        el.style.color = '#a04020';
+      }
+    }
+    checkFields();
+  }
+
+  let selectedType = '';
+  let selectedRitual = '';
+
+  function selectChip(el, group) {
+    document.querySelectorAll(`#typeChips .chip`).forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedType = el.textContent;
+    checkFields();
+  }
+
+  function selectRitual(el) {
+    document.querySelectorAll('#ritualChips .chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedRitual = el.textContent;
+    document.getElementById('ritualCustom').value = '';
+    checkFields();
+  }
+
+  function checkFields() {
+    const t = document.getElementById('oneThing').value.trim();
+    const r = selectedRitual || document.getElementById('ritualCustom').value.trim();
+    const time = document.getElementById('startTime').value;
+    let count = 0;
+    if (time) count++;
+    if (t) count++;
+    if (r) count++;
+    document.getElementById('progressFill').style.width = (count / 3 * 100) + '%';
+    document.getElementById('progressLabel').textContent = `${count} / 3 欄位完成`;
+
+    document.getElementById('card1').className = 'card' + (time ? ' filled' : '');
+    document.getElementById('card2').className = 'card' + (t ? ' filled' : '');
+    document.getElementById('card3').className = 'card' + (r ? ' filled' : '');
+  }
+
+  function generateSummary() {
+    const s = document.getElementById('startTime').value;
+    const e = document.getElementById('endTime').value;
+    const thing = document.getElementById('oneThing').value.trim();
+    const ritual = selectedRitual || document.getElementById('ritualCustom').value.trim();
+
+    if (!s || !thing || !ritual) {
+      alert('請填完三個欄位再產出排程 :)');
+      return;
+    }
+
+    const fmt = t => {
+      const [h, m] = t.split(':');
+      const hNum = parseInt(h);
+      const period = hNum < 12 ? '早上' : hNum < 18 ? '下午' : '晚上';
+      const h12 = hNum > 12 ? hNum - 12 : hNum === 0 ? 12 : hNum;
+      return `${period} ${h12}:${m}`;
+    };
+
+    document.getElementById('s-time').textContent = `${fmt(s)} ～ ${fmt(e)}`;
+    document.getElementById('s-thing').textContent = thing + (selectedType ? ` （${selectedType}）` : '');
+    document.getElementById('s-ritual').textContent = ritual;
+
+    const [sh] = s.split(':').map(Number);
+    let reminder = '';
+    if (sh <= 9) reminder = '你選擇了最強的清醒窗口——早晨時段的大腦認知效率最高。在這個窗口啟動之前，不要看信箱，不要滑通知。';
+    else if (sh <= 11) reminder = '上午中段是很多人的認知高峰期。記得讓入場儀式先到位，再打開任何需要注意力的東西。';
+    else reminder = '這個時段的清醒度會受到午餐前後的影響。如果可以，把入場儀式放在吃飯前，而不是吃完之後。';
+    reminder += '今天最重要的一件事已經確認了。清醒時段結束之前，只做這一件事。';
+
+    document.getElementById('s-reminder').textContent = reminder;
+
+    const summary = document.getElementById('summary');
+    summary.classList.add('visible');
+    summary.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Mark day 1 done
+    document.getElementById('check1').textContent = '✓';
+    document.getElementById('track1').classList.add('done');
+    document.getElementById('bar1').style.setProperty('--fill', '100%');
+  }
+
+  function copySchedule() {
+    const time = document.getElementById('s-time').textContent;
+    const thing = document.getElementById('s-thing').textContent;
+    const ritual = document.getElementById('s-ritual').textContent;
+    const text = `📋 今日清醒時段排程 · 4月21日 週二\n\n🧠 清醒時段：${time}\n🎯 今天那件事：${thing}\n🔔 入場儀式：${ritual}\n\n#大腦清醒時段 #睡得更聰明 #Week02`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = '✓ 已複製！貼到 Skool 社群吧';
+      setTimeout(() => btn.textContent = '複製排程 · 貼到 Skool 社群', 2500);
+    }).catch(() => {
+      alert('複製失敗，請手動選取文字複製');
+    });
+  }
+
+  // Init
+  updateDuration();
+</script>
+</body>
+</html>
