@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>睡眠品質 × 情緒管理｜三合一模板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d0d14;
+  --surface: #13131f;
+  --card: #191926;
+  --border: rgba(255,255,255,0.07);
+  --gold: #d4a843;
+  --gold-dim: rgba(212,168,67,0.15);
+  --teal: #5bb8c4;
+  --teal-dim: rgba(91,184,196,0.12);
+  --rose: #e07070;
+  --rose-dim: rgba(224,112,112,0.12);
+  --text: #e8e4dc;
+  --text-muted: rgba(232,228,220,0.45);
+  --serif: 'Noto Serif TC', serif;
+  --sans: 'Noto Sans TC', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── NOISE TEXTURE ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ─── AMBIENT GLOW ─── */
+body::after {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(212,168,67,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HEADER ─── */
+header {
+  position: relative;
+  z-index: 1;
+  padding: 3.5rem 2rem 2.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.1s forwards;
+}
+
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 900;
+  line-height: 1.25;
+  margin-bottom: 0.6rem;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.2s forwards;
+}
+
+header h1 em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.header-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.3s forwards;
+}
+
+/* ─── NAV TABS ─── */
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,13,20,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 0 1rem;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 1rem 1.4rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ─── SECTIONS ─── */
+.section { display: none; position: relative; z-index: 1; }
+.section.active {
+  display: block;
+  animation: fadeUp 0.4s forwards;
+}
+
+.section-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: var(--serif);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─── DATE LABEL ─── */
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.date-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.date-input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  padding: 0.4rem 0.8rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.date-input:focus { border-color: var(--gold); }
+
+/* ─── TABLE: SLEEP TRACKER ─── */
+.tracker-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+}
+
+.tracker-table th {
+  background: var(--card);
+  color: var(--gold);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.tracker-table td {
+  border: 1px solid var(--border);
+  padding: 0;
+}
+
+.tracker-table input[type="text"],
+.tracker-table input[type="time"],
+.tracker-table input[type="date"] {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  padding: 0.7rem 0.9rem;
+  outline: none;
+  transition: background 0.15s;
+}
+
+.tracker-table tr:hover td { background: rgba(255,255,255,0.02); }
+.tracker-table input:focus { background: var(--gold-dim); }
+
+/* STAR RATING */
+.star-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0.4rem;
+}
+
+.star {
+  font-size: 1.1rem;
+  color: var(--border);
+  cursor: pointer;
+  transition: color 0.15s, transform 0.1s;
+  user-select: none;
+}
+
+.star:hover, .star.on { color: var(--gold); }
+.star:active { transform: scale(0.9); }
+
+/* ─── SOP BLOCK ─── */
+.sop-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+}
+
+.sop-header {
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.sop-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.sop-header span {
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.sop-header .sop-time-input {
+  margin-left: auto;
+  background: rgba(212,168,67,0.1);
+  border: 1px solid rgba(212,168,67,0.3);
+  border-radius: 3px;
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  outline: none;
+  width: 80px;
+  text-align: center;
+}
+
+.sop-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sop-item:last-child { border-bottom: none; }
+.sop-item:hover { background: rgba(255,255,255,0.02); }
+
+.sop-check {
+  width: 18px; height: 18px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 0.7rem;
+}
+
+.sop-item.checked .sop-check {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg);
+}
+
+.sop-item.checked .sop-text { opacity: 0.4; text-decoration: line-through; }
+
+.sop-text {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text);
+  transition: opacity 0.2s;
+}
+
+.sop-text-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--border);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  padding: 0.2rem 0;
+  outline: none;
+}
+
+.sop-text-input:focus { border-bottom-color: var(--gold); }
+.sop-text-input::placeholder { color: var(--text-muted); }
+
+/* ─── WEEKLY REVIEW ─── */
+.review-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.review-card:hover { border-color: rgba(255,255,255,0.12); }
+
+.review-q {
+  padding: 1rem 1.2rem 0.8rem;
+  font-family: var(--serif);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.6;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.review-q-num {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  color: var(--gold);
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.review-answer {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.83rem;
+  line-height: 1.8;
+  padding: 1rem 1.2rem;
+  resize: none;
+  min-height: 80px;
+  outline: none;
+}
+
+.review-answer::placeholder { color: var(--text-muted); font-style: italic; }
+.review-answer:focus { background: rgba(255,255,255,0.02); }
+
+/* ─── INSIGHT BAR ─── */
+.insight-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.insight-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.1rem;
+  text-align: center;
+}
+
+.insight-val {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.insight-val.teal { color: var(--teal); }
+.insight-val.rose { color: var(--rose); }
+
+.insight-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+}
+
+/* ─── SAVE BUTTON ─── */
+.save-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  padding: 0.65rem 1.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.btn-primary:hover {
+  background: #e8c060;
+  color: var(--bg);
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(4rem);
+  background: var(--gold);
+  color: var(--bg);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.7rem 1.5rem;
+  border-radius: 3px;
+  z-index: 999;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── EMPTY STATE ─── */
+.empty-hint {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 2;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .tracker-table { font-size: 0.72rem; }
+  .tracker-table th, .tracker-table input { font-size: 0.72rem; padding: 0.5rem; }
+  .insight-row { grid-template-columns: repeat(3,1fr); }
+  .insight-val { font-size: 1.5rem; }
+  .tabs { justify-content: flex-start; }
+}
+
+/* ─── WEEK ROW HIGHLIGHT ─── */
+.tracker-table tr.today-row td { background: rgba(212,168,67,0.05); }
+
+/* ─── PROGRESS ─── */
+.progress-wrap {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--teal));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">時間派 × 睡得更聰明</div>
+  <h1>睡眠品質 × <em>情緒管理</em><br>三合一模板</h1>
+  <p class="header-sub">睡眠追蹤 · 睡前SOP · 週反思｜2026.04.22</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" onclick="showTab('tracker')">睡眠追蹤</button>
+  <button class="tab-btn" onclick="showTab('sop')">睡前SOP</button>
+  <button class="tab-btn" onclick="showTab('weekly')">週反思</button>
+</nav>
+
+<!-- ══════════════════════════════════
+     TAB 1: 睡眠追蹤表
+══════════════════════════════════ -->
+<div id="tab-tracker" class="section active">
+  <div class="section-inner">
+    <div class="section-title">睡眠追蹤 · 每日記錄</div>
+
+    <!-- 本週概覽 -->
+    <div class="insight-row" id="insight-row">
+      <div class="insight-block">
+        <div class="insight-val" id="avg-quality">—</div>
+        <div class="insight-label">本週平均<br>睡眠品質</div>
+      </div>
+      <div class="insight-block">
+        <div class="insight-val teal" id="avg-mood">—</div>
+        <div class="insight-label">本週平均<br>早晨情緒</div>
+      </div>
+      <div class="insight-block">
+        <div class="insight-val rose" id="days-filled">0</div>
+        <div class="insight-label">已記錄<br>天數</div>
+      </div>
+    </div>
+
+    <!-- 進度條 -->
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>本週完成度</span>
+        <span id="progress-pct">0 / 7 天</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 表格 -->
+    <div style="overflow-x:auto; margin-top:1.5rem;">
+      <table class="tracker-table" id="tracker-table">
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>入睡時間</th>
+            <th>起床時間</th>
+            <th>睡眠品質</th>
+            <th>早晨情緒</th>
+            <th>備註（睡前在做什麼）</th>
+          </tr>
+        </thead>
+        <tbody id="tracker-body"></tbody>
+      </table>
+    </div>
+
+    <div class="save-row">
+      <button class="btn" onclick="clearTracker()">清除本週</button>
+      <button class="btn btn-primary" onclick="saveTracker()">儲存記錄</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TAB 2: 睡前SOP
+══════════════════════════════════ -->
+<div id="tab-sop" class="section">
+  <div class="section-inner">
+    <div class="section-title">睡前儀式 SOP · 90分鐘緩衝區</div>
+
+    <!-- 第一區：關閉刺激 -->
+    <div class="sop-section">
+      <div class="sop-header">
+        <div class="sop-dot"></div>
+        <span>關閉刺激</span>
+        <input class="sop-time-input" type="time" id="time-1" placeholder="幾點開始">
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">手機調成勿擾模式</div>
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">停止工作相關思考——關掉待辦清單的腦袋</div>
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">不看新聞、不回工作訊息</div>
+      </div>
+    </div>
+
+    <!-- 第二區：降低光線 -->
+    <div class="sop-section">
+      <div class="sop-header">
+        <div class="sop-dot" style="background:var(--teal)"></div>
+        <span style="color:var(--teal)">降低光線</span>
+        <input class="sop-time-input" type="time" id="time-2" style="background:rgba(91,184,196,0.1);border-color:rgba(91,184,196,0.3);color:var(--teal);" placeholder="幾點開始">
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">調暗房間燈光——換暖光或關主燈</div>
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">手機螢幕調至最低亮度或開夜間模式</div>
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">讓臥室保持涼爽——開冷氣或電扇</div>
+      </div>
+    </div>
+
+    <!-- 第三區：睡眠錨點 -->
+    <div class="sop-section">
+      <div class="sop-header">
+        <div class="sop-dot" style="background:var(--rose)"></div>
+        <span style="color:var(--rose)">啟動錨點</span>
+        <input class="sop-time-input" type="time" id="time-3" style="background:rgba(224,112,112,0.1);border-color:rgba(224,112,112,0.3);color:var(--rose);" placeholder="幾點開始">
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text sop-editable">
+          <input class="sop-text-input" placeholder="我的錨點動作是——（例：泡腳10分鐘）" />
+        </div>
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">寫下今天三件發生的好事</div>
+      </div>
+      <div class="sop-item" onclick="toggleSop(this)">
+        <div class="sop-check">✓</div>
+        <div class="sop-text">深呼吸 5 次——告訴大腦：今天結束了</div>
+      </div>
+    </div>
+
+    <div class="save-row">
+      <button class="btn" onclick="resetSop()">重置清單</button>
+      <button class="btn btn-primary" onclick="saveSop()">儲存今晚設定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TAB 3: 週反思
+══════════════════════════════════ -->
+<div id="tab-weekly" class="section">
+  <div class="section-inner">
+    <div class="section-title">週睡眠反思 · 每週日復盤</div>
+
+    <div class="review-card">
+      <div class="review-q">
+        <span class="review-q-num">01</span>
+        <span>這週睡得最好的一天是哪天？<br>那天前一晚，你做了什麼？</span>
+      </div>
+      <textarea class="review-answer" id="w1" placeholder="例：週三。前一晚泡腳30分鐘，10點半就關燈了…"></textarea>
+    </div>
+
+    <div class="review-card">
+      <div class="review-q">
+        <span class="review-q-num">02</span>
+        <span>這週睡得最差的一天是哪天？<br>那天前一晚，你做了什麼？</span>
+      </div>
+      <textarea class="review-answer" id="w2" placeholder="例：週五。滑手機滑到凌晨1點，一直在想明天的事…"></textarea>
+    </div>
+
+    <div class="review-card">
+      <div class="review-q">
+        <span class="review-q-num">03</span>
+        <span>這週情緒最穩定的一天——<br>它跟你的睡眠，有什麼關係？</span>
+      </div>
+      <textarea class="review-answer" id="w3" placeholder="例：週三那天，接受了一個原本會讓我很煩的feedback，因為睡飽了，覺得沒什麼大不了…"></textarea>
+    </div>
+
+    <div class="review-card">
+      <div class="review-q">
+        <span class="review-q-num">04</span>
+        <span>下週，我要調整的一件事是——</span>
+      </div>
+      <textarea class="review-answer" id="w4" placeholder="例：11點前一定要離開手機，不管多少訊息沒回…"></textarea>
+    </div>
+
+    <div class="save-row">
+      <button class="btn" onclick="clearWeekly()">清除本週</button>
+      <button class="btn btn-primary" onclick="saveWeekly()">儲存反思</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">已儲存 ✓</div>
+
+<script>
+// ─── TAB SWITCHING ───
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── BUILD TRACKER TABLE ───
+const DAYS = ['日','一','二','三','四','五','六'];
+
+function buildTrackerTable() {
+  const tbody = document.getElementById('tracker-body');
+  tbody.innerHTML = '';
+  const saved = JSON.parse(localStorage.getItem('sleepTracker') || '{}');
+  
+  // build 7 rows: Mon–Sun of current week
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Sun
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const isToday = key === today.toISOString().slice(0, 10);
+    const row = saved[key] || {};
+
+    const tr = document.createElement('tr');
+    if (isToday) tr.classList.add('today-row');
+
+    tr.innerHTML = `
+      <td style="padding:0.6rem 0.9rem;font-size:0.8rem;color:${isToday?'var(--gold)':'var(--text-muted)'};white-space:nowrap;">
+        ${key.slice(5).replace('-','/')} (${DAYS[d.getDay()]})
+        ${isToday ? '<span style="font-size:0.6rem;color:var(--gold);margin-left:4px;">今天</span>' : ''}
+      </td>
+      <td><input type="time" value="${row.sleep||''}" onchange="updateTracker('${key}','sleep',this.value)" /></td>
+      <td><input type="time" value="${row.wake||''}" onchange="updateTracker('${key}','wake',this.value)" /></td>
+      <td><div class="star-cell" id="quality-${key}">${buildStars(key,'quality',row.quality||0)}</div></td>
+      <td><div class="star-cell" id="mood-${key}">${buildStars(key,'mood',row.mood||0)}</div></td>
+      <td><input type="text" value="${row.note||''}" placeholder="睡前在做什麼…" onchange="updateTracker('${key}','note',this.value)" /></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  updateInsights();
+}
+
+function buildStars(key, field, val) {
+  let s = '';
+  for (let i = 1; i <= 5; i++) {
+    s += `<span class="star ${i<=val?'on':''}" onclick="rateStar('${key}','${field}',${i})">★</span>`;
+  }
+  return s;
+}
+
+function rateStar(key, field, val) {
+  const saved = JSON.parse(localStorage.getItem('sleepTracker') || '{}');
+  if (!saved[key]) saved[key] = {};
+  saved[key][field] = val;
+  localStorage.setItem('sleepTracker', JSON.stringify(saved));
+  const cell = document.getElementById(field + '-' + key);
+  if (cell) cell.innerHTML = buildStars(key, field, val);
+  updateInsights();
+}
+
+function updateTracker(key, field, val) {
+  const saved = JSON.parse(localStorage.getItem('sleepTracker') || '{}');
+  if (!saved[key]) saved[key] = {};
+  saved[key][field] = val;
+  localStorage.setItem('sleepTracker', JSON.stringify(saved));
+  updateInsights();
+}
+
+function updateInsights() {
+  const saved = JSON.parse(localStorage.getItem('sleepTracker') || '{}');
+  const vals = Object.values(saved);
+  const withQuality = vals.filter(v => v.quality > 0);
+  const withMood = vals.filter(v => v.mood > 0);
+  const filled = vals.filter(v => v.sleep || v.quality || v.mood).length;
+
+  const avgQ = withQuality.length ? (withQuality.reduce((a,v)=>a+v.quality,0)/withQuality.length).toFixed(1) : '—';
+  const avgM = withMood.length ? (withMood.reduce((a,v)=>a+v.mood,0)/withMood.length).toFixed(1) : '—';
+
+  document.getElementById('avg-quality').textContent = avgQ;
+  document.getElementById('avg-mood').textContent = avgM;
+  document.getElementById('days-filled').textContent = filled;
+  document.getElementById('progress-pct').textContent = filled + ' / 7 天';
+  document.getElementById('progress-fill').style.width = Math.round(filled/7*100) + '%';
+}
+
+function saveTracker() { showToast('睡眠記錄已儲存 ✓'); }
+function clearTracker() {
+  if (!confirm('確定清除本週記錄？')) return;
+  localStorage.removeItem('sleepTracker');
+  buildTrackerTable();
+  showToast('已清除 ✓');
+}
+
+// ─── SOP TOGGLE ───
+function toggleSop(el) {
+  if (el.querySelector('input')) return; // don't toggle input rows
+  el.classList.toggle('checked');
+  saveSopState();
+}
+
+function saveSopState() {
+  const items = document.querySelectorAll('.sop-item');
+  const states = [...items].map(el => el.classList.contains('checked'));
+  const t1 = document.getElementById('time-1')?.value || '';
+  const t2 = document.getElementById('time-2')?.value || '';
+  const t3 = document.getElementById('time-3')?.value || '';
+  const anchor = document.querySelector('.sop-text-input')?.value || '';
+  localStorage.setItem('sopState', JSON.stringify({states, t1, t2, t3, anchor}));
+}
+
+function loadSopState() {
+  const raw = localStorage.getItem('sopState');
+  if (!raw) return;
+  const data = JSON.parse(raw);
+  const items = document.querySelectorAll('.sop-item');
+  items.forEach((el, i) => {
+    if (data.states[i]) el.classList.add('checked');
+    else el.classList.remove('checked');
+  });
+  if (data.t1) document.getElementById('time-1').value = data.t1;
+  if (data.t2) document.getElementById('time-2').value = data.t2;
+  if (data.t3) document.getElementById('time-3').value = data.t3;
+  const ainput = document.querySelector('.sop-text-input');
+  if (ainput && data.anchor) ainput.value = data.anchor;
+}
+
+function saveSop() { saveSopState(); showToast('SOP設定已儲存 ✓'); }
+
+function resetSop() {
+  document.querySelectorAll('.sop-item').forEach(el => el.classList.remove('checked'));
+  ['time-1','time-2','time-3'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  const ainput = document.querySelector('.sop-text-input');
+  if (ainput) ainput.value = '';
+  localStorage.removeItem('sopState');
+  showToast('已重置 ✓');
+}
+
+// ─── WEEKLY ───
+function loadWeekly() {
+  const raw = localStorage.getItem('weeklyReview');
+  if (!raw) return;
+  const data = JSON.parse(raw);
+  ['w1','w2','w3','w4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && data[id]) el.value = data[id];
+  });
+}
+
+function saveWeekly() {
+  const data = {};
+  ['w1','w2','w3','w4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  localStorage.setItem('weeklyReview', JSON.stringify(data));
+  showToast('週反思已儲存 ✓');
+}
+
+function clearWeekly() {
+  if (!confirm('確定清除本週反思？')) return;
+  ['w1','w2','w3','w4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  localStorage.removeItem('weeklyReview');
+  showToast('已清除 ✓');
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  buildTrackerTable();
+  loadSopState();
+  loadWeekly();
+
+  // auto-save SOP inputs
+  document.querySelectorAll('.sop-time-input').forEach(el => {
+    el.addEventListener('change', saveSopState);
+  });
+  const ainput = document.querySelector('.sop-text-input');
+  if (ainput) ainput.addEventListener('input', saveSopState);
+});
+</script>
+</body>
+</html>
