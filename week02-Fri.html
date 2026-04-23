@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大腦修復週報｜Week 02 · Friday</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #f5f0e8;
+    --accent: #c8832a;
+    --accent-dim: #e8c080;
+    --blue-deep: #0f2044;
+    --blue-mid: #1a3a6b;
+    --blue-light: #2a5298;
+    --glow: #6fa3ef;
+    --text-main: #1a1a2e;
+    --text-muted: #5a6278;
+    --border: #d4c9b0;
+    --card-bg: #faf7f2;
+    --night: #08101e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--paper);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--night);
+    position: relative;
+    overflow: hidden;
+    padding: 48px 32px 40px;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(42,82,152,0.35) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 30%, rgba(200,131,42,0.15) 0%, transparent 60%);
+  }
+
+  .stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: var(--op, 0.6);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--op, 0.6); transform: scale(1); }
+    50% { opacity: 0.1; transform: scale(0.5); }
+  }
+
+  .header-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .week-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent-dim);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding: 6px 14px;
+    border: 1px solid rgba(200,131,42,0.3);
+    border-radius: 2px;
+    background: rgba(200,131,42,0.08);
+  }
+
+  .week-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(28px, 5vw, 44px);
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .header h1 em {
+    font-style: normal;
+    color: var(--accent-dim);
+  }
+
+  .header .subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.05em;
+    font-weight: 300;
+    margin-bottom: 28px;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    margin-top: 36px;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    min-width: 28px;
+  }
+
+  .section-title h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--blue-deep);
+    letter-spacing: 0.02em;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 4px 0 0 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  /* ── SLEEP TRACKER ── */
+  .sleep-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .field-input {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    background: white;
+    color: var(--text-main);
+    width: 100%;
+    transition: border-color 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,131,42,0.1);
+  }
+
+  /* ── SCORE BUTTONS ── */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .score-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 40px;
+  }
+
+  .score-btns {
+    display: flex;
+    gap: 6px;
+  }
+
+  .score-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: white;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .score-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* ── CHECKBOX ROW ── */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .check-row:last-child {
+    border-bottom: none;
+  }
+
+  .check-box {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    background: white;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .check-box.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check-box.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .check-text {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.5;
+  }
+
+  .check-row.done .check-text {
+    color: var(--text-muted);
+    text-decoration: line-through;
+  }
+
+  /* ── TEXTAREA ── */
+  .field-textarea {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    background: white;
+    color: var(--text-main);
+    width: 100%;
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.7;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,131,42,0.1);
+  }
+
+  /* ── THREE-LINE REPLAY ── */
+  .replay-card {
+    background: var(--night);
+    border: 1px solid rgba(200,131,42,0.2);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .replay-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(42,82,152,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .replay-card h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    color: var(--accent-dim);
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+  }
+
+  .replay-line {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .replay-line:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .replay-prompt {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .replay-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    padding: 10px 14px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  .replay-input:focus {
+    border-color: rgba(200,131,42,0.5);
+    background: rgba(255,255,255,0.08);
+  }
+
+  .replay-input::placeholder {
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* ── KEY CONCEPT BOX ── */
+  .concept-box {
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 12px;
+    color: white;
+  }
+
+  .concept-box .concept-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent-dim);
+    margin-bottom: 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .concept-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .concept-row:last-child {
+    border-bottom: none;
+  }
+
+  .concept-arrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .concept-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+  }
+
+  .concept-text strong {
+    color: white;
+    font-weight: 500;
+  }
+
+  /* ── ACTION 1-1-1 ── */
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 520px) {
+    .action-grid { grid-template-columns: 1fr; }
+    .sleep-grid { grid-template-columns: 1fr; }
+  }
+
+  .action-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .action-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .action-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue-deep);
+  }
+
+  .action-textarea {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    background: white;
+    color: var(--text-main);
+    width: 100%;
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .action-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,131,42,0.1);
+  }
+
+  /* ── SAVE BUTTON ── */
+  .save-area {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--night);
+    color: var(--accent-dim);
+    border: 1px solid rgba(200,131,42,0.3);
+    border-radius: 3px;
+    padding: 14px 32px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .save-btn:hover {
+    background: var(--blue-deep);
+    border-color: var(--accent);
+    color: white;
+    box-shadow: 0 4px 20px rgba(200,131,42,0.2);
+    transform: translateY(-1px);
+  }
+
+  .save-btn:active {
+    transform: translateY(0);
+  }
+
+  .save-msg {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ANIMATIONS ── */
+  .card, .concept-box, .replay-card, .action-card {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0;
+  }
+
+  .tag-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(200,131,42,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(200,131,42,0.2);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="stars" id="stars"></div>
+  <div class="header-inner">
+    <div class="week-badge">
+      <span class="dot"></span>
+      Week 02 · Friday · 學習復盤
+    </div>
+    <h1>睡得更聰明<br><em>大腦修復與記憶</em></h1>
+    <p class="subtitle">睡眠是記憶的存檔鍵——不是休息而已</p>
+    <div class="header-meta">
+      <div class="meta-item">
+        <span class="meta-label">日期</span>
+        <span class="meta-value" id="today-date">2026.04.24</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">核心書籍</span>
+        <span class="meta-value">睡得更聰明</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">主題</span>
+        <span class="meta-value">大腦修復 × 記憶鞏固</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ── 核心概念速記 ── -->
+  <div class="section-title">
+    <span class="section-num">01</span>
+    <h2>今日核心概念</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="concept-box">
+    <div class="concept-title">膠淋巴系統 × 記憶鞏固</div>
+    <div class="concept-row">
+      <span class="concept-arrow">→</span>
+      <span class="concept-text"><strong>膠淋巴系統</strong>只在睡眠中運作——腦細胞縮小60%，廢物被沖走</span>
+    </div>
+    <div class="concept-row">
+      <span class="concept-arrow">→</span>
+      <span class="concept-text"><strong>海馬迴 = RAM</strong>，大腦皮質 = 硬碟，睡眠 = 存檔鍵</span>
+    </div>
+    <div class="concept-row">
+      <span class="concept-arrow">→</span>
+      <span class="concept-text">記憶在睡眠中從暫存轉移到長期儲存——<strong>不睡好，轉存失敗</strong></span>
+    </div>
+    <div class="concept-row">
+      <span class="concept-arrow">→</span>
+      <span class="concept-text">學完靜置10分鐘 vs 馬上滑手機：記憶保留差距 <strong>50%</strong></span>
+    </div>
+  </div>
+
+  <!-- ── 睡眠紀錄 ── -->
+  <div class="section-title">
+    <span class="section-num">02</span>
+    <h2>今日睡眠紀錄</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="sleep-grid">
+      <div class="field-group">
+        <label class="field-label">就寢時間</label>
+        <input type="time" class="field-input" id="sleep-time" placeholder="23:00">
+      </div>
+      <div class="field-group">
+        <label class="field-label">起床時間</label>
+        <input type="time" class="field-input" id="wake-time" placeholder="06:30">
+      </div>
+    </div>
+
+    <div class="sleep-grid" style="margin-bottom:0">
+      <div class="field-group">
+        <label class="field-label">主觀感受（睡眠品質）</label>
+        <div class="score-row">
+          <span class="score-label">1 → 5</span>
+          <div class="score-btns" id="quality-btns">
+            <button class="score-btn" onclick="selectScore('quality',1)">1</button>
+            <button class="score-btn" onclick="selectScore('quality',2)">2</button>
+            <button class="score-btn" onclick="selectScore('quality',3)">3</button>
+            <button class="score-btn" onclick="selectScore('quality',4)">4</button>
+            <button class="score-btn" onclick="selectScore('quality',5)">5</button>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">今日清醒度</label>
+        <div class="score-row">
+          <span class="score-label">1 → 5</span>
+          <div class="score-btns" id="alert-btns">
+            <button class="score-btn" onclick="selectScore('alert',1)">1</button>
+            <button class="score-btn" onclick="selectScore('alert',2)">2</button>
+            <button class="score-btn" onclick="selectScore('alert',3)">3</button>
+            <button class="score-btn" onclick="selectScore('alert',4)">4</button>
+            <button class="score-btn" onclick="selectScore('alert',5)">5</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 今日學習輸入 ── -->
+  <div class="section-title">
+    <span class="section-num">03</span>
+    <h2>今日學習輸入</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="field-group" style="margin-bottom:14px">
+      <label class="field-label">今天學了什麼（一句話）</label>
+      <input type="text" class="field-input" placeholder="例：睡眠是記憶的存檔鍵，不睡好等於轉存失敗">
+    </div>
+    <div class="sleep-grid" style="margin-bottom:14px">
+      <div class="field-group">
+        <label class="field-label">學習花了多久</label>
+        <input type="text" class="field-input" placeholder="例：45分鐘">
+      </div>
+      <div class="field-group">
+        <label class="field-label">學習來源</label>
+        <input type="text" class="field-input" placeholder="例：YT直播 / 書籍章節">
+      </div>
+    </div>
+    <div class="field-group" style="margin-bottom:16px">
+      <label class="field-label">補充筆記</label>
+      <textarea class="field-textarea" placeholder="可以記下讓你印象深刻的比喻、例子、或你自己延伸的想法..."></textarea>
+    </div>
+    <div class="divider"></div>
+    <div style="margin-top:14px">
+      <div class="field-label" style="margin-bottom:10px">今天有沒有做到？</div>
+      <div class="check-row" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <span class="check-text">學完後靜置了 5～10 分鐘（沒有立刻滑手機）</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <span class="check-text">睡前九十分鐘沒有做讓情緒起伏的事</span>
+      </div>
+      <div class="check-row" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <span class="check-text">睡前做了「認知降溫」（讀書、寫筆記、身體掃描）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 睡前記憶重播 ── -->
+  <div class="section-title">
+    <span class="section-num">04</span>
+    <h2>睡前記憶重播</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="replay-card">
+    <h3>告訴大腦今晚要存什麼 ——</h3>
+    <div class="replay-line">
+      <span class="replay-prompt">Line 01 · 今天最重要的學習是</span>
+      <input type="text" class="replay-input" placeholder="一件事就夠，不需要多">
+    </div>
+    <div class="replay-line">
+      <span class="replay-prompt">Line 02 · 這件事對我有用，因為</span>
+      <input type="text" class="replay-input" placeholder="越具體越好——和你現在的生活有什麼關係">
+    </div>
+    <div class="replay-line">
+      <span class="replay-prompt">Line 03 · 明天我要試試看</span>
+      <input type="text" class="replay-input" placeholder="一個動作，今天結束前決定好">
+    </div>
+  </div>
+
+  <!-- ── 1-1-1 行動格式 ── -->
+  <div class="section-title">
+    <span class="section-num">05</span>
+    <h2>1-1-1 互動格式</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="action-grid">
+    <div class="action-card">
+      <div class="action-num">1</div>
+      <div class="action-title">個收穫</div>
+      <textarea class="action-textarea" placeholder="今天最讓你驚訝的一件事..."></textarea>
+    </div>
+    <div class="action-card">
+      <div class="action-num">1</div>
+      <div class="action-title">個對照</div>
+      <textarea class="action-textarea" placeholder="你之前做對或做錯了什麼..."></textarea>
+    </div>
+    <div class="action-card">
+      <div class="action-num">1</div>
+      <div class="action-title">個行動</div>
+      <textarea class="action-textarea" placeholder="今晚先做哪一步..."></textarea>
+    </div>
+  </div>
+
+  <!-- ── 本週標籤 ── -->
+  <div class="card" style="animation-delay:0.2s">
+    <div class="field-label" style="margin-bottom:8px">本週關鍵詞</div>
+    <div class="tag-row">
+      <span class="tag">#膠淋巴系統</span>
+      <span class="tag">#記憶鞏固</span>
+      <span class="tag">#靜置期</span>
+      <span class="tag">#認知降溫</span>
+      <span class="tag">#睡前重播</span>
+      <span class="tag">#深睡眠</span>
+    </div>
+  </div>
+
+  <!-- ── SAVE ── -->
+  <div class="save-area">
+    <button class="save-btn" onclick="savePage()">
+      <span>存檔今日復盤</span>
+      <span style="font-size:18px">→</span>
+    </button>
+    <p class="save-msg" id="save-msg">尚未儲存</p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  WEEK 02 · FRI · 睡得更聰明 · 大腦修復與記憶 · 2026.04.24
+</footer>
+
+<script>
+  // ── Generate stars ──
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;
+      --delay:${Math.random()*4}s;
+      --op:${0.2+Math.random()*0.7};
+      width:${Math.random()<0.2?3:2}px;
+      height:${Math.random()<0.2?3:2}px;
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // ── Today date ──
+  const d = new Date();
+  document.getElementById('today-date').textContent =
+    `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+
+  // ── Score buttons ──
+  const scores = { quality: 0, alert: 0 };
+  function selectScore(type, val) {
+    scores[type] = val;
+    document.querySelectorAll(`#${type}-btns .score-btn`).forEach((btn, i) => {
+      btn.classList.toggle('active', i+1 <= val);
+    });
+  }
+
+  // ── Checkbox ──
+  function toggleCheck(row) {
+    const box = row.querySelector('.check-box');
+    const isChecked = box.classList.toggle('checked');
+    row.classList.toggle('done', isChecked);
+  }
+
+  // ── Save ──
+  function savePage() {
+    const msg = document.getElementById('save-msg');
+    msg.textContent = '✓ 已儲存——大腦存檔中，今晚好好睡';
+    msg.style.color = '#c8832a';
+    const btn = document.querySelector('.save-btn');
+    btn.style.background = '#0f2044';
+    btn.style.borderColor = '#c8832a';
+  }
+</script>
+</body>
+</html>
