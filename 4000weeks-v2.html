@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生4000個禮拜｜互動工具包</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #12100e;
+  --paper: #f7f3ed;
+  --paper-dark: #ede7dc;
+  --accent: #c8602a;
+  --accent-light: #e8935a;
+  --accent-pale: #fdeee5;
+  --muted: #8a7d6a;
+  --border: #d4c8b4;
+  --green: #2e7d5a;
+  --green-pale: #e8f5ee;
+  --blue: #2563a8;
+  --blue-pale: #e8f0fa;
+  --purple: #6b3fa0;
+  --purple-pale: #f0eafa;
+  --shadow: rgba(18,16,14,0.10);
+  --tab-h: 56px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  padding-bottom:80px;
+}
+
+/* ── HEADER ── */
+header{
+  background:var(--ink);
+  color:var(--paper);
+  padding:2rem 1.25rem 1.5rem;
+  position:relative;overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;
+  top:-60px;right:-60px;
+  width:240px;height:240px;border-radius:50%;
+  border:50px solid var(--accent);opacity:0.10;
+}
+.h-label{font-size:.65rem;letter-spacing:.2em;color:var(--accent-light);text-transform:uppercase;margin-bottom:.4rem;}
+header h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.5rem;line-height:1.35;margin-bottom:.3rem;}
+header p{font-size:.78rem;color:#b0a090;line-height:1.7;}
+
+/* ── TAB BAR ── */
+.tab-bar{
+  display:flex;background:#1c1914;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px var(--shadow);
+}
+.tab-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.2rem;padding:.65rem .25rem;
+  background:none;border:none;color:#7a6e5a;
+  cursor:pointer;font-family:'Noto Sans TC',sans-serif;
+  font-size:.62rem;letter-spacing:.05em;
+  border-bottom:3px solid transparent;
+  transition:all .2s;
+}
+.tab-btn .ti{font-size:1.1rem;}
+.tab-btn.active{color:var(--accent-light);border-bottom-color:var(--accent);}
+
+/* ── PANELS ── */
+.panel{display:none;animation:fadeUp .3s ease;}
+.panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+main{max-width:680px;margin:0 auto;padding:1.25rem 1rem 2rem;display:flex;flex-direction:column;gap:1.25rem;}
+
+/* ── CARD ── */
+.card{background:white;border-radius:14px;box-shadow:0 2px 14px var(--shadow);overflow:hidden;}
+.card-hd{
+  padding:1rem 1.25rem .75rem;
+  border-bottom:1px solid var(--paper-dark);
+  display:flex;align-items:flex-start;gap:.75rem;
+}
+.ci{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;margin-top:1px;
+}
+.card-title{font-family:'Noto Serif TC',serif;font-weight:600;font-size:.98rem;line-height:1.3;}
+.card-sub{font-size:.71rem;color:var(--muted);margin-top:.2rem;line-height:1.5;}
+.card-body{padding:1.1rem 1.25rem;}
+
+/* ── CALCULATOR ── */
+.calc-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;}
+.calc-field{flex:1;min-width:120px;}
+.calc-field label{display:block;font-size:.71rem;color:var(--muted);margin-bottom:.3rem;font-weight:500;}
+.calc-field input,.calc-field select{
+  width:100%;padding:.55rem .75rem;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-size:.9rem;font-family:'Noto Sans TC',sans-serif;
+  color:var(--ink);background:var(--paper);
+  transition:border-color .2s;-webkit-appearance:none;
+}
+.calc-field input:focus,.calc-field select:focus{outline:none;border-color:var(--accent);}
+.calc-btn{
+  width:100%;padding:.7rem;background:var(--accent);color:white;
+  border:none;border-radius:8px;font-size:.9rem;font-weight:600;
+  font-family:'Noto Serif TC',serif;cursor:pointer;transition:opacity .15s;
+}
+.calc-btn:hover{opacity:.88;}
+
+.result-box{display:none;margin-top:1.1rem;border-radius:10px;overflow:hidden;border:1.5px solid var(--accent);animation:fadeUp .4s ease;}
+.result-box.show{display:block;}
+.result-top{background:var(--accent);color:white;padding:1rem 1.25rem;text-align:center;}
+.result-big{font-family:'Noto Serif TC',serif;font-size:3rem;font-weight:900;line-height:1;}
+.result-unit{font-size:.82rem;opacity:.85;margin-top:.2rem;}
+.result-stats{background:var(--accent-pale);padding:.9rem 1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem;}
+.stat-label{font-size:.67rem;color:var(--muted);margin-bottom:.1rem;}
+.stat-val{font-family:'Noto Serif TC',serif;font-weight:700;font-size:1.05rem;color:var(--accent);}
+.grid-wrap{padding:.9rem 1.25rem 1rem;border-top:1px solid var(--paper-dark);}
+.grid-title{font-size:.7rem;color:var(--muted);margin-bottom:.5rem;}
+#weeksGrid{display:flex;flex-wrap:wrap;gap:2px;}
+.wk{width:7px;height:7px;border-radius:1px;background:var(--paper-dark);}
+.wk.used{background:var(--accent);}
+.wk.remaining{background:#d4c8b8;}
+
+/* ── CONCEPT TOOLS ── */
+.concept-list{display:flex;flex-direction:column;gap:1.25rem;}
+
+.concept-card{
+  background:white;border-radius:14px;
+  box-shadow:0 2px 14px var(--shadow);overflow:hidden;
+}
+.concept-hd{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.9rem 1.25rem;cursor:pointer;
+  user-select:none;
+  border-bottom:1px solid transparent;
+  transition:background .15s;
+}
+.concept-hd:hover{background:var(--paper);}
+.concept-hd.open{border-bottom-color:var(--paper-dark);}
+.concept-num{
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;
+  color:white;background:var(--accent);
+  width:26px;height:26px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.concept-name{font-family:'Noto Serif TC',serif;font-weight:600;font-size:.95rem;flex:1;}
+.concept-arrow{color:var(--muted);font-size:.85rem;transition:transform .25s;}
+.concept-hd.open .concept-arrow{transform:rotate(180deg);}
+.concept-body{display:none;padding:1rem 1.25rem 1.25rem;animation:fadeUp .25s ease;}
+.concept-body.open{display:block;}
+.concept-quote{
+  font-family:'Noto Serif TC',serif;font-size:.88rem;line-height:1.8;
+  color:#5a4e40;border-left:3px solid var(--accent);
+  padding:.5rem .75rem;margin-bottom:1rem;
+  background:var(--accent-pale);border-radius:0 6px 6px 0;
+}
+
+/* tool共用 */
+.tool-label{font-size:.7rem;color:var(--muted);font-weight:500;margin-bottom:.4rem;}
+.tool-q{font-size:.85rem;line-height:1.65;margin-bottom:.75rem;color:var(--ink);}
+.tool-textarea{
+  width:100%;min-height:70px;padding:.6rem .75rem;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-family:'Noto Sans TC',sans-serif;font-size:.84rem;line-height:1.6;
+  color:var(--ink);background:var(--paper);resize:vertical;
+  transition:border-color .2s;
+}
+.tool-textarea:focus{outline:none;border-color:var(--accent);}
+.tool-textarea::placeholder{color:#c0b5a0;}
+
+/* C1 效率陷阱 */
+.effort-slider-wrap{margin-bottom:1rem;}
+.slider-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:.3rem;}
+input[type=range]{width:100%;accent-color:var(--accent);}
+.slider-result{
+  margin-top:.6rem;padding:.6rem .75rem;
+  background:var(--accent-pale);border-radius:8px;
+  font-size:.82rem;color:var(--accent);line-height:1.6;
+  min-height:2.5rem;
+}
+
+/* C2 JOMO */
+.jomo-options{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;}
+.jomo-opt{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.6rem .75rem;border:1.5px solid var(--border);
+  border-radius:8px;cursor:pointer;transition:all .2s;
+  font-size:.84rem;
+}
+.jomo-opt:hover{border-color:var(--accent-light);background:var(--accent-pale);}
+.jomo-opt.selected{border-color:var(--accent);background:var(--accent-pale);font-weight:500;}
+.jomo-opt .dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border);flex-shrink:0;
+  transition:all .2s;
+}
+.jomo-opt.selected .dot{background:var(--accent);border-color:var(--accent);}
+.jomo-result{
+  padding:.75rem;background:var(--green-pale);border-radius:8px;
+  font-size:.82rem;color:var(--green);line-height:1.65;
+  display:none;
+}
+.jomo-result.show{display:block;animation:fadeUp .25s ease;}
+
+/* C3 耐心計時器 */
+.patience-wrap{text-align:center;}
+.patience-display{
+  font-family:'Noto Serif TC',serif;font-size:3rem;font-weight:900;
+  color:var(--accent);line-height:1;margin:1rem 0 .5rem;
+}
+.patience-sub{font-size:.75rem;color:var(--muted);margin-bottom:1rem;}
+.patience-btns{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;}
+.p-btn{
+  padding:.5rem 1rem;border-radius:8px;border:1.5px solid var(--border);
+  background:white;font-family:'Noto Sans TC',sans-serif;font-size:.82rem;
+  cursor:pointer;transition:all .2s;
+}
+.p-btn:hover{border-color:var(--accent);color:var(--accent);}
+.p-btn.primary{background:var(--accent);color:white;border-color:var(--accent);}
+.patience-msg{
+  margin-top:.75rem;padding:.6rem .75rem;
+  background:var(--accent-pale);border-radius:8px;
+  font-size:.8rem;color:var(--accent);line-height:1.6;
+  display:none;
+}
+.patience-msg.show{display:block;}
+
+/* C4 現在 */
+.now-check-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;}
+.now-item{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.55rem .75rem;border:1.5px solid var(--border);
+  border-radius:8px;cursor:pointer;transition:all .15s;font-size:.83rem;
+}
+.now-item:hover{background:var(--paper);}
+.now-item.checked{border-color:var(--green);background:var(--green-pale);}
+.now-cb{
+  width:18px;height:18px;border-radius:4px;
+  border:2px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;color:white;transition:all .15s;
+}
+.now-item.checked .now-cb{background:var(--green);border-color:var(--green);}
+.now-score{
+  margin-top:.5rem;padding:.6rem .75rem;
+  border-radius:8px;font-size:.82rem;line-height:1.6;
+  background:var(--blue-pale);color:var(--blue);
+}
+
+/* C5 最後一次 */
+.last-time-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;}
+.last-item{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.55rem .75rem;border:1.5px solid var(--border);
+  border-radius:8px;font-size:.83rem;
+}
+.last-item input[type=text]{
+  flex:1;border:none;background:transparent;
+  font-family:'Noto Sans TC',sans-serif;font-size:.83rem;
+  color:var(--ink);outline:none;
+}
+.last-item input[type=text]::placeholder{color:#c0b5a0;}
+.last-item-del{
+  background:none;border:none;color:#c0b5a0;
+  cursor:pointer;font-size:.95rem;padding:0;flex-shrink:0;
+}
+.last-item-del:hover{color:#e05030;}
+.add-last-btn{
+  display:flex;align-items:center;gap:.4rem;
+  background:none;border:1.5px dashed var(--border);
+  border-radius:8px;width:100%;padding:.5rem .75rem;
+  font-family:'Noto Sans TC',sans-serif;font-size:.82rem;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.add-last-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* C6 時間是借來的 */
+.borrowed-scenario{
+  padding:.75rem;background:var(--paper);border-radius:8px;
+  font-size:.83rem;line-height:1.7;margin-bottom:.75rem;
+  border:1.5px solid var(--border);
+}
+.borrowed-flip-btn{
+  width:100%;padding:.6rem;background:var(--ink);color:white;
+  border:none;border-radius:8px;font-size:.84rem;
+  font-family:'Noto Serif TC',serif;cursor:pointer;
+  margin-bottom:.75rem;transition:opacity .15s;
+}
+.borrowed-flip-btn:hover{opacity:.85;}
+.borrowed-reframe{
+  padding:.75rem;background:var(--green-pale);border-radius:8px;
+  font-size:.83rem;line-height:1.7;color:var(--green);
+  display:none;animation:fadeUp .3s ease;
+}
+.borrowed-reframe.show{display:block;}
+
+/* C7 別太嚴肅 */
+.universe-bar-wrap{margin-bottom:1rem;}
+.universe-bar{
+  height:16px;background:var(--ink);border-radius:4px;
+  position:relative;overflow:hidden;
+}
+.universe-fill{
+  position:absolute;right:0;top:0;bottom:0;
+  background:var(--accent);width:0;
+  transition:width 1s ease;
+}
+.universe-labels{display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-top:.3rem;}
+.universe-fact{
+  padding:.6rem .75rem;background:var(--purple-pale);
+  border-radius:8px;font-size:.8rem;color:var(--purple);
+  line-height:1.65;margin-bottom:.75rem;
+}
+.joy-input-wrap{display:flex;gap:.5rem;flex-wrap:wrap;}
+.joy-input{
+  flex:1;min-width:140px;padding:.55rem .75rem;
+  border:1.5px solid var(--border);border-radius:8px;
+  font-family:'Noto Sans TC',sans-serif;font-size:.84rem;
+  color:var(--ink);background:var(--paper);
+}
+.joy-input:focus{outline:none;border-color:var(--accent);}
+.joy-add-btn{
+  padding:.55rem 1rem;background:var(--accent);color:white;
+  border:none;border-radius:8px;font-size:.82rem;
+  font-family:'Noto Sans TC',sans-serif;cursor:pointer;
+  white-space:nowrap;
+}
+.joy-list{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem;}
+.joy-tag{
+  display:flex;align-items:center;gap:.3rem;
+  background:var(--accent-pale);color:var(--accent);
+  padding:.25rem .6rem;border-radius:20px;font-size:.78rem;
+}
+.joy-tag button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:.8rem;padding:0;}
+
+/* ── TWO LISTS ── */
+.week-bar{
+  background:var(--accent);color:white;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.65rem 1.25rem;font-size:.8rem;border-radius:10px;
+}
+.week-bar input[type=week]{
+  background:transparent;border:1px solid rgba(255,255,255,.4);
+  color:white;padding:.2rem .45rem;border-radius:4px;
+  font-size:.75rem;font-family:'Noto Sans TC',sans-serif;
+}
+.week-bar input[type=week]::-webkit-calendar-picker-indicator{filter:invert(1);}
+
+.items-wrap{padding:0 1.25rem .25rem;}
+.item{
+  display:flex;align-items:flex-start;gap:.6rem;
+  padding:.5rem 0;border-bottom:1px solid var(--paper-dark);
+  animation:fadeUp .2s ease;
+}
+.item:last-child{border-bottom:none;}
+.item-check{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--border);flex-shrink:0;
+  cursor:pointer;transition:all .2s;position:relative;
+  margin-top:2px;background:white;
+}
+.item-check:hover{border-color:var(--accent-light);}
+.item-check.checked{background:var(--accent);border-color:var(--accent);}
+.item-check.checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:.62rem;font-weight:700;}
+.limit-item .item-check{border-radius:4px;}
+.item-text{
+  flex:1;font-size:.86rem;line-height:1.5;
+  color:var(--ink);outline:none;min-height:1.3em;word-break:break-all;
+}
+.item-text.done{color:var(--muted);text-decoration:line-through;}
+.item-text:empty::before{content:attr(data-placeholder);color:#c0b5a0;pointer-events:none;}
+.item-del{background:none;border:none;color:#c0b5a0;cursor:pointer;font-size:.95rem;padding:0;flex-shrink:0;margin-top:2px;}
+.item-del:hover{color:#e05030;}
+.add-item-btn{
+  display:flex;align-items:center;gap:.45rem;
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:.8rem;font-family:'Noto Sans TC',sans-serif;
+  padding:.55rem 1.25rem .25rem;transition:color .15s;width:100%;
+}
+.add-item-btn:hover{color:var(--accent);}
+.add-item-btn .plus{
+  width:20px;height:20px;border-radius:50%;
+  border:1.5px dashed currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;
+}
+.limit-gate{
+  display:flex;align-items:flex-start;gap:.5rem;
+  padding:.55rem 0;border-bottom:1px solid var(--paper-dark);margin-bottom:.1rem;
+}
+.gate-q{font-size:.72rem;color:#b0a080;line-height:1.55;font-style:italic;}
+.count-badge{font-size:.69rem;color:var(--muted);background:var(--paper);padding:.18rem .45rem;border-radius:20px;font-weight:500;white-space:nowrap;align-self:center;}
+.limit-badge{background:var(--accent-pale);color:var(--accent);}
+.limit-full-msg{
+  display:none;align-items:center;gap:.4rem;
+  padding:.5rem .75rem;background:#fff3ed;border-radius:6px;
+  font-size:.73rem;color:var(--accent);margin:.3rem 1.25rem .6rem;
+}
+.limit-full-msg.show{display:flex;}
+.progress-wrap{padding:.4rem 1.25rem .9rem;}
+.progress-label{display:flex;justify-content:space-between;font-size:.69rem;color:var(--muted);margin-bottom:.3rem;}
+.progress-bar{height:4px;background:var(--paper-dark);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease;width:0%;}
+
+/* ── QUOTE ── */
+.quote-card{
+  background:var(--ink);color:var(--paper);
+  border-radius:14px;padding:1.3rem 1.25rem;
+  position:relative;overflow:hidden;
+}
+.quote-card::before{
+  content:'"';position:absolute;top:-10px;right:1rem;
+  font-family:'Noto Serif TC',serif;font-size:6rem;
+  color:var(--accent);opacity:.18;line-height:1;pointer-events:none;
+}
+.quote-label{font-size:.63rem;letter-spacing:.15em;color:var(--accent-light);text-transform:uppercase;margin-bottom:.45rem;}
+.quote-text{font-family:'Noto Serif TC',serif;font-size:.88rem;line-height:1.85;color:#e8e0d0;}
+.quote-source{font-size:.69rem;color:#7a6e60;margin-top:.45rem;}
+
+/* ── SAVE BTN ── */
+.save-btn{
+  width:100%;padding:.6rem;background:var(--green);color:white;
+  border:none;border-radius:8px;font-size:.84rem;font-weight:500;
+  font-family:'Noto Serif TC',serif;cursor:pointer;transition:opacity .15s;margin-top:.6rem;
+}
+.save-btn:hover{opacity:.88;}
+.save-ok{display:none;text-align:center;font-size:.76rem;color:var(--green);padding:.35rem 0;}
+.save-ok.show{display:block;}
+
+@media(min-width:520px){
+  header{padding:2.5rem 2rem 2rem;}
+  header h1{font-size:1.75rem;}
+  main{padding:1.5rem 1.5rem 2rem;gap:1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-label">人生4000個禮拜 × 讀書會互動工具包</div>
+  <h1>你還剩幾個禮拜？<br>7個觀念讓你活得更清醒</h1>
+  <p>計算你的人生格子，體驗7個核心觀念，安排本週最重要的事。</p>
+</header>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('calc',this)">
+    <span class="ti">⏳</span>人生計算機
+  </button>
+  <button class="tab-btn" onclick="switchTab('concepts',this)">
+    <span class="ti">💡</span>7個觀念
+  </button>
+  <button class="tab-btn" onclick="switchTab('lists',this)">
+    <span class="ti">🎯</span>本週清單
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB 1：人生計算機
+══════════════════════════════════════ -->
+<div id="tab-calc" class="panel active">
+<main>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="ci" style="background:#fdeee5;">⏳</div>
+      <div>
+        <div class="card-title">你的人生格子</div>
+        <div class="card-sub">填入年齡與性別，算出你還剩多少個禮拜。</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="calc-row">
+        <div class="calc-field">
+          <label>你現在幾歲？</label>
+          <input type="number" id="ageInput" min="1" max="99" placeholder="例：32" />
+        </div>
+        <div class="calc-field">
+          <label>性別</label>
+          <select id="genderInput">
+            <option value="male">男性</option>
+            <option value="female">女性</option>
+          </select>
+        </div>
+      </div>
+      <button class="calc-btn" onclick="calculate()">算算我還剩幾個禮拜 →</button>
+      <div class="result-box" id="resultBox">
+        <div class="result-top">
+          <div class="result-big" id="weeksLeft">—</div>
+          <div class="result-unit">個禮拜</div>
+          <div style="font-size:.73rem;opacity:.75;margin-top:.35rem" id="resultSub"></div>
+        </div>
+        <div class="result-stats">
+          <div><div class="stat-label">台灣男性平均餘命</div><div class="stat-val">77.0 歲</div></div>
+          <div><div class="stat-label">台灣女性平均餘命</div><div class="stat-val">83.7 歲</div></div>
+          <div><div class="stat-label">你已活了</div><div class="stat-val" id="weeksLived">—</div></div>
+          <div><div class="stat-label">人生已走過</div><div class="stat-val" id="percentLived">—</div></div>
+        </div>
+        <div class="grid-wrap">
+          <div class="grid-title" id="gridTitle"></div>
+          <div id="weeksGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-card">
+    <div class="quote-label">塞內卡說</div>
+    <div class="quote-text">大部分的人，在終於感到準備好要開始活著的時候，就已經到了結束的時刻。</div>
+    <div class="quote-source">— 《論生命之短暫》</div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB 2：7個觀念互動工具
+══════════════════════════════════════ -->
+<div id="tab-concepts" class="panel">
+<main>
+
+<div class="concept-list">
+
+  <!-- C1 效率陷阱 -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">01</div>
+      <div class="concept-name">效率陷阱</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">你做得越快，冒出來的新任務就越多。待辦清單永遠清不完。</div>
+      <div class="tool-label">📊 你現在的忙碌程度？</div>
+      <div class="effort-slider-wrap">
+        <div class="slider-labels"><span>還好</span><span>快爆炸了</span></div>
+        <input type="range" id="effortSlider" min="1" max="10" value="5" oninput="updateEffort(this.value)">
+        <div class="slider-result" id="effortResult">拖動滑桿，看看對應的建議。</div>
+      </div>
+      <div class="tool-label">✏️ 你的「限制清單」今天放哪三件事？</div>
+      <textarea class="tool-textarea" id="c1note" placeholder="只寫三件，其他先不管…" rows="3"></textarea>
+      <button class="save-btn" onclick="saveConcept('c1note')">儲存</button>
+      <div class="save-ok" id="c1ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+  <!-- C2 JOMO -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">02</div>
+      <div class="concept-name">JOMO｜錯過的喜悅</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">你注定會錯過這個世界99%的事物。何不把心思全放在你選擇的那1%？</div>
+      <div class="tool-label">🎯 今晚你選擇做哪一件事？</div>
+      <div class="jomo-options" id="jomoOptions">
+        <div class="jomo-opt" onclick="selectJomo(this,'下班回家陪家人吃飯')"><div class="dot"></div>下班回家陪家人吃飯</div>
+        <div class="jomo-opt" onclick="selectJomo(this,'去參加朋友的派對')"><div class="dot"></div>去參加朋友的派對</div>
+        <div class="jomo-opt" onclick="selectJomo(this,'一個人讀書或寫作')"><div class="dot"></div>一個人讀書或寫作</div>
+        <div class="jomo-opt" onclick="selectJomo(this,'追劇放空休息')"><div class="dot"></div>追劇放空休息</div>
+        <div class="jomo-opt" id="jomoCustomOpt" onclick="selectJomo(this,'__custom__')"><div class="dot"></div><span style="color:var(--muted);white-space:nowrap;">其他：</span><input id="jomoCustomInput" type="text" placeholder="輸入你的選擇…" onclick="event.stopPropagation()" oninput="updateJomoCustom()" style="border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:.84rem;color:var(--ink);outline:none;flex:1;min-width:80px;"></div>
+      </div>
+      <div class="jomo-result" id="jomoResult"></div>
+      <div class="tool-label" style="margin-top:.75rem;">✏️ 你最近一次「主動放棄」了什麼？那個選擇讓你感覺如何？</div>
+      <textarea class="tool-textarea" id="c2note" placeholder="寫下那個你主動錯過的事，以及你的感受…"></textarea>
+      <button class="save-btn" onclick="saveConcept('c2note')">儲存</button>
+      <div class="save-ok" id="c2ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+  <!-- C3 耐心 -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">03</div>
+      <div class="concept-name">慢慢來，反而比較快</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">耐心似乎讓事物產生了某種嚼勁。深度，是需要用時間與耐心換來的。</div>
+      <div class="tool-label">⏱ 耐心練習計時器</div>
+      <div class="patience-wrap">
+        <div class="tool-q">選一件事，靜靜做它。不看手機、不切換視窗，就只做這一件。</div>
+        <div class="patience-display" id="patienceDisplay">00:00</div>
+        <div class="patience-sub" id="patienceSub">選擇時長，按開始</div>
+        <div class="patience-btns">
+          <button class="p-btn" onclick="startPatience(5)">5分鐘</button>
+          <button class="p-btn" onclick="startPatience(15)">15分鐘</button>
+          <button class="p-btn" onclick="startPatience(30)">30分鐘</button>
+          <button class="p-btn" onclick="startPatience(180)">3小時挑戰</button>
+          <button class="p-btn primary" id="patienceToggle" onclick="togglePatience()">開始</button>
+        </div>
+        <div class="patience-msg" id="patienceMsg"></div>
+      </div>
+      <div class="tool-label" style="margin-top:1rem;">✏️ 你最近有什麼事，因為沒耐心而放棄了？</div>
+      <textarea class="tool-textarea" id="c3note" placeholder="那件事如果你多給它一點時間，可能會發生什麼？"></textarea>
+      <button class="save-btn" onclick="saveConcept('c3note')">儲存</button>
+      <div class="save-ok" id="c3ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+  <!-- C4 現在 -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">04</div>
+      <div class="concept-name">你真正擁有的，只有現在</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">那個「無憂無慮的完美狀態」永遠不會到來。犧牲現在換取未來，是把快樂的終點線不斷往後推移。</div>
+      <div class="tool-label">✅ 你有多活在當下？勾選符合你的項目</div>
+      <div class="now-check-list" id="nowCheckList">
+        <div class="now-item" onclick="toggleNow(this)"><div class="now-cb"></div>吃飯時我會專心吃，不滑手機</div>
+        <div class="now-item" onclick="toggleNow(this)"><div class="now-cb"></div>我享受工作或學習的過程，不只想著結果</div>
+        <div class="now-item" onclick="toggleNow(this)"><div class="now-cb"></div>跟家人朋友相處時，我真的有在聽他們說話</div>
+        <div class="now-item" onclick="toggleNow(this)"><div class="now-cb"></div>我不常說「等…之後再說」</div>
+        <div class="now-item" onclick="toggleNow(this)"><div class="now-cb"></div>我知道今天讓我感到快樂的小事是什麼</div>
+        <div class="now-item" id="nowCustomItem" onclick="toggleNow(this)"><div class="now-cb"></div><span style="color:var(--muted);white-space:nowrap;">其他：</span><input id="nowCustomInput" type="text" placeholder="輸入你自己的項目…" onclick="event.stopPropagation()" style="border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:.83rem;color:var(--ink);outline:none;flex:1;min-width:80px;"></div>
+      </div>
+      <div class="now-score" id="nowScore">勾選看看你的當下指數。</div>
+      <div class="tool-label" style="margin-top:.75rem;">✏️ 如果這個過程本身能夠變得有趣，它會是什麼樣子？</div>
+      <textarea class="tool-textarea" id="c4note" placeholder="你最近在做的一件事，怎麼讓過程變得值得？"></textarea>
+      <button class="save-btn" onclick="saveConcept('c4note')">儲存</button>
+      <div class="save-ok" id="c4ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+  <!-- C5 最後一次 -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">05</div>
+      <div class="concept-name">什麼都有最後一次</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">最殘酷的是，在經歷這些時刻的當下，我們幾乎都渾然不覺。</div>
+      <div class="tool-label">📝 寫下你想珍惜的「還沒最後一次」清單</div>
+      <div class="last-time-list" id="lastTimeList"></div>
+      <button class="add-last-btn" onclick="addLastItem()">＋ 新增一件想珍惜的事</button>
+      <div class="tool-label" style="margin-top:.75rem;">✏️ 有沒有一件事，你現在才意識到「上次就是最後一次」？</div>
+      <textarea class="tool-textarea" id="c5note" placeholder="那是什麼事？你當時知道嗎？現在有什麼感受？"></textarea>
+      <button class="save-btn" onclick="saveConcept('c5note')">儲存</button>
+      <div class="save-ok" id="c5ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+  <!-- C6 時間是借來的 -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">06</div>
+      <div class="concept-name">我們從未真正「擁有」時間</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">比起健康地活著，那些瑣碎的煩惱根本微不足道。</div>
+      <div class="tool-label">🔄 煩惱重框練習</div>
+      <div class="borrowed-scenario" id="borrowedScenario">點擊下方按鈕，抽出一個煩惱情境。</div>
+      <button class="borrowed-flip-btn" onclick="drawScenario()">抽一個情境 →</button>
+      <div class="borrowed-reframe" id="borrowedReframe"></div>
+      <div class="tool-label" style="margin-top:.75rem;">✏️ 你最近讓你煩躁的一件事，如果用「時間是借來的」角度來看，你會怎麼想？</div>
+      <textarea class="tool-textarea" id="c6note" placeholder="寫下那件事，然後試著重新框架它…"></textarea>
+      <button class="save-btn" onclick="saveConcept('c6note')">儲存</button>
+      <div class="save-ok" id="c6ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+  <!-- C7 別太嚴肅 -->
+  <div class="concept-card">
+    <div class="concept-hd" onclick="toggleConcept(this)">
+      <div class="concept-num">07</div>
+      <div class="concept-name">別活得太嚴肅</div>
+      <span class="concept-arrow">▾</span>
+    </div>
+    <div class="concept-body">
+      <div class="concept-quote">幾百年後，不會有人記得我們。所以放輕鬆，好好享受這段短暫而珍貴的旅程。</div>
+      <div class="tool-label">🌌 宇宙視角：你的人生在宇宙時間軸上有多長？</div>
+      <div class="universe-bar-wrap">
+        <div class="universe-bar"><div class="universe-fill" id="universeFill"></div></div>
+        <div class="universe-labels"><span>宇宙誕生（138億年前）</span><span>現在</span></div>
+      </div>
+      <div class="universe-fact" id="universeFact">人類一百萬年的歷史，在宇宙138億年的時間軸上，只佔0.007%。而你的一生，更是無法用比例表示的渺小。</div>
+      <div class="tool-label">🎉 你的「純粹享受清單」——不需要有用，只要讓你快樂</div>
+      <div class="joy-input-wrap">
+        <input class="joy-input" id="joyInput" placeholder="例：帶狗散步、看漫畫…" onkeydown="if(event.key==='Enter')addJoy()">
+        <button class="joy-add-btn" onclick="addJoy()">＋ 加入</button>
+      </div>
+      <div class="joy-list" id="joyList"></div>
+      <div class="tool-label" style="margin-top:.75rem;">✏️ 你最近有什麼事讓你感到「無憂無慮地快樂」？不管它有沒有意義。</div>
+      <textarea class="tool-textarea" id="c7note" placeholder="就算只是吃了一碗很好吃的麵，也可以寫…"></textarea>
+      <button class="save-btn" onclick="saveConcept('c7note')">儲存</button>
+      <div class="save-ok" id="c7ok">✓ 已儲存</div>
+    </div>
+  </div>
+
+</div><!-- end concept-list -->
+</main>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB 3：本週清單
+══════════════════════════════════════ -->
+<div id="tab-lists" class="panel">
+<main>
+
+  <div class="week-bar">
+    <strong id="weekDisplay">本週</strong>
+    <input type="week" id="weekPicker">
+  </div>
+
+  <!-- 開放清單 -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="ci" style="background:#f0ece4;">📋</div>
+      <div style="flex:1">
+        <div class="card-title">開放清單</div>
+        <div class="card-sub">把所有想做、該做的事全部丟進來，不管多瑣碎。</div>
+      </div>
+      <span class="count-badge" id="openCount">0 件</span>
+    </div>
+    <div class="items-wrap" id="openItems"></div>
+    <button class="add-item-btn" id="addOpenBtn"><span class="plus">+</span>新增一件事</button>
+    <div style="height:.75rem;"></div>
+  </div>
+
+  <!-- 限制清單 -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="ci" style="background:#fdeee5;">🎯</div>
+      <div style="flex:1">
+        <div class="card-title">限制清單</div>
+        <div class="card-sub">最多 5 件。完成一件，才能再從開放清單加進來。</div>
+      </div>
+      <span class="count-badge limit-badge" id="limitCount">0 / 5</span>
+    </div>
+    <div class="items-wrap" id="limitItems">
+      <div class="limit-gate">
+        <div style="font-size:.85rem;flex-shrink:0;margin-top:1px;">💬</div>
+        <div class="gate-q">加進來之前先問自己：「這件事如果這週沒做，會怎樣？」如果答案是「其實也還好」——請放回開放清單。</div>
+      </div>
+    </div>
+    <button class="add-item-btn" id="addLimitBtn"><span class="plus">+</span>從開放清單挑一件放進來</button>
+    <div class="limit-full-msg" id="limitFullMsg">⚠️ 已達上限。完成一件後才能再加。</div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>本週進度</span><span id="progressText">0 / 0 完成</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+
+  <div class="quote-card">
+    <div class="quote-label">本週提醒</div>
+    <div class="quote-text">你沒有辦法做完所有的事，<br>但你可以選擇你不做哪些事。<br>而那個選擇，才是真正屬於你的人生。</div>
+    <div class="quote-source">— Oliver Burkeman《人生4000個禮拜》</div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ══ TAB ══
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══ CALCULATOR ══
+const LIFE={male:77.0,female:83.7};
+function calculate(){
+  const age=parseInt(document.getElementById('ageInput').value);
+  const gender=document.getElementById('genderInput').value;
+  if(!age||age<1||age>99){document.getElementById('ageInput').focus();return;}
+  const le=LIFE[gender];
+  const total=Math.round(le*52);
+  const lived=Math.round(age*52);
+  const left=Math.max(0,total-lived);
+  const pct=Math.round(lived/total*100);
+  document.getElementById('weeksLeft').textContent=left.toLocaleString();
+  document.getElementById('resultSub').textContent=`以台灣${gender==='male'?'男性':'女性'} ${le} 歲平均餘命計算`;
+  document.getElementById('weeksLived').textContent=lived.toLocaleString()+' 個禮拜';
+  document.getElementById('percentLived').textContent=pct+' %';
+  document.getElementById('gridTitle').textContent='每個小格＝1個禮拜｜橘色＝已過去，灰色＝剩餘';
+  const grid=document.getElementById('weeksGrid');grid.innerHTML='';
+  for(let i=0;i<total;i++){const d=document.createElement('div');d.className='wk '+(i<lived?'used':'remaining');grid.appendChild(d);}
+  document.getElementById('resultBox').classList.add('show');
+}
+
+// ══ CONCEPT TOGGLE ══
+function toggleConcept(hd){
+  const body=hd.nextElementSibling;
+  const isOpen=body.classList.contains('open');
+  document.querySelectorAll('.concept-body.open').forEach(b=>{b.classList.remove('open');b.previousElementSibling.classList.remove('open');});
+  if(!isOpen){body.classList.add('open');hd.classList.add('open');}
+}
+
+// ══ C1 EFFORT SLIDER ══
+const effortMsgs=[
+  '你狀態還不錯！試試看今天能不能減少一件待辦事項。',
+  '開始感受到一點壓力了。這時候最容易把時間花在不重要的事上，小心。',
+  '壓力升高中。提醒你：回覆更多郵件，只會帶來更多郵件。',
+  '你可能陷入效率陷阱了。停下來，只做三件最重要的事就好。',
+  '快爆炸了！現在就把限制清單拿出來，其他的先不管，真的。'
+];
+function updateEffort(v){
+  const idx=Math.min(Math.floor((v-1)/2),effortMsgs.length-1);
+  document.getElementById('effortResult').textContent=effortMsgs[idx];
+}
+
+// ══ C2 JOMO ══
+const jomoFeedback={
+  '下班回家陪家人吃飯':'很好。這個選擇之所以珍貴，正是因為你主動切斷了派對的可能性。那個放棄，讓陪伴有了重量。',
+  '去參加朋友的派對':'沒有問題。只要這是你真心選擇的，而不是害怕錯過才去的，JOMO的精神就在其中。',
+  '一個人讀書或寫作':'獨處是一種選擇，不是孤獨。你正在把時間花在真正滋養自己的事情上。',
+  '追劇放空休息':'休息本身就是有價值的。不需要每一刻都有意義，允許自己放空，也是一種清醒。'
+};
+function selectJomo(el,choice){
+  document.querySelectorAll('.jomo-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  const customVal=document.getElementById('jomoCustomInput').value.trim();
+  const actualChoice=choice==='__custom__'?(customVal||'你自己的選擇'):choice;
+  const r=document.getElementById('jomoResult');
+  const customMsg=customVal?`你選擇了「${customVal}」。這個選擇之所以有意義，正是因為你主動放棄了其他的可能性。那個放棄，讓你的選擇有了重量。`:'請在欄位輸入你的選擇，我會給你回饋。';
+  r.textContent=jomoFeedback[actualChoice]||customMsg;
+  r.classList.add('show');
+}
+function updateJomoCustom(){
+  const el=document.getElementById('jomoCustomOpt');
+  if(el.classList.contains('selected')){
+    const v=document.getElementById('jomoCustomInput').value.trim();
+    const r=document.getElementById('jomoResult');
+    r.textContent=v?`你選擇了「${v}」。這個選擇之所以有意義，正是因為你主動放棄了其他的可能性。那個放棄，讓你的選擇有了重量。`:'請輸入你的選擇。';
+  }
+}
+
+// ══ C3 PATIENCE TIMER ══
+let pTimer=null,pSeconds=0,pTarget=0,pRunning=false;
+function startPatience(mins){
+  clearInterval(pTimer);
+  pSeconds=0;pTarget=mins*60;pRunning=false;
+  document.getElementById('patienceDisplay').textContent=formatTime(0);
+  document.getElementById('patienceSub').textContent=`目標：${mins>=60?mins/60+'小時':mins+'分鐘'}｜按開始`;
+  document.getElementById('patienceToggle').textContent='開始';
+  document.getElementById('patienceMsg').classList.remove('show');
+}
+function togglePatience(){
+  if(!pTarget){return;}
+  pRunning=!pRunning;
+  document.getElementById('patienceToggle').textContent=pRunning?'暫停':'繼續';
+  if(pRunning){
+    pTimer=setInterval(()=>{
+      if(!pRunning)return;
+      pSeconds++;
+      document.getElementById('patienceDisplay').textContent=formatTime(pSeconds);
+      document.getElementById('patienceSub').textContent=`目標：${formatTime(pTarget)}｜剩 ${formatTime(pTarget-pSeconds)}`;
+      if(pSeconds>=pTarget){
+        clearInterval(pTimer);pRunning=false;
+        document.getElementById('patienceToggle').textContent='完成 🎉';
+        const msg=document.getElementById('patienceMsg');
+        msg.textContent='你做到了！這就是耐心的感覺——不舒服，然後突破，然後深度出現。';
+        msg.classList.add('show');
+      }
+    },1000);
+  }else{clearInterval(pTimer);}
+}
+function formatTime(s){const m=Math.floor(s/60);const ss=s%60;return `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+
+// ══ C4 NOW CHECK ══
+function toggleNow(el){
+  if(el.id==='nowCustomItem'){
+    const input=document.getElementById('nowCustomInput');
+    if(!input.value.trim()){input.focus();return;}
+  }
+  el.classList.toggle('checked');
+  el.querySelector('.now-cb').textContent=el.classList.contains('checked')?'✓':'';
+  const checked=document.querySelectorAll('.now-item.checked').length;
+  const total=document.querySelectorAll('.now-item').length;
+  const msgs=['還有很大的空間可以練習活在當下，從今天開始，每次吃飯先放下手機試試看。','有一點當下感了，繼續刻意練習，很快就會有感覺。','不錯！你已經有一定的當下意識，繼續保持。','很棒！你很懂得珍惜當下，把這個感覺帶到每一天。','滿分！你非常活在當下，這是很難得的能力。','太厲害了！連自己補充的項目都做到了，繼續保持這個清醒。'];
+  document.getElementById('nowScore').textContent=`當下指數：${checked}/${total}｜${msgs[Math.min(checked,msgs.length-1)]}`;
+}
+
+// ══ C5 LAST TIME ══
+let lastItems=JSON.parse(localStorage.getItem('last_items')||'[]');
+function renderLastItems(){
+  const wrap=document.getElementById('lastTimeList');wrap.innerHTML='';
+  lastItems.forEach((txt,i)=>{
+    const row=document.createElement('div');row.className='last-item';
+    row.innerHTML=`<span style="font-size:.85rem;flex-shrink:0;">🔖</span><input type="text" value="${txt}" placeholder="我想珍惜…" onchange="updateLastItem(${i},this.value)"><button class="last-item-del" onclick="removeLastItem(${i})">×</button>`;
+    wrap.appendChild(row);
+  });
+}
+function addLastItem(){lastItems.push('');localStorage.setItem('last_items',JSON.stringify(lastItems));renderLastItems();const inputs=document.querySelectorAll('#lastTimeList input');if(inputs.length)inputs[inputs.length-1].focus();}
+function updateLastItem(i,v){lastItems[i]=v;localStorage.setItem('last_items',JSON.stringify(lastItems));}
+function removeLastItem(i){lastItems.splice(i,1);localStorage.setItem('last_items',JSON.stringify(lastItems));renderLastItems();}
+renderLastItems();
+
+// ══ C6 BORROWED SCENARIOS ══
+const scenarios=[
+  {s:'你在高速公路上塞車，已經多等了30分鐘，旁邊的人一直按喇叭。',r:'如果你那個已經不在了的朋友，能用什麼來換取現在塞車的機會，他願意嗎？答案毫無疑問：願意。只要能活著，就算塞車三個小時，也是一種奢求。'},
+  {s:'你回覆了十封信，又來了二十封。待辦清單越來越長，永遠清不完。',r:'這個煩惱成立的前提，是你今天還活著，還有機會煩這件事。換個角度，這些信件代表你還被需要，還有事情可以做。'},
+  {s:'你準備好好休息，結果家人突然拜託你幫忙，計劃全亂了。',r:'擁有一個需要你的家人，本身就是一份禮物。多年後，你可能會很慶幸今天選擇了幫忙。'},
+  {s:'你在會議室等了一個小時，對方遲到，你的時間就這樣浪費了。',r:'這一個小時，你還活著，還能思考、還能呼吸。有多少人寧願用一切來換取這平凡的一個小時？'},
+  {s:'你努力準備的事情，結果沒有人注意到，也沒有人稱讚你。',r:'你做那件事的初衷是什麼？如果是為了讓自己成長，那成長已經發生了，不需要別人的掌聲才算數。'}
+];
+let lastScenario=-1;
+function drawScenario(){
+  let idx;do{idx=Math.floor(Math.random()*scenarios.length);}while(idx===lastScenario);
+  lastScenario=idx;
+  document.getElementById('borrowedScenario').textContent=scenarios[idx].s;
+  const r=document.getElementById('borrowedReframe');
+  r.textContent=scenarios[idx].r;r.classList.add('show');
+}
+
+// ══ C7 UNIVERSE + JOY ══
+setTimeout(()=>{document.getElementById('universeFill').style.width='0.007%';},300);
+let joyItems=JSON.parse(localStorage.getItem('joy_items')||'[]');
+function renderJoy(){
+  const wrap=document.getElementById('joyList');wrap.innerHTML='';
+  joyItems.forEach((t,i)=>{
+    const tag=document.createElement('div');tag.className='joy-tag';
+    tag.innerHTML=`${t}<button onclick="removeJoy(${i})">×</button>`;
+    wrap.appendChild(tag);
+  });
+  localStorage.setItem('joy_items',JSON.stringify(joyItems));
+}
+function addJoy(){const v=document.getElementById('joyInput').value.trim();if(!v)return;joyItems.push(v);document.getElementById('joyInput').value='';renderJoy();}
+function removeJoy(i){joyItems.splice(i,1);renderJoy();}
+renderJoy();
+
+// ══ SAVE CONCEPT NOTES ══
+function saveConcept(id){
+  const v=document.getElementById(id).value;
+  localStorage.setItem(id,v);
+  const ok=document.getElementById(id.replace('note','ok'));
+  ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),2000);
+}
+['c1note','c2note','c3note','c4note','c5note','c6note','c7note'].forEach(id=>{
+  const v=localStorage.getItem(id);
+  if(v)document.getElementById(id).value=v;
+});
+
+// ══ WEEK PICKER ══
+const wPicker=document.getElementById('weekPicker');
+const wDisplay=document.getElementById('weekDisplay');
+function setCurrentWeek(){
+  const now=new Date();
+  const d=new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()));
+  d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));
+  const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  const wn=Math.ceil((((d-ys)/86400000)+1)/7);
+  const val=`${d.getUTCFullYear()}-W${String(wn).padStart(2,'0')}`;
+  wPicker.value=val;wDisplay.textContent=`${d.getUTCFullYear()} 年 第 ${wn} 週`;
+}
+setCurrentWeek();
+wPicker.addEventListener('change',e=>{const[y,w]=e.target.value.split('-W');wDisplay.textContent=`${y} 年 第 ${parseInt(w)} 週`;});
+
+// ══ TWO LISTS ══
+let openItems=JSON.parse(localStorage.getItem('open_items')||'[]');
+let limitItems=JSON.parse(localStorage.getItem('limit_items')||'[]');
+const MAX=5;
+function saveList(){localStorage.setItem('open_items',JSON.stringify(openItems));localStorage.setItem('limit_items',JSON.stringify(limitItems));}
+function renderOpen(){
+  const wrap=document.getElementById('openItems');wrap.innerHTML='';
+  openItems.forEach((item,i)=>{
+    const row=document.createElement('div');row.className='item';
+    row.innerHTML=`<button class="item-check${item.done?' checked':''}" data-list="open" data-i="${i}"></button><div class="item-text${item.done?' done':''}" contenteditable="true" data-list="open" data-i="${i}" data-placeholder="寫下要做的事...">${item.text}</div><button class="item-del" data-list="open" data-i="${i}">×</button>`;
+    wrap.appendChild(row);
+  });
+  document.getElementById('openCount').textContent=openItems.length+' 件';
+}
+function renderLimit(){
+  const wrap=document.getElementById('limitItems');
+  const gate=wrap.querySelector('.limit-gate');wrap.innerHTML='';
+  if(gate)wrap.appendChild(gate);
+  limitItems.forEach((item,i)=>{
+    const row=document.createElement('div');row.className='item limit-item';
+    row.innerHTML=`<button class="item-check${item.done?' checked':''}" data-list="limit" data-i="${i}"></button><div class="item-text${item.done?' done':''}" contenteditable="true" data-list="limit" data-i="${i}" data-placeholder="最重要的事...">${item.text}</div><button class="item-del" data-list="limit" data-i="${i}">×</button>`;
+    wrap.appendChild(row);
+  });
+  document.getElementById('limitCount').textContent=limitItems.length+' / '+MAX;
+  const done=limitItems.filter(x=>x.done).length,total=limitItems.length;
+  document.getElementById('progressText').textContent=done+' / '+total+' 完成';
+  document.getElementById('progressFill').style.width=total?(done/total*100)+'%':'0%';
+  const full=limitItems.length>=MAX;
+  document.getElementById('limitFullMsg').classList.toggle('show',full);
+  document.getElementById('addLimitBtn').style.display=full?'none':'';
+}
+function renderAll(){renderOpen();renderLimit();}
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('item-check')){const{list,i}=e.target.dataset;const arr=list==='open'?openItems:limitItems;arr[i].done=!arr[i].done;saveList();renderAll();}
+  if(e.target.classList.contains('item-del')){const{list,i}=e.target.dataset;if(list==='open')openItems.splice(i,1);else limitItems.splice(i,1);saveList();renderAll();}
+});
+document.addEventListener('input',e=>{
+  if(e.target.classList.contains('item-text')){const{list,i}=e.target.dataset;const arr=list==='open'?openItems:limitItems;arr[i].text=e.target.textContent;saveList();if(list==='open')document.getElementById('openCount').textContent=openItems.length+' 件';}
+});
+document.getElementById('addOpenBtn').addEventListener('click',()=>{openItems.push({text:'',done:false});saveList();renderOpen();const items=document.querySelectorAll('#openItems .item-text');if(items.length)items[items.length-1].focus();});
+document.getElementById('addLimitBtn').addEventListener('click',()=>{if(limitItems.length>=MAX)return;limitItems.push({text:'',done:false});saveList();renderLimit();const items=document.querySelectorAll('#limitItems .item-text');if(items.length)items[items.length-1].focus();});
+renderAll();
+</script>
+</body>
+</html>
