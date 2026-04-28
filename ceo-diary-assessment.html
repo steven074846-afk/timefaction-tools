@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>執行長日記｜8大法則自我評估</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #c8a96e;
+    --accent2: #e8c98e;
+    --text: #e8e4dc;
+    --text-dim: #888;
+    --text-dimmer: #444;
+    --danger: #c0392b;
+    --success: #27ae60;
+    --r1: #c8a96e;
+    --r2: #b8885e;
+    --r3: #a87060;
+    --r4: #985868;
+    --r5: #884870;
+    --r6: #783878;
+    --r7: #682880;
+    --r8: #581888;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .header-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .header-sub {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+
+  /* RULE CARD */
+  .rule-card {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .rule-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent)22, 0 8px 32px #00000060;
+  }
+
+  .rule-card.completed {
+    border-color: var(--success)44;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* stagger */
+  .rule-card:nth-child(1) { animation-delay: 0.05s; }
+  .rule-card:nth-child(2) { animation-delay: 0.1s; }
+  .rule-card:nth-child(3) { animation-delay: 0.15s; }
+  .rule-card:nth-child(4) { animation-delay: 0.2s; }
+  .rule-card:nth-child(5) { animation-delay: 0.25s; }
+  .rule-card:nth-child(6) { animation-delay: 0.3s; }
+  .rule-card:nth-child(7) { animation-delay: 0.35s; }
+  .rule-card:nth-child(8) { animation-delay: 0.4s; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .rule-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--bg);
+    background: var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+
+  .rule-card:nth-child(1) .rule-num { background: var(--r1); }
+  .rule-card:nth-child(2) .rule-num { background: var(--r2); }
+  .rule-card:nth-child(3) .rule-num { background: var(--r3); }
+  .rule-card:nth-child(4) .rule-num { background: var(--r4); }
+  .rule-card:nth-child(5) .rule-num { background: var(--r5); }
+  .rule-card:nth-child(6) .rule-num { background: var(--r6); }
+  .rule-card:nth-child(7) .rule-num { background: var(--r7); }
+  .rule-card:nth-child(8) .rule-num { background: var(--r8); }
+
+  .rule-title-wrap { flex: 1; }
+
+  .rule-title {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .rule-subtitle {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 0.2rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .card-status {
+    font-size: 1rem;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+
+  .rule-card.active .card-status { transform: rotate(180deg); }
+
+  /* CARD BODY */
+  .card-body {
+    display: none;
+    padding: 0 1.4rem 1.4rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .rule-card.active .card-body { display: block; }
+
+  .rule-context {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin: 1rem 0 1.2rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--border);
+  }
+
+  .rule-context strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* QUESTIONS */
+  .question-block {
+    margin-bottom: 1.2rem;
+  }
+
+  .question-label {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .question-label .q-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    margin-right: 0.4rem;
+  }
+
+  /* RATING */
+  .rating-wrap {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .rating-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rating-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .rating-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    font-weight: 500;
+  }
+
+  .rating-hint {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.3rem;
+  }
+
+  .rating-hint span {
+    font-size: 0.65rem;
+    color: var(--text-dimmer);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* TEXT AREA */
+  textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    padding: 0.8rem 1rem;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  textarea::placeholder { color: var(--text-dimmer); }
+  textarea:focus { border-color: var(--accent); }
+
+  /* BUCKET VISUAL (Rule 1 special) */
+  .buckets-visual {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+  }
+
+  .bucket-item {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .bucket-bar-wrap {
+    height: 60px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 0.3rem;
+    position: relative;
+  }
+
+  .bucket-bar {
+    width: 100%;
+    background: linear-gradient(180deg, var(--accent2), var(--accent));
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 0%;
+  }
+
+  .bucket-name {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* NEXT BUTTON */
+  .next-btn {
+    margin-top: 1.2rem;
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.05em;
+  }
+
+  .next-btn:hover { background: var(--accent2); }
+  .next-btn:active { transform: scale(0.99); }
+
+  /* RESULT SECTION */
+  #result-section {
+    display: none;
+    margin-top: 2rem;
+    border: 1px solid var(--accent)44;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--surface);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .result-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #1a1510, var(--surface));
+  }
+
+  .result-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  .result-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .result-body { padding: 1.5rem; }
+
+  /* OVERALL SCORE */
+  .score-ring-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .score-ring {
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+  }
+
+  .score-ring circle {
+    fill: none;
+    stroke-width: 7;
+    stroke-linecap: round;
+  }
+
+  .score-ring .track { stroke: var(--border); }
+  .score-ring .fill {
+    stroke: var(--accent);
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1);
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  .score-text-wrap { flex: 1; min-width: 180px; }
+
+  .score-big {
+    font-family: 'DM Mono', monospace;
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .score-big span {
+    font-size: 1rem;
+    color: var(--text-dim);
+  }
+
+  .score-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* RULE SUMMARY */
+  .rule-summary-list { margin-bottom: 1.5rem; }
+
+  .rule-summary-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rule-summary-item:last-child { border-bottom: none; }
+
+  .rscore {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .rscore.low { background: var(--danger); }
+  .rscore.mid { background: #b8860b; }
+  .rscore.high { background: var(--success); }
+
+  .rinfo { flex: 1; }
+
+  .rinfo-title {
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .rinfo-action {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .rnotes {
+    font-size: 0.72rem;
+    color: var(--text-dimmer);
+    margin-top: 0.3rem;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* SHARE SECTION */
+  .share-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin-top: 1.2rem;
+  }
+
+  .share-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .share-preview {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    font-family: 'DM Mono', monospace;
+    max-height: 260px;
+    overflow-y: auto;
+    margin-bottom: 0.8rem;
+  }
+
+  .copy-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .copy-btn.copied {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+
+  /* RESET */
+  .reset-btn {
+    display: block;
+    margin: 1.5rem auto 0;
+    background: none;
+    border: none;
+    color: var(--text-dimmer);
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .reset-btn:hover { color: var(--text-dim); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.7rem;
+    color: var(--text-dimmer);
+    font-family: 'DM Mono', monospace;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 480px) {
+    header, .progress-wrap { padding-left: 1rem; padding-right: 1rem; }
+    main { padding: 1.2rem 1rem 6rem; }
+    .rating-btn { width: 32px; height: 32px; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">執行長日記 × 自我評估工具</div>
+  <h1>你的八個桶子<br>裝了多少？<span>．</span></h1>
+  <p class="header-sub">根據 Steven Bartlett《執行長日記》8 大法則，誠實評估你現在在哪裡。沒有標準答案，只有你自己知道的真相。</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 8 完成</div>
+</div>
+
+<main>
+
+  <!-- RULE 1 -->
+  <div class="rule-card" data-rule="1">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">01</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">依序裝滿五個桶子</div>
+        <div class="rule-subtitle">知識 → 技能 → 人脈 → 資源 → 聲望</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">這五個桶子必須依序裝滿。很多人跳過前兩個，直接去裝人脈——但那些人脈，可能只是<strong>公司的水，不是你的水</strong>。</p>
+
+      <div class="buckets-visual" id="bucketsViz">
+        <div class="bucket-item">
+          <div class="bucket-bar-wrap"><div class="bucket-bar" id="b1"></div></div>
+          <div class="bucket-name">知識</div>
+        </div>
+        <div class="bucket-item">
+          <div class="bucket-bar-wrap"><div class="bucket-bar" id="b2"></div></div>
+          <div class="bucket-name">技能</div>
+        </div>
+        <div class="bucket-item">
+          <div class="bucket-bar-wrap"><div class="bucket-bar" id="b3"></div></div>
+          <div class="bucket-name">人脈</div>
+        </div>
+        <div class="bucket-item">
+          <div class="bucket-bar-wrap"><div class="bucket-bar" id="b4"></div></div>
+          <div class="bucket-name">資源</div>
+        </div>
+        <div class="bucket-item">
+          <div class="bucket-bar-wrap"><div class="bucket-bar" id="b5"></div></div>
+          <div class="bucket-name">聲望</div>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>你現在的知識與技能，是「屬於你個人」還是「離開現在公司就消失」？</div>
+        <div class="rating-wrap" data-bucket="1" data-q="1_1">
+          <button class="rating-btn" onclick="setRating(this,'1_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'1_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'1_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'1_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'1_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>完全是公司的</span><span>完全是我的</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你目前在哪個桶子卡關？說說你的狀況。</div>
+        <textarea id="r1_note" placeholder="例如：我覺得知識和技能還沒裝滿，但已經在急著建立人脈了……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(1)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 2 -->
+  <div class="rule-card" data-rule="2">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">02</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">逼自己教會別人</div>
+        <div class="rule-subtitle">輸出才是真正的學習</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">你以為你懂，不代表你真的懂。要測試自己是否真正理解所學，最好的方法就是<strong>輸出</strong>——寫作、拍片、教學。說不下去的那個瞬間，才是真正學習的開始。</p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>過去一個月，你有多少次主動把所學「輸出」給別人？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'2_1',1)" data-val="1">幾乎沒有</button>
+          <button class="rating-btn" onclick="setRating(this,'2_1',2)" data-val="2">偶爾</button>
+          <button class="rating-btn" onclick="setRating(this,'2_1',3)" data-val="3">每週一次</button>
+          <button class="rating-btn" onclick="setRating(this,'2_1',4)" data-val="4">每週多次</button>
+          <button class="rating-btn" onclick="setRating(this,'2_1',5)" data-val="5">每天</button>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你現在有什麼「以為自己懂，但從沒試著解釋給別人聽」的知識？</div>
+        <textarea id="r2_note" placeholder="例如：我覺得我懂時間管理，但從來沒試著教過別人……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(2)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 3 -->
+  <div class="rule-card" data-rule="3">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">03</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">荒謬比實用更能定義你</div>
+        <div class="rule-subtitle">你的記憶點是什麼？</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">在資訊爆炸的時代，「有用」已經不夠了。讓人印象深刻的，往往不是你有多實用，而是你有多<strong>與眾不同</strong>。那個讓人說「這也太扯了吧」的元素，才是真正的記憶錨點。</p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>如果讓一個朋友用一句話描述你（或你的品牌），他說得出來嗎？那句話有多獨特？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'3_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'3_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'3_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'3_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'3_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>完全沒有記憶點</span><span>非常獨特難忘</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你的「荒謬元素」是什麼，或你想打造什麼樣的記憶點？</div>
+        <textarea id="r3_note" placeholder="例如：一個前會計師在做自我成長 YT，本身就已經有點荒謬了……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(3)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 4 -->
+  <div class="rule-card" data-rule="4">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">04</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">比對手加倍失敗</div>
+        <div class="rule-subtitle">失敗 = 反饋 = 知識 = 力量</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">IBM 前總裁說：「想提升成功率，就把失敗率加倍。」害怕失敗而裹足不前，才是最大的損失。<strong>失敗本身不是問題，問題是你有沒有從失敗裡萃取知識。</strong></p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>你上一次「快速嘗試、快速失敗」是什麼時候？失敗率夠高嗎？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'4_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'4_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'4_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'4_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'4_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>從來不敢失敗</span><span>積極嘗試、不怕失敗</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你最近一次「有意義的失敗」是什麼？你從中學到了什麼？</div>
+        <textarea id="r4_note" placeholder="例如：上個月試了一個新的影片格式，完全沒人看，但我發現原來開場白很重要……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(4)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 5 -->
+  <div class="rule-card" data-rule="5">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">05</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">把壓力當作特權</div>
+        <div class="rule-subtitle">你詮釋壓力的方式，決定它對你的影響</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">研究發現：高壓力但認為「壓力有害」的人，死亡風險比無壓力者<strong>高 43%</strong>。但高壓力且認為「壓力是助力」的人，死亡風險比無壓力者<strong>低 17%</strong>。同樣的壓力，詮釋方式決定一切。</p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>你現在面對壓力的方式是什麼？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'5_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'5_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'5_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'5_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'5_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>壓力讓我崩潰</span><span>壓力讓我更強</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你現在最大的壓力來源是什麼？試著用「這是我為自己贏來的特權」重新詮釋它。</div>
+        <textarea id="r5_note" placeholder="例如：我最近趕片壓力很大，但這代表我已經認真在做這件事了……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(5)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 6 -->
+  <div class="rule-card" data-rule="6">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">06</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">價值取決於情境</div>
+        <div class="rule-subtitle">選對戰場，比練好功夫更重要</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">同樣的技能，放在不同產業，能創造的價值天差地遠。<strong>技能沒有固定的價值，越稀有的組合，越容易被看重。</strong>你現在選的戰場，是你能發揮最大價值的地方嗎？</p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>你目前的技能組合，放在你選的領域，稀有程度有多高？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'6_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'6_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'6_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'6_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'6_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>很多人跟我一樣</span><span>幾乎沒有人有這個組合</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你有沒有哪個技能，放在現在的戰場感覺被低估，但換個領域可能很值錢？</div>
+        <textarea id="r6_note" placeholder="例如：我有會計背景，在大部分自媒體領域這個技能根本沒人在乎，但在財務教育領域可能很有價值……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(6)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 7 -->
+  <div class="rule-card" data-rule="7">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">07</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">事前驗屍法</div>
+        <div class="rule-subtitle">先問「為什麼會失敗」，再問「如何成功」</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">查理蒙格說：「告訴我我會死在哪裡，這樣我就不會去那個地方。」在全心投入之前，先問自己：<strong>「這個計畫為什麼可能會失敗？」</strong>那些讓你不舒服的答案，才是真正在保護你的東西。</p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>你現在最重要的一個計畫或目標是什麼？你有多認真思考過它可能失敗的原因？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'7_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'7_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'7_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'7_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'7_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>完全沒想過</span><span>已做過完整驗屍</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>現在試著做一個小型事前驗屍：你最在乎的計畫，三個最可能讓它失敗的原因是什麼？</div>
+        <textarea id="r7_note" placeholder="例如：1. 我太完美主義，永遠覺得還沒準備好 2. 沒有固定發片時間 3. 遇到挫折容易放棄……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(7)">完成這條法則 →</button>
+    </div>
+  </div>
+
+  <!-- RULE 8 -->
+  <div class="rule-card" data-rule="8">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="rule-num">08</div>
+      <div class="rule-title-wrap">
+        <div class="rule-title">顧好你的第一基礎</div>
+        <div class="rule-subtitle">身心是你這輩子唯一一輛車</div>
+      </div>
+      <div class="card-status">▾</div>
+    </div>
+    <div class="card-body">
+      <p class="rule-context">巴菲特說：如果你這輩子只有一輛車，你一定會把使用手冊讀五遍、只加最好的油。<strong>你的身心，就是那輛車。</strong>失去健康，其他的桶子裝再滿也沒有意義。</p>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q1</span>你目前對身心基礎的照顧程度（睡眠、運動、飲食）？</div>
+        <div class="rating-wrap">
+          <button class="rating-btn" onclick="setRating(this,'8_1',1)" data-val="1">1</button>
+          <button class="rating-btn" onclick="setRating(this,'8_1',2)" data-val="2">2</button>
+          <button class="rating-btn" onclick="setRating(this,'8_1',3)" data-val="3">3</button>
+          <button class="rating-btn" onclick="setRating(this,'8_1',4)" data-val="4">4</button>
+          <button class="rating-btn" onclick="setRating(this,'8_1',5)" data-val="5">5</button>
+        </div>
+        <div class="rating-hint"><span>完全在透支身體</span><span>照顧得很好</span></div>
+      </div>
+
+      <div class="question-block">
+        <div class="question-label"><span class="q-num">Q2</span>你現在最忽略的一個身心基礎是什麼？你願意做什麼小改變？</div>
+        <textarea id="r8_note" placeholder="例如：我睡眠最差，最近常常 2 點才睡。這週想試著 12 點前上床……" oninput="updatePreview()"></textarea>
+      </div>
+
+      <button class="next-btn" onclick="completeCard(8)">查看我的評估結果 →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-section">
+    <div class="result-header">
+      <div class="result-title">你的評估結果</div>
+      <div class="result-subtitle">誠實面對，才是成長的起點</div>
+    </div>
+    <div class="result-body">
+
+      <div class="score-ring-wrap">
+        <svg class="score-ring" viewBox="0 0 90 90">
+          <circle class="track" cx="45" cy="45" r="40"/>
+          <circle class="fill" id="scoreCircle" cx="45" cy="45" r="40"/>
+        </svg>
+        <div class="score-text-wrap">
+          <div class="score-big" id="scoreNum">0<span> / 40</span></div>
+          <div class="score-desc" id="scoreDesc">計算中…</div>
+        </div>
+      </div>
+
+      <div class="rule-summary-list" id="ruleSummaryList"></div>
+
+      <div class="share-section">
+        <div class="share-label">📋 複製到 Skool 社群分享</div>
+        <div class="share-preview" id="sharePreview"></div>
+        <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">複製評估結果</button>
+      </div>
+
+    </div>
+    <button class="reset-btn" onclick="resetAll()">重新評估</button>
+  </div>
+
+</main>
+
+<footer>執行長日記 × 8大法則自我評估 ｜ 根據 Steven Bartlett《The Diary of a CEO》製作</footer>
+
+<script>
+  const ratings = {};
+  const completed = new Set();
+
+  const ruleData = [
+    { num:1, title:'五個桶子', key:'1_1', actions:['先確認你的知識和技能是屬於你個人的，再去建立人脈','問問自己：如果明天離開現在的公司，你能帶走什麼？'] },
+    { num:2, title:'教會別人', key:'2_1', actions:['這週選一個你「以為懂」的概念，試著寫成一篇文章或短影片','不需要完美，重點是說不下去的那個地方'] },
+    { num:3, title:'荒謬記憶點', key:'3_1', actions:['想一個讓人說「這也太扯了吧」的個人標籤','你的身份組合本身可能就已經夠荒謬了'] },
+    { num:4, title:'加倍失敗', key:'4_1', actions:['這週做一件「成功率不確定但值得嘗試」的事','失敗後記錄：我學到了什麼？下次怎麼改？'] },
+    { num:5, title:'壓力特權', key:'5_1', actions:['當壓力來臨時，先問：這個壓力告訴我什麼？','試著把壓力說出口，分享給一個你信任的人'] },
+    { num:6, title:'選對戰場', key:'6_1', actions:['列出你的三個核心技能，在哪個領域這個組合最稀有？','不要只問「我能做什麼」，要問「在哪裡我的價值最獨特」'] },
+    { num:7, title:'事前驗屍', key:'7_1', actions:['對你最重要的計畫做一次完整的事前驗屍','找一個你信任的人，讓他唱反調，認真聽'] },
+    { num:8, title:'第一基礎', key:'8_1', actions:['今晚選一件你一直在忽略的身心基礎，做一個微小改變','睡眠、運動、飲食——先從最容易的一個開始'] },
+  ];
+
+  function toggleCard(header) {
+    const card = header.parentElement;
+    const wasActive = card.classList.contains('active');
+    document.querySelectorAll('.rule-card').forEach(c => c.classList.remove('active'));
+    if (!wasActive) card.classList.add('active');
+  }
+
+  function setRating(btn, key, val) {
+    const wrap = btn.parentElement;
+    wrap.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    ratings[key] = val;
+
+    // bucket viz for rule 1
+    if (key === '1_1') updateBuckets(val);
+    updatePreview();
+  }
+
+  function updateBuckets(val) {
+    const buckets = ['b1','b2','b3','b4','b5'];
+    const pct = (val / 5) * 100;
+    const decay = [1, 0.85, 0.65, 0.4, 0.2];
+    buckets.forEach((id, i) => {
+      const bar = document.getElementById(id);
+      if (bar) bar.style.height = Math.max(4, pct * decay[i]) + '%';
+    });
+  }
+
+  function completeCard(num) {
+    completed.add(num);
+    const card = document.querySelector(`[data-rule="${num}"]`);
+    card.classList.remove('active');
+    card.classList.add('completed');
+
+    const statusEl = card.querySelector('.card-status');
+    statusEl.textContent = '✓';
+    statusEl.style.color = 'var(--success)';
+
+    updateProgress();
+    updatePreview();
+
+    if (completed.size === 8) showResult();
+    else {
+      // auto open next card
+      const next = document.querySelector(`[data-rule="${num+1}"]`);
+      if (next) {
+        setTimeout(() => {
+          next.classList.add('active');
+          next.scrollIntoView({ behavior:'smooth', block:'start' });
+        }, 300);
+      }
+    }
+  }
+
+  function updateProgress() {
+    const pct = (completed.size / 8) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = `${completed.size} / 8 完成`;
+  }
+
+  function getTotalScore() {
+    let total = 0;
+    ruleData.forEach(r => { total += (ratings[r.key] || 0); });
+    return total;
+  }
+
+  function getScoreDesc(score) {
+    if (score <= 10) return '你還在起點，但你有意識到——這已經比大多數人更前面了。';
+    if (score <= 20) return '你有一些桶子在裝，但有幾個地方需要認真面對。';
+    if (score <= 30) return '你的基礎不錯，現在需要找出最薄弱的一兩個環節集中突破。';
+    return '你做得相當好。保持這個狀態，同時小心不要落入「安逸陷阱」。';
+  }
+
+  function getScoreClass(score) {
+    if (score <= 2) return 'low';
+    if (score <= 3) return 'mid';
+    return 'high';
+  }
+
+  function showResult() {
+    const section = document.getElementById('result-section');
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior:'smooth', block:'start' });
+
+    const total = getTotalScore();
+    document.getElementById('scoreNum').innerHTML = `${total}<span> / 40</span>`;
+    document.getElementById('scoreDesc').textContent = getScoreDesc(total);
+
+    // animate ring
+    const pct = total / 40;
+    const offset = 251.2 * (1 - pct);
+    setTimeout(() => {
+      document.getElementById('scoreCircle').style.strokeDashoffset = offset;
+    }, 200);
+
+    // rule summary
+    const list = document.getElementById('ruleSummaryList');
+    list.innerHTML = '';
+    ruleData.forEach(r => {
+      const score = ratings[r.key] || 0;
+      const note = document.getElementById(`r${r.num}_note`)?.value || '';
+      const cls = getScoreClass(score);
+      const action = score <= 2 ? r.actions[0] : r.actions[1];
+      list.innerHTML += `
+        <div class="rule-summary-item">
+          <div class="rscore ${cls}">${score}/5</div>
+          <div class="rinfo">
+            <div class="rinfo-title">法則${r.num}：${r.title}</div>
+            <div class="rinfo-action">→ ${action}</div>
+            ${note ? `<div class="rnotes">「${note.slice(0,60)}${note.length>60?'…':''}」</div>` : ''}
+          </div>
+        </div>`;
+    });
+
+    updatePreview();
+  }
+
+  function buildShareText() {
+    const total = getTotalScore();
+    const notes = [1,2,3,4,5,6,7,8].map(n => {
+      const score = ratings[ruleData[n-1].key] || 0;
+      const note = document.getElementById(`r${n}_note`)?.value || '（未填寫）';
+      return `【法則${n}：${ruleData[n-1].title}】${score}/5\n${note}`;
+    }).join('\n\n');
+
+    return `📊 我的《執行長日記》8大法則自我評估
+
+總分：${total} / 40
+
+${notes}
+
+---
+${getScoreDesc(total)}
+
+你很棒，放輕鬆，別太逼自己了。`;
+  }
+
+  function updatePreview() {
+    const el = document.getElementById('sharePreview');
+    if (el) el.textContent = buildShareText();
+  }
+
+  function copyToClipboard() {
+    const text = buildShareText();
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ 已複製！貼到 Skool 分享吧';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '複製評估結果';
+        btn.classList.remove('copied');
+      }, 3000);
+    });
+  }
+
+  function resetAll() {
+    Object.keys(ratings).forEach(k => delete ratings[k]);
+    completed.clear();
+    document.querySelectorAll('.rule-card').forEach(c => {
+      c.classList.remove('active','completed');
+      c.querySelector('.card-status').textContent = '▾';
+      c.querySelector('.card-status').style.color = '';
+    });
+    document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('textarea').forEach(t => t.value = '');
+    ['b1','b2','b3','b4','b5'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.height = '0%';
+    });
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressLabel').textContent = '0 / 8 完成';
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // open first card on load
+  window.addEventListener('load', () => {
+    document.querySelector('[data-rule="1"]').classList.add('active');
+  });
+</script>
+</body>
+</html>
