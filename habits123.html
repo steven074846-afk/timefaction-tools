@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個人的勝利｜習慣一到三自我檢測工具</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --h1-color: #c8410a;
+    --h2-color: #2a6e4a;
+    --h3-color: #1a4a8a;
+    --gold: #c9a84c;
+    --muted: #8a7a6a;
+    --white: #fffdf8;
+    --border: rgba(26,18,8,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .series-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border: 1px solid var(--gold);
+    padding: 4px 16px;
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 900;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+
+  /* Habit tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(26,18,8,0.1);
+    animation: fadeDown 0.7s 0.1s ease both;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 16px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    background: var(--white);
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    position: relative;
+  }
+
+  .tab .tab-num {
+    display: block;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 2px;
+    transition: color 0.3s;
+  }
+
+  .tab .tab-name {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .tab.h1.active { background: #fff5f2; border-bottom-color: var(--h1-color); color: var(--h1-color); }
+  .tab.h2.active { background: #f2faf5; border-bottom-color: var(--h2-color); color: var(--h2-color); }
+  .tab.h3.active { background: #f2f6ff; border-bottom-color: var(--h3-color); color: var(--h3-color); }
+
+  .tab:hover:not(.active) { background: rgba(26,18,8,0.03); }
+
+  /* Section dividers between tabs */
+  .tab:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+
+  /* Panel */
+  .panel {
+    display: none;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .panel.active { display: block; }
+
+  /* Habit header card */
+  .habit-header {
+    border-radius: 4px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .habit-header::before {
+    content: attr(data-num);
+    position: absolute;
+    right: -10px;
+    top: -20px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 140px;
+    font-weight: 900;
+    opacity: 0.07;
+    line-height: 1;
+    color: white;
+  }
+
+  .panel-h1 .habit-header { background: linear-gradient(135deg, #c8410a 0%, #a83508 100%); }
+  .panel-h2 .habit-header { background: linear-gradient(135deg, #2a6e4a 0%, #1a5038 100%); }
+  .panel-h3 .habit-header { background: linear-gradient(135deg, #1a4a8a 0%, #0e2e5e 100%); }
+
+  .habit-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .habit-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .habit-desc {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.8;
+  }
+
+  /* Core concept box */
+  .concept-box {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(26,18,8,0.06), 0 0 0 1px var(--border);
+    position: relative;
+  }
+
+  .concept-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .panel-h1 .concept-box::before { background: var(--h1-color); }
+  .panel-h2 .concept-box::before { background: var(--h2-color); }
+  .panel-h3 .concept-box::before { background: var(--h3-color); }
+
+  .concept-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .panel-h1 .concept-label { color: var(--h1-color); }
+  .panel-h2 .concept-label { color: var(--h2-color); }
+  .panel-h3 .concept-label { color: var(--h3-color); }
+
+  .concept-box p {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+
+  /* Quote */
+  .quote-box {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .quote-box::before {
+    content: '"';
+    font-family: 'Noto Serif TC', serif;
+    font-size: 80px;
+    position: absolute;
+    top: -8px; left: 16px;
+    line-height: 1;
+    opacity: 0.2;
+  }
+
+  .panel-h1 .quote-box::before { color: var(--h1-color); }
+  .panel-h2 .quote-box::before { color: var(--h2-color); }
+  .panel-h3 .quote-box::before { color: var(--h3-color); }
+
+  .quote-box p {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #e8e0d0;
+    padding-left: 8px;
+  }
+
+  .quote-box cite {
+    display: block;
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 12px;
+    padding-left: 8px;
+    font-style: normal;
+    letter-spacing: 0.05em;
+  }
+
+  /* Self-check section */
+  .check-section {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(26,18,8,0.06), 0 0 0 1px var(--border);
+  }
+
+  .check-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .check-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.7;
+  }
+
+  /* Checklist items */
+  .check-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: var(--paper);
+    user-select: none;
+  }
+
+  .check-item:hover { border-color: rgba(26,18,8,0.2); background: white; }
+
+  .check-item.checked {
+    border-color: transparent;
+  }
+
+  .panel-h1 .check-item.checked { background: #fff5f2; border-color: rgba(200,65,10,0.2); }
+  .panel-h2 .check-item.checked { background: #f2faf5; border-color: rgba(42,110,74,0.2); }
+  .panel-h3 .check-item.checked { background: #f2f6ff; border-color: rgba(26,74,138,0.2); }
+
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(26,18,8,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.25s;
+    font-size: 12px;
+    color: white;
+  }
+
+  .check-item.checked .check-box {
+    border-color: transparent;
+  }
+
+  .panel-h1 .check-item.checked .check-box { background: var(--h1-color); }
+  .panel-h2 .check-item.checked .check-box { background: var(--h2-color); }
+  .panel-h3 .check-item.checked .check-box { background: var(--h3-color); }
+
+  .check-item-text {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .check-item-text strong {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  /* Score bar */
+  .score-area {
+    padding: 20px 0 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .score-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .score-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .score-num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .panel-h1 .score-num { color: var(--h1-color); }
+  .panel-h2 .score-num { color: var(--h2-color); }
+  .panel-h3 .score-num { color: var(--h3-color); }
+
+  .score-bar-wrap {
+    height: 8px;
+    background: rgba(26,18,8,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .panel-h1 .score-bar-fill { background: linear-gradient(90deg, var(--h1-color), #e86030); }
+  .panel-h2 .score-bar-fill { background: linear-gradient(90deg, var(--h2-color), #40a870); }
+  .panel-h3 .score-bar-fill { background: linear-gradient(90deg, var(--h3-color), #3070d0); }
+
+  .score-feedback {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+    min-height: 40px;
+    transition: all 0.3s;
+  }
+
+  /* Input area */
+  .input-section {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(26,18,8,0.06), 0 0 0 1px var(--border);
+  }
+
+  .input-section h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .input-section .input-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 7px;
+    letter-spacing: 0.02em;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--ink);
+    background: var(--paper);
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 18px;
+  }
+
+  .panel-h1 textarea:focus { border-color: var(--h1-color); box-shadow: 0 0 0 3px rgba(200,65,10,0.08); }
+  .panel-h2 textarea:focus { border-color: var(--h2-color); box-shadow: 0 0 0 3px rgba(42,110,74,0.08); }
+  .panel-h3 textarea:focus { border-color: var(--h3-color); box-shadow: 0 0 0 3px rgba(26,74,138,0.08); }
+
+  textarea::placeholder { color: #b8a898; }
+
+  /* Commitment box */
+  .commit-box {
+    border-radius: 4px;
+    padding: 18px 20px;
+    margin-top: 4px;
+  }
+
+  .panel-h1 .commit-box { background: #fff5f2; border: 1.5px solid rgba(200,65,10,0.2); }
+  .panel-h2 .commit-box { background: #f2faf5; border: 1.5px solid rgba(42,110,74,0.2); }
+  .panel-h3 .commit-box { background: #f2f6ff; border: 1.5px solid rgba(26,74,138,0.2); }
+
+  .commit-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .panel-h1 .commit-label { color: var(--h1-color); }
+  .panel-h2 .commit-label { color: var(--h2-color); }
+  .panel-h3 .commit-label { color: var(--h3-color); }
+
+  .commit-text {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+
+  /* Nav buttons */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+
+  button {
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    font-size: 13.5px;
+    font-weight: 700;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    padding: 12px 28px;
+  }
+
+  .btn-primary-h1 { background: var(--h1-color); color: white; box-shadow: 0 4px 16px rgba(200,65,10,0.25); }
+  .btn-primary-h1:hover { background: #a83508; transform: translateY(-1px); }
+  .btn-primary-h2 { background: var(--h2-color); color: white; box-shadow: 0 4px 16px rgba(42,110,74,0.25); }
+  .btn-primary-h2:hover { background: #1a5038; transform: translateY(-1px); }
+  .btn-primary-h3 { background: var(--h3-color); color: white; box-shadow: 0 4px 16px rgba(26,74,138,0.25); }
+  .btn-primary-h3:hover { background: #0e2e5e; transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    padding: 11px 20px;
+  }
+
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* Summary panel */
+  .summary-panel {
+    display: none;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .summary-panel.active { display: block; }
+
+  .summary-header {
+    text-align: center;
+    padding: 40px 24px 32px;
+    background: var(--ink);
+    border-radius: 4px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .summary-header::before {
+    content: '✦';
+    position: absolute;
+    top: -30px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 140px;
+    opacity: 0.04;
+    color: white;
+  }
+
+  .summary-header h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .summary-header p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 600px) {
+    .summary-cards { grid-template-columns: 1fr; }
+    .wrap { padding: 40px 16px 80px; }
+    .habit-header { padding: 24px 20px; }
+    .concept-box, .check-section, .input-section { padding: 22px 20px; }
+  }
+
+  .summary-card {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(26,18,8,0.06), 0 0 0 1px var(--border);
+  }
+
+  .summary-card .s-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .summary-card.s1 .s-label { color: var(--h1-color); }
+  .summary-card.s2 .s-label { color: var(--h2-color); }
+  .summary-card.s3 .s-label { color: var(--h3-color); }
+
+  .summary-card .s-score {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .summary-card.s1 .s-score { color: var(--h1-color); }
+  .summary-card.s2 .s-score { color: var(--h2-color); }
+  .summary-card.s3 .s-score { color: var(--h3-color); }
+
+  .summary-card .s-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .summary-card .s-action {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+
+  .covey-final {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .covey-final::before {
+    content: '"';
+    font-family: 'Noto Serif TC', serif;
+    font-size: 80px;
+    color: var(--gold);
+    opacity: 0.3;
+    position: absolute;
+    top: -8px; left: 16px;
+    line-height: 1;
+  }
+
+  .covey-final p {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #e8e0d0;
+    padding-left: 12px;
+  }
+
+  .covey-final cite {
+    display: block;
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 12px;
+    padding-left: 12px;
+    font-style: normal;
+    letter-spacing: 0.05em;
+  }
+
+  .save-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .btn-save {
+    background: var(--ink);
+    color: var(--paper);
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    padding: 13px;
+  }
+
+  .btn-save:hover { background: #2e2418; }
+
+  .btn-restart {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    padding: 13px 20px;
+    font-size: 13px;
+  }
+
+  .btn-restart:hover { border-color: var(--ink); color: var(--ink); }
+
+  .save-msg {
+    font-size: 12px;
+    color: #2a6e4a;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    margin-top: 8px;
+  }
+
+  .save-msg.show { opacity: 1; }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Progress dots */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 40px;
+    animation: fadeDown 0.7s 0.15s ease both;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(26,18,8,0.15);
+    transition: all 0.3s;
+  }
+
+  .dot.h1-active { background: var(--h1-color); width: 24px; border-radius: 4px; }
+  .dot.h2-active { background: var(--h2-color); width: 24px; border-radius: 4px; }
+  .dot.h3-active { background: var(--h3-color); width: 24px; border-radius: 4px; }
+  .dot.done { background: var(--gold); }
+  .dot.summary-active { background: var(--ink); width: 24px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="series-tag">與成功有約 · 七個習慣</div>
+    <h1>個人的勝利<br>習慣一到三自我檢測</h1>
+    <p class="header-sub">柯維說，從依賴走向獨立，需要先打贏這三場個人的仗。<br>這個工具幫你找出你現在卡在哪裡，以及下一步可以怎麼做。</p>
+  </div>
+
+  <!-- Progress dots -->
+  <div class="progress-dots">
+    <div class="dot h1-active" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+    <div class="dot" id="dot4"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab h1 active" onclick="switchTab('h1')">
+      <span class="tab-num">01</span>
+      <span class="tab-name">積極主動</span>
+    </div>
+    <div class="tab h2" onclick="switchTab('h2')">
+      <span class="tab-num">02</span>
+      <span class="tab-name">以終為始</span>
+    </div>
+    <div class="tab h3" onclick="switchTab('h3')">
+      <span class="tab-num">03</span>
+      <span class="tab-name">要事第一</span>
+    </div>
+  </div>
+
+  <!-- PANEL H1 -->
+  <div class="panel panel-h1 active" id="panel-h1">
+
+    <div class="habit-header" data-num="01">
+      <div class="habit-label">習慣一 · Habit 1</div>
+      <div class="habit-title">積極主動</div>
+      <div class="habit-desc">在刺激和回應之間，有一個空間。在那個空間裡，你有選擇的自由。積極主動的人選擇自己的回應——而不是讓環境替他做選擇。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念</div>
+      <p>柯維說，你可以看一個人怎麼說話，就知道他是積極主動還是消極被動。<br><br>
+      消極被動的語言：「我沒辦法」、「都是因為⋯⋯」、「如果不是⋯⋯」<br>
+      積極主動的語言：「我可以選擇」、「我來想辦法」、「我決定」<br><br>
+      還有一個關鍵概念：<strong>影響圈 vs. 關注圈</strong>。積極主動的人把精力放在自己能控制的事（影響圈），而不是花時間煩惱控制不了的事（關注圈）。</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「你沒辦法控制風的方向，但你可以調整帆的角度。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">勾選最近一個月內你有的狀態。誠實面對自己，這裡沒有對錯。</div>
+
+      <div class="check-items" id="check-h1">
+        <div class="check-item" onclick="toggleCheck(this,'h1')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>遇到問題，我第一個反應是找解法，不是找藉口</strong>
+            就算外部條件很差，我也會想「在這個限制內，我還能做什麼？」
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h1')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我說話很少用「因為他⋯⋯所以我沒辦法⋯⋯」</strong>
+            我知道別人的行為和外部環境不能決定我的回應。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h1')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我把精力花在我能控制的事情上</strong>
+            不會花大量時間抱怨景氣、公司制度、或別人的態度。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h1')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>就算結果不如預期，我會先反思自己能改變什麼</strong>
+            不會只歸咎外部原因然後放棄。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h1')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我對自己的承諾說到做到</strong>
+            自己答應自己的事，我會認真對待。
+          </div>
+        </div>
+      </div>
+
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">積極主動程度</span>
+          <span class="score-num" id="score-h1-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-fill" id="bar-h1"></div>
+        </div>
+        <div class="score-feedback" id="feedback-h1">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">思考完之後，把它寫下來。寫出來的承諾，成真的機率是沒寫的三倍。</p>
+
+      <label>最近有哪一件事，你把問題怪在外部，但其實你有選擇？</label>
+      <textarea id="h1-q1" placeholder="例：我一直覺得沒有人脈所以創業很難開始，但其實我可以先做的事是⋯⋯"></textarea>
+
+      <label>在你的影響圈裡，這週你可以做的一個具體行動是什麼？</label>
+      <textarea id="h1-q2" placeholder="例：不管有沒有人脈，我這週要做的一件事是先把我的服務內容寫清楚⋯⋯"></textarea>
+
+      <div class="commit-box">
+        <div class="commit-label">⚡ 我的承諾</div>
+        <div class="commit-text" id="h1-commit">填寫上方之後，你的承諾會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-primary-h1" onclick="goNext('h2')">下一個習慣：以終為始 →</button>
+    </div>
+  </div>
+
+  <!-- PANEL H2 -->
+  <div class="panel panel-h2" id="panel-h2">
+
+    <div class="habit-header" data-num="02">
+      <div class="habit-label">習慣二 · Habit 2</div>
+      <div class="habit-title">以終為始</div>
+      <div class="habit-desc">所有事情都會被創造兩次——第一次在你的腦袋裡，第二次才在現實裡。如果你沒有先想清楚終點，你就只是在跟著別人的劇本走。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念</div>
+      <p>柯維說，以終為始不是叫你設定模糊的人生夢想，而是讓你在每一個當下都知道：<strong>我現在做的這件事，是為了什麼。</strong><br><br>
+      每一段經歷、每一份工作、每一個決定——在進去之前，你有沒有先想清楚你要帶走什麼？<br><br>
+      沒有終點的努力，只是在消耗自己。</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「管理是把梯子架好爬上去，領導則是先確認梯子是否靠在對的牆上。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">勾選最近的狀態。</div>
+
+      <div class="check-items" id="check-h2">
+        <div class="check-item" onclick="toggleCheck(this,'h2')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我很清楚我現在這段工作或經歷，最終是為了什麼目標</strong>
+            不是「為了生活」，而是有具體的方向。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h2')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我知道五年後我希望自己在哪裡、做什麼</strong>
+            不一定很精確，但我有一個大方向。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h2')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>痛苦或疲累的時候，我知道為什麼要撐下去</strong>
+            我可以在那個當下提醒自己目標還沒達成。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h2')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我的每日行動跟我的長期目標是對齊的</strong>
+            我今天做的事，是在幫我走向我想去的地方。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h2')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我有寫下或說清楚過自己的個人使命</strong>
+            我知道我的核心價值是什麼，什麼事對我最重要。
+          </div>
+        </div>
+      </div>
+
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">以終為始程度</span>
+          <span class="score-num" id="score-h2-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-fill" id="bar-h2"></div>
+        </div>
+        <div class="score-feedback" id="feedback-h2">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">把終點寫下來，你才真的有終點。</p>
+
+      <label>你現在這段工作或生活，你最希望帶走什麼？（具體說）</label>
+      <textarea id="h2-q1" placeholder="例：我在這份工作想學到財務分析的實戰能力，讓我之後可以獨立評估一間公司的財務健康度⋯⋯"></textarea>
+
+      <label>五年後，你希望自己在哪裡？用一句話寫下來。</label>
+      <textarea id="h2-q2" placeholder="例：五年後我希望自己已經有一個穩定的財務顧問客群，每個月有固定的顧問收入⋯⋯" style="min-height: 70px;"></textarea>
+
+      <div class="commit-box">
+        <div class="commit-label">🎯 我的終點</div>
+        <div class="commit-text" id="h2-commit">填寫上方之後，你的終點會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goNext('h1')">← 返回</button>
+      <button class="btn-primary-h2" onclick="goNext('h3')">下一個習慣：要事第一 →</button>
+    </div>
+  </div>
+
+  <!-- PANEL H3 -->
+  <div class="panel panel-h3" id="panel-h3">
+
+    <div class="habit-header" data-num="03">
+      <div class="habit-label">習慣三 · Habit 3</div>
+      <div class="habit-title">要事第一</div>
+      <div class="habit-desc">習慣一讓你知道可以選擇，習慣二讓你知道要去哪裡，習慣三讓你真的把時間和精力放在對的地方。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念｜時間管理矩陣</div>
+      <p>柯維把所有事情分成四格：<br><br>
+      <strong>第一格｜重要＋緊急：</strong>危機、截止日、緊急事件→必須處理，但不能讓它佔滿你的生活<br>
+      <strong>第二格｜重要＋不緊急：</strong>學習、健康、關係、規劃→高效能人士最應該投資的格子<br>
+      <strong>第三格｜不重要＋緊急：</strong>別人的急事、冗長的行政流程→時間的最大殺手<br>
+      <strong>第四格｜不重要＋不緊急：</strong>刷手機、無意義的消遣→直接刪掉<br><br>
+      大多數人的問題是：被第三格吃掉太多時間，卻沒有空間投資第二格。</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「重點不是把時間表排滿，而是把真正重要的事排進去。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">想一想上個禮拜，你的時間大概花在哪裡。</div>
+
+      <div class="check-items" id="check-h3">
+        <div class="check-item" onclick="toggleCheck(this,'h3')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>上週我有花時間在學習或個人成長上（第二格）</strong>
+            不是偶爾，是刻意安排的時間。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h3')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我每天知道今天最重要的一件事是什麼</strong>
+            不是什麼都想做，而是有清楚的優先順序。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h3')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我可以對不重要的事說「不」</strong>
+            別人的急事不一定是我的急事，我知道怎麼拒絕。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h3')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我一天結束的時候，不會覺得忙了一整天但什麼都沒做到</strong>
+            我忙完之後，知道自己往前走了。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h3')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我有保護自己休息和恢復精力的時間</strong>
+            不是被逼才休息，是主動安排。
+          </div>
+        </div>
+      </div>
+
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">要事第一程度</span>
+          <span class="score-num" id="score-h3-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-fill" id="bar-h3"></div>
+        </div>
+        <div class="score-feedback" id="feedback-h3">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">把你的時間矩陣寫出來。</p>
+
+      <label>上週你花最多時間的事是什麼？它在第幾格？</label>
+      <textarea id="h3-q1" placeholder="例：上週花最多時間在回覆客戶的各種臨時需求（第三格：不重要但緊急），導致沒時間準備我的課程內容⋯⋯"></textarea>
+
+      <label>這週你要保護哪一段時間，專門用來做第二格的事？</label>
+      <textarea id="h3-q2" placeholder="例：每天早上8點到9點，手機靜音，只用來寫內容或學習，不回訊息⋯⋯" style="min-height: 70px;"></textarea>
+
+      <div class="commit-box">
+        <div class="commit-label">📅 我要保護的時間</div>
+        <div class="commit-text" id="h3-commit">填寫上方之後，你的承諾會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goNext('h2')">← 返回</button>
+      <button class="btn-primary-h3" onclick="showSummary()">看我的個人勝利總結 →</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-panel" id="summary-panel">
+
+    <div class="summary-header">
+      <h2>你的個人勝利報告</h2>
+      <p>這是你目前三個習慣的狀態。<br>哪裡分數低，就是你接下來最值得投資的地方。</p>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card s1">
+        <div class="s-label">習慣一</div>
+        <div class="s-score" id="sum-s1">0/5</div>
+        <div class="s-name">積極主動</div>
+        <div class="s-action" id="sum-a1">—</div>
+      </div>
+      <div class="summary-card s2">
+        <div class="s-label">習慣二</div>
+        <div class="s-score" id="sum-s2">0/5</div>
+        <div class="s-name">以終為始</div>
+        <div class="s-action" id="sum-a2">—</div>
+      </div>
+      <div class="summary-card s3">
+        <div class="s-label">習慣三</div>
+        <div class="s-score" id="sum-s3">0/5</div>
+        <div class="s-name">要事第一</div>
+        <div class="s-action" id="sum-a3">—</div>
+      </div>
+    </div>
+
+    <div class="covey-final">
+      <p>「知識、技巧、意願——三個缺一不可。知道要做什麼，知道怎麼做，然後真的想做。習慣，就是三者交會的那個點。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="save-row">
+      <button class="btn-save" onclick="saveResult()">📋 複製這份報告</button>
+      <button class="btn-restart" onclick="restart()">↩ 重新填寫</button>
+    </div>
+    <div class="save-msg" id="saveMsg">已複製到剪貼簿 ✓</div>
+
+  </div>
+
+</div>
+
+<script>
+  let scores = { h1: 0, h2: 0, h3: 0 };
+
+  const feedbacks = {
+    h1: [
+      '你還在起步——這很正常。先從觀察自己說話的方式開始：下次你說「我沒辦法」的時候，停一下，問問自己真的沒辦法嗎？',
+      '有一點意識了，但還在練習。試著把你最常抱怨的那件事，寫下你能控制的部分是什麼。',
+      '中等水位。你已經知道概念了，現在需要的是在情緒高漲的時候也能記得選擇。',
+      '做得很好。你大部分時間都在影響圈裡工作，繼續保持，並且幫身邊的人也建立這個意識。',
+      '你已經把積極主動變成習慣了。現在可以問自己：我怎麼把這個影響力擴大到更大的圈子？'
+    ],
+    h2: [
+      '你現在可能正在爬一個不確定靠在哪面牆上的梯子。停下來，先想清楚你要去哪裡，比爬得快更重要。',
+      '有方向感，但還不夠清晰。試著把你的目標從模糊的「想要成功」變成具體的「我要在X年內做到Y」。',
+      '你有終點，但可能還沒完全對齊每天的行動。花10分鐘把你的長期目標和今天的待辦清單放在一起看看。',
+      '你的方向很清楚。現在要做的是定期回頭確認：你走的路還是你想走的路嗎？',
+      '你已經掌握以終為始的精髓。你做的每一件事都是為了某個更大的目標服務的。'
+    ],
+    h3: [
+      '你很可能大部分時間都在第三格裡面轉。試著這週記錄你的時間，找出最大的時間殺手是什麼。',
+      '開始有意識了，但第二格的時間還是不夠。試著每天只保護一個小時給真正重要的事。',
+      '你有在投資自己，但可能還沒有系統。建議把第二格的事先排進行事曆，然後再填其他事。',
+      '你的時間管理已經比大多數人好了。下一步是學會更乾脆地說不，保護更多第二格的空間。',
+      '你已經把要事第一落實到生活裡了。你忙，但你知道你在忙什麼，而且那些事都值得忙。'
+    ]
+  };
+
+  function toggleCheck(el, habit) {
+    el.classList.toggle('checked');
+    const checked = document.querySelectorAll(`#check-${habit} .check-item.checked`).length;
+    scores[habit] = checked;
+    updateScore(habit, checked);
+  }
+
+  function updateScore(habit, n) {
+    const total = 5;
+    const pct = (n / total) * 100;
+    document.getElementById(`bar-${habit}`).style.width = pct + '%';
+    document.getElementById(`score-${habit}-num`).textContent = `${n} / ${total}`;
+    document.getElementById(`feedback-${habit}`).textContent = feedbacks[habit][Math.min(n, 4)];
+  }
+
+  function switchTab(habit) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`.tab.${habit}`).classList.add('active');
+    document.getElementById(`panel-${habit}`).classList.add('active');
+    updateDots(habit);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goNext(habit) {
+    updateCommits();
+    switchTab(habit);
+  }
+
+  function updateDots(current) {
+    const map = { h1: 0, h2: 1, h3: 2 };
+    const idx = map[current];
+    ['dot1','dot2','dot3','dot4'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'dot';
+      if (i < idx) el.classList.add('done');
+      else if (i === idx) {
+        if (current === 'h1') el.classList.add('h1-active');
+        else if (current === 'h2') el.classList.add('h2-active');
+        else if (current === 'h3') el.classList.add('h3-active');
+      }
+    });
+  }
+
+  function updateCommits() {
+    const h1q2 = document.getElementById('h1-q2').value.trim();
+    const h2q1 = document.getElementById('h2-q1').value.trim();
+    const h2q2 = document.getElementById('h2-q2').value.trim();
+    const h3q2 = document.getElementById('h3-q2').value.trim();
+
+    if (h1q2) document.getElementById('h1-commit').textContent = '這週我要做的：' + h1q2;
+    if (h2q1 || h2q2) document.getElementById('h2-commit').textContent = (h2q1 ? '我要帶走：' + h2q1 + '\n\n' : '') + (h2q2 ? '五年後：' + h2q2 : '');
+    if (h3q2) document.getElementById('h3-commit').textContent = '我要保護的時間：' + h3q2;
+  }
+
+  function showSummary() {
+    updateCommits();
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('summary-panel').classList.add('active');
+
+    // Update dots
+    ['dot1','dot2','dot3'].forEach(id => {
+      document.getElementById(id).className = 'dot done';
+    });
+    document.getElementById('dot4').className = 'dot summary-active';
+
+    // Fill summary
+    const actions = {
+      h1: feedbacks.h1[Math.min(scores.h1, 4)],
+      h2: feedbacks.h2[Math.min(scores.h2, 4)],
+      h3: feedbacks.h3[Math.min(scores.h3, 4)],
+    };
+
+    document.getElementById('sum-s1').textContent = `${scores.h1}/5`;
+    document.getElementById('sum-s2').textContent = `${scores.h2}/5`;
+    document.getElementById('sum-s3').textContent = `${scores.h3}/5`;
+    document.getElementById('sum-a1').textContent = actions.h1;
+    document.getElementById('sum-a2').textContent = actions.h2;
+    document.getElementById('sum-a3').textContent = actions.h3;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function saveResult() {
+    const h1q1 = document.getElementById('h1-q1').value.trim();
+    const h1q2 = document.getElementById('h1-q2').value.trim();
+    const h2q1 = document.getElementById('h2-q1').value.trim();
+    const h2q2 = document.getElementById('h2-q2').value.trim();
+    const h3q1 = document.getElementById('h3-q1').value.trim();
+    const h3q2 = document.getElementById('h3-q2').value.trim();
+
+    const text = `【個人勝利報告｜習慣一到三】\n\n` +
+      `📊 分數總覽\n` +
+      `習慣一・積極主動：${scores.h1}/5\n` +
+      `習慣二・以終為始：${scores.h2}/5\n` +
+      `習慣三・要事第一：${scores.h3}/5\n\n` +
+      `🔴 習慣一｜積極主動\n` +
+      (h1q1 ? `問題所在：${h1q1}\n` : '') +
+      (h1q2 ? `這週的行動：${h1q2}\n` : '') + '\n' +
+      `🟢 習慣二｜以終為始\n` +
+      (h2q1 ? `我要帶走：${h2q1}\n` : '') +
+      (h2q2 ? `五年後的我：${h2q2}\n` : '') + '\n' +
+      `🔵 習慣三｜要事第一\n` +
+      (h3q1 ? `時間殺手：${h3q1}\n` : '') +
+      (h3q2 ? `我要保護的時間：${h3q2}\n` : '') + '\n' +
+      `——\n基於《與成功有約：高效能人士的七個習慣》`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const msg = document.getElementById('saveMsg');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 2500);
+    });
+  }
+
+  function restart() {
+    scores = { h1: 0, h2: 0, h3: 0 };
+    document.querySelectorAll('.check-item').forEach(el => el.classList.remove('checked'));
+    ['h1','h2','h3'].forEach(h => updateScore(h, 0));
+    ['h1-q1','h1-q2','h2-q1','h2-q2','h3-q1','h3-q2'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    ['h1-commit','h2-commit','h3-commit'].forEach(id => {
+      document.getElementById(id).textContent = '填寫上方之後，你的承諾會出現在這裡。';
+    });
+    document.getElementById('summary-panel').classList.remove('active');
+    switchTab('h1');
+  }
+
+  // Live commit updates
+  ['h1-q2','h2-q1','h2-q2','h3-q2'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateCommits);
+  });
+</script>
+</body>
+</html>
