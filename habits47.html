@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公眾的勝利｜習慣四到七自我檢測工具</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12100e;
+    --paper: #f0ebe0;
+    --h4: #7b2d8b;
+    --h5: #b5651d;
+    --h6: #1a6b5a;
+    --h7: #1a3a6b;
+    --gold: #c9a84c;
+    --muted: #7a6e60;
+    --white: #fdfaf4;
+    --border: rgba(18,16,14,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .series-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border: 1px solid var(--gold);
+    padding: 4px 16px;
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 900;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+
+  /* Progress dots */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 40px;
+    animation: fadeDown 0.7s 0.15s ease both;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(18,16,14,0.15);
+    transition: all 0.3s;
+  }
+
+  .dot.h4-active { background: var(--h4); width: 24px; border-radius: 4px; }
+  .dot.h5-active { background: var(--h5); width: 24px; border-radius: 4px; }
+  .dot.h6-active { background: var(--h6); width: 24px; border-radius: 4px; }
+  .dot.h7-active { background: var(--h7); width: 24px; border-radius: 4px; }
+  .dot.summary-active { background: var(--ink); width: 24px; border-radius: 4px; }
+  .dot.done { background: var(--gold); }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(18,16,14,0.1);
+    animation: fadeDown 0.7s 0.1s ease both;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 14px 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: all 0.3s ease;
+    background: var(--white);
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab .tab-num {
+    display: block;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 2px;
+  }
+
+  .tab .tab-name { display: block; font-size: 10px; letter-spacing: 0.06em; }
+  .tab:not(:last-child) { border-right: 1px solid var(--border); }
+  .tab:hover:not(.active) { background: rgba(18,16,14,0.03); }
+
+  .tab.h4.active { background: #faf4fc; border-bottom-color: var(--h4); color: var(--h4); }
+  .tab.h5.active { background: #fdf5ec; border-bottom-color: var(--h5); color: var(--h5); }
+  .tab.h6.active { background: #f0faf7; border-bottom-color: var(--h6); color: var(--h6); }
+  .tab.h7.active { background: #f0f4fc; border-bottom-color: var(--h7); color: var(--h7); }
+
+  /* Panel */
+  .panel { display: none; animation: fadeUp 0.45s ease both; }
+  .panel.active { display: block; }
+
+  /* Habit header */
+  .habit-header {
+    border-radius: 4px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .habit-header::before {
+    content: attr(data-num);
+    position: absolute;
+    right: -10px; top: -20px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 140px;
+    font-weight: 900;
+    opacity: 0.07;
+    line-height: 1;
+    color: white;
+  }
+
+  .panel-h4 .habit-header { background: linear-gradient(135deg, #7b2d8b 0%, #5a1a6a 100%); }
+  .panel-h5 .habit-header { background: linear-gradient(135deg, #b5651d 0%, #8a4810 100%); }
+  .panel-h6 .habit-header { background: linear-gradient(135deg, #1a6b5a 0%, #0e4a3c 100%); }
+  .panel-h7 .habit-header { background: linear-gradient(135deg, #1a3a6b 0%, #0e2448 100%); }
+
+  .habit-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .habit-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .habit-desc {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.8;
+  }
+
+  /* Concept box */
+  .concept-box {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(18,16,14,0.06), 0 0 0 1px var(--border);
+    position: relative;
+  }
+
+  .concept-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .panel-h4 .concept-box::before { background: var(--h4); }
+  .panel-h5 .concept-box::before { background: var(--h5); }
+  .panel-h6 .concept-box::before { background: var(--h6); }
+  .panel-h7 .concept-box::before { background: var(--h7); }
+
+  .concept-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .panel-h4 .concept-label { color: var(--h4); }
+  .panel-h5 .concept-label { color: var(--h5); }
+  .panel-h6 .concept-label { color: var(--h6); }
+  .panel-h7 .concept-label { color: var(--h7); }
+
+  .concept-box p { font-size: 14px; line-height: 1.85; color: var(--ink); }
+
+  /* Quote */
+  .quote-box {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .quote-box::before {
+    content: '"';
+    font-family: 'Noto Serif TC', serif;
+    font-size: 80px;
+    position: absolute;
+    top: -8px; left: 16px;
+    line-height: 1;
+    opacity: 0.25;
+  }
+
+  .panel-h4 .quote-box::before { color: var(--h4); }
+  .panel-h5 .quote-box::before { color: var(--h5); }
+  .panel-h6 .quote-box::before { color: var(--h6); }
+  .panel-h7 .quote-box::before { color: var(--h7); }
+
+  .quote-box p {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #e8e0d0;
+    padding-left: 8px;
+  }
+
+  .quote-box cite {
+    display: block;
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 12px;
+    padding-left: 8px;
+    font-style: normal;
+    letter-spacing: 0.05em;
+  }
+
+  /* Check section */
+  .check-section {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(18,16,14,0.06), 0 0 0 1px var(--border);
+  }
+
+  .check-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .check-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.7;
+  }
+
+  .check-items { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: var(--paper);
+    user-select: none;
+  }
+
+  .check-item:hover { border-color: rgba(18,16,14,0.2); background: white; }
+
+  .panel-h4 .check-item.checked { background: #faf4fc; border-color: rgba(123,45,139,0.2); }
+  .panel-h5 .check-item.checked { background: #fdf5ec; border-color: rgba(181,101,29,0.2); }
+  .panel-h6 .check-item.checked { background: #f0faf7; border-color: rgba(26,107,90,0.2); }
+  .panel-h7 .check-item.checked { background: #f0f4fc; border-color: rgba(26,58,107,0.2); }
+
+  .check-box {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(18,16,14,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.25s;
+    font-size: 12px;
+    color: white;
+  }
+
+  .panel-h4 .check-item.checked .check-box { background: var(--h4); border-color: transparent; }
+  .panel-h5 .check-item.checked .check-box { background: var(--h5); border-color: transparent; }
+  .panel-h6 .check-item.checked .check-box { background: var(--h6); border-color: transparent; }
+  .panel-h7 .check-item.checked .check-box { background: var(--h7); border-color: transparent; }
+
+  .check-item-text { font-size: 13.5px; line-height: 1.7; color: var(--ink); }
+  .check-item-text strong { display: block; font-weight: 700; margin-bottom: 2px; }
+
+  /* Score */
+  .score-area { padding: 20px 0 0; border-top: 1px solid var(--border); }
+
+  .score-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .score-text { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+  .score-num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .panel-h4 .score-num { color: var(--h4); }
+  .panel-h5 .score-num { color: var(--h5); }
+  .panel-h6 .score-num { color: var(--h6); }
+  .panel-h7 .score-num { color: var(--h7); }
+
+  .score-bar-wrap {
+    height: 8px;
+    background: rgba(18,16,14,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .score-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; width: 0%; }
+  .panel-h4 .score-bar-fill { background: linear-gradient(90deg, var(--h4), #a040b8); }
+  .panel-h5 .score-bar-fill { background: linear-gradient(90deg, var(--h5), #d4804a); }
+  .panel-h6 .score-bar-fill { background: linear-gradient(90deg, var(--h6), #30a880); }
+  .panel-h7 .score-bar-fill { background: linear-gradient(90deg, var(--h7), #3060c0); }
+
+  .score-feedback { font-size: 13px; line-height: 1.7; color: var(--muted); min-height: 40px; transition: all 0.3s; }
+
+  /* Input section */
+  .input-section {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px rgba(18,16,14,0.06), 0 0 0 1px var(--border);
+  }
+
+  .input-section h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .input-desc { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+
+  label { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
+
+  textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--ink);
+    background: var(--paper);
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 18px;
+  }
+
+  textarea::placeholder { color: #b0a090; }
+
+  .panel-h4 textarea:focus { border-color: var(--h4); box-shadow: 0 0 0 3px rgba(123,45,139,0.08); }
+  .panel-h5 textarea:focus { border-color: var(--h5); box-shadow: 0 0 0 3px rgba(181,101,29,0.08); }
+  .panel-h6 textarea:focus { border-color: var(--h6); box-shadow: 0 0 0 3px rgba(26,107,90,0.08); }
+  .panel-h7 textarea:focus { border-color: var(--h7); box-shadow: 0 0 0 3px rgba(26,58,107,0.08); }
+
+  .commit-box { border-radius: 4px; padding: 18px 20px; margin-top: 4px; }
+  .panel-h4 .commit-box { background: #faf4fc; border: 1.5px solid rgba(123,45,139,0.2); }
+  .panel-h5 .commit-box { background: #fdf5ec; border: 1.5px solid rgba(181,101,29,0.2); }
+  .panel-h6 .commit-box { background: #f0faf7; border: 1.5px solid rgba(26,107,90,0.2); }
+  .panel-h7 .commit-box { background: #f0f4fc; border: 1.5px solid rgba(26,58,107,0.2); }
+
+  .commit-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
+  .panel-h4 .commit-label { color: var(--h4); }
+  .panel-h5 .commit-label { color: var(--h5); }
+  .panel-h6 .commit-label { color: var(--h6); }
+  .panel-h7 .commit-label { color: var(--h7); }
+
+  .commit-text { font-size: 13.5px; line-height: 1.8; color: var(--ink); }
+
+  /* Nav */
+  .nav-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+
+  button {
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    border: none;
+    border-radius: 3px;
+    font-size: 13.5px;
+    font-weight: 700;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    padding: 12px 28px;
+  }
+
+  .btn-h4 { background: var(--h4); color: white; box-shadow: 0 4px 16px rgba(123,45,139,0.25); }
+  .btn-h4:hover { background: #5a1a6a; transform: translateY(-1px); }
+  .btn-h5 { background: var(--h5); color: white; box-shadow: 0 4px 16px rgba(181,101,29,0.25); }
+  .btn-h5:hover { background: #8a4810; transform: translateY(-1px); }
+  .btn-h6 { background: var(--h6); color: white; box-shadow: 0 4px 16px rgba(26,107,90,0.25); }
+  .btn-h6:hover { background: #0e4a3c; transform: translateY(-1px); }
+  .btn-h7 { background: var(--h7); color: white; box-shadow: 0 4px 16px rgba(26,58,107,0.25); }
+  .btn-h7:hover { background: #0e2448; transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    padding: 11px 20px;
+  }
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* Summary */
+  .summary-panel { display: none; animation: fadeUp 0.45s ease both; }
+  .summary-panel.active { display: block; }
+
+  .summary-header {
+    text-align: center;
+    padding: 44px 24px 36px;
+    background: var(--ink);
+    border-radius: 4px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .summary-header::before {
+    content: '✦';
+    position: absolute;
+    top: -40px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 160px;
+    opacity: 0.03;
+    color: white;
+  }
+
+  .summary-header h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .summary-header p { font-size: 13.5px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 560px) {
+    .summary-cards { grid-template-columns: 1fr; }
+    .wrap { padding: 40px 16px 80px; }
+    .habit-header { padding: 24px 20px; }
+    .concept-box, .check-section, .input-section { padding: 22px 20px; }
+    .tabs .tab-name { display: none; }
+  }
+
+  .summary-card {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(18,16,14,0.06), 0 0 0 1px var(--border);
+  }
+
+  .summary-card .s-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
+  .summary-card.s4 .s-label { color: var(--h4); }
+  .summary-card.s5 .s-label { color: var(--h5); }
+  .summary-card.s6 .s-label { color: var(--h6); }
+  .summary-card.s7 .s-label { color: var(--h7); }
+
+  .summary-card .s-score {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .summary-card.s4 .s-score { color: var(--h4); }
+  .summary-card.s5 .s-score { color: var(--h5); }
+  .summary-card.s6 .s-score { color: var(--h6); }
+  .summary-card.s7 .s-score { color: var(--h7); }
+
+  .summary-card .s-name { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+  .summary-card .s-action { font-size: 12px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 10px; }
+
+  .covey-final { background: var(--ink); border-radius: 4px; padding: 28px 32px; margin-bottom: 24px; position: relative; }
+  .covey-final::before {
+    content: '"';
+    font-family: 'Noto Serif TC', serif;
+    font-size: 80px;
+    color: var(--gold);
+    opacity: 0.3;
+    position: absolute;
+    top: -8px; left: 16px;
+    line-height: 1;
+  }
+
+  .covey-final p { font-family: 'Noto Serif TC', serif; font-size: 15px; line-height: 1.9; color: #e8e0d0; padding-left: 12px; }
+  .covey-final cite { display: block; font-size: 11px; color: var(--gold); margin-top: 12px; padding-left: 12px; font-style: normal; letter-spacing: 0.05em; }
+
+  .save-row { display: flex; gap: 12px; margin-bottom: 16px; }
+
+  .btn-save { background: var(--ink); color: var(--paper); flex: 1; text-align: center; font-size: 13px; padding: 13px; }
+  .btn-save:hover { background: #2a2420; }
+
+  .btn-restart { background: transparent; color: var(--muted); border: 1.5px solid var(--border); padding: 13px 20px; font-size: 13px; }
+  .btn-restart:hover { border-color: var(--ink); color: var(--ink); }
+
+  .save-msg { font-size: 12px; color: var(--h6); text-align: center; opacity: 0; transition: opacity 0.3s; margin-top: 8px; }
+  .save-msg.show { opacity: 1; }
+
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="series-tag">與成功有約 · 七個習慣</div>
+    <h1>公眾的勝利<br>習慣四到七自我檢測</h1>
+    <p class="header-sub">你已經能獨立了。現在這四個習慣，決定你能不能跟別人一起創造出更大的東西——以及你能不能持續不退化。</p>
+  </div>
+
+  <div class="progress-dots">
+    <div class="dot h4-active" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+    <div class="dot" id="dot4"></div>
+    <div class="dot" id="dot5"></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab h4 active" onclick="switchTab('h4')">
+      <span class="tab-num">04</span>
+      <span class="tab-name">雙贏思維</span>
+    </div>
+    <div class="tab h5" onclick="switchTab('h5')">
+      <span class="tab-num">05</span>
+      <span class="tab-name">知彼解己</span>
+    </div>
+    <div class="tab h6" onclick="switchTab('h6')">
+      <span class="tab-num">06</span>
+      <span class="tab-name">統合綜效</span>
+    </div>
+    <div class="tab h7" onclick="switchTab('h7')">
+      <span class="tab-num">07</span>
+      <span class="tab-name">不斷更新</span>
+    </div>
+  </div>
+
+  <!-- PANEL H4 -->
+  <div class="panel panel-h4 active" id="panel-h4">
+    <div class="habit-header" data-num="04">
+      <div class="habit-label">習慣四 · Habit 4</div>
+      <div class="habit-title">雙贏思維</div>
+      <div class="habit-desc">合作不是妥協。雙贏是找到一條讓雙方都真正更好的路——不是你讓我，我讓你，而是一起找到第三條路。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念｜情感帳戶</div>
+      <p>柯維說，每一段關係都有一個情感帳戶。存款：讓對方感覺被尊重、被理解、被信任。提款：失信、輕視、只顧自己。<br><br>
+      帳戶餘額高的時候，就算你說錯一句話，對方也不會太在意。帳戶透支的時候，你說什麼都是錯的。<br><br>
+      雙贏不是談判技巧，它建立在情感帳戶存款夠多的基礎上。你的帳戶現在是正數還是負數？</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「雙贏不是一種技巧，而是一種對人際互動的全面哲學。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">想想你最重要的一段工作關係或合作關係。</div>
+      <div class="check-items" id="check-h4">
+        <div class="check-item" onclick="toggleCheck(this,'h4')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>談合作或協商時，我會先想「怎麼讓雙方都更好」</strong>
+            不是只想著我能拿到什麼。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h4')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我說到做到，對方可以信任我的承諾</strong>
+            我在重要關係的情感帳戶裡，存款多於提款。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h4')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>遇到利益衝突，我會找第三條路而不是堅持我的版本</strong>
+            我願意接受最後的結果可能跟我一開始想的不一樣。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h4')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我不會為了贏得眼前的爭論，而傷害長期的關係</strong>
+            我知道關係比單次結果更重要。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h4')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>如果找不到雙贏的方案，我願意選擇「無交易」</strong>
+            強迫對方接受對他不好的結果，不是我的風格。
+          </div>
+        </div>
+      </div>
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">雙贏思維程度</span>
+          <span class="score-num" id="score-h4-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" id="bar-h4"></div></div>
+        <div class="score-feedback" id="feedback-h4">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">把它寫下來，你才真的會去做。</p>
+      <label>你現在有哪一段關係，情感帳戶可能是負數的？</label>
+      <textarea id="h4-q1" placeholder="例：我跟某個合作夥伴最近因為分工問題有些摩擦，我覺得我一直在提款⋯⋯"></textarea>
+      <label>這週你可以做什麼，為這段關係的情感帳戶存一筆款？</label>
+      <textarea id="h4-q2" placeholder="例：主動約他聊聊，先聽他的想法，不急著說我的版本⋯⋯" style="min-height:70px;"></textarea>
+      <div class="commit-box">
+        <div class="commit-label">💰 我的存款計畫</div>
+        <div class="commit-text" id="h4-commit">填寫上方之後，你的計畫會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-h4" onclick="goNext('h5')">下一個習慣：知彼解己 →</button>
+    </div>
+  </div>
+
+  <!-- PANEL H5 -->
+  <div class="panel panel-h5" id="panel-h5">
+    <div class="habit-header" data-num="05">
+      <div class="habit-label">習慣五 · Habit 5</div>
+      <div class="habit-title">知彼解己</div>
+      <div class="habit-desc">先理解別人，再讓別人理解你。當一個人感覺被真正理解了，他才有空間聽你說話。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念｜移情聆聽</div>
+      <p>柯維說，大多數人聽話的方式叫做「自傳式回應」——對方還沒說完，你就已經在腦袋裡準備你的故事、你的建議、你的判斷了。<br><br>
+      移情聆聽不是要你同意對方，而是讓對方感覺被真正理解。這需要你暫時放下自己的思維定式，真的站在對方的角度看事情。<br><br>
+      你上一次真正聽完別人說話，是什麼時候？</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「先尋求理解，再尋求被理解。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">想想你最近的對話和溝通情況。</div>
+      <div class="check-items" id="check-h5">
+        <div class="check-item" onclick="toggleCheck(this,'h5')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>聽別人說話時，我不會一邊聽一邊準備我的回應</strong>
+            我真的讓對方說完，才開始思考我要說什麼。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h5')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我可以用對方的角度重新說一遍他的立場</strong>
+            不是嘲諷，是真的理解他為什麼這樣想。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h5')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>跟我想法很不一樣的人說話，我不會急著反駁</strong>
+            我會先問：「你為什麼這樣想？」
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h5')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>身邊的人覺得跟我說話很輕鬆，願意分享真實想法</strong>
+            他們不用擔心被評判。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h5')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我知道自己什麼時候在用「自傳式回應」</strong>
+            我有能力在那個當下停下來，重新聽。
+          </div>
+        </div>
+      </div>
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">知彼解己程度</span>
+          <span class="score-num" id="score-h5-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" id="bar-h5"></div></div>
+        <div class="score-feedback" id="feedback-h5">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">溝通的質量，決定關係的深度。</p>
+      <label>最近有哪一個人，你可能一直沒有真正聽懂他在說什麼？</label>
+      <textarea id="h5-q1" placeholder="例：我跟父親每次聊職涯都聊不攏，我一直覺得他不理解我，但其實我也沒有真正聽懂他的擔心⋯⋯"></textarea>
+      <label>下次跟他對話，你要怎麼做到移情聆聽？</label>
+      <textarea id="h5-q2" placeholder="例：先不說我的想法，只問他：你最擔心的是什麼？然後把他說的重新說一遍給他聽，確認我理解對了⋯⋯" style="min-height:70px;"></textarea>
+      <div class="commit-box">
+        <div class="commit-label">👂 我的聆聽承諾</div>
+        <div class="commit-text" id="h5-commit">填寫上方之後，你的承諾會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goNext('h4')">← 返回</button>
+      <button class="btn-h5" onclick="goNext('h6')">下一個習慣：統合綜效 →</button>
+    </div>
+  </div>
+
+  <!-- PANEL H6 -->
+  <div class="panel panel-h6" id="panel-h6">
+    <div class="habit-header" data-num="06">
+      <div class="habit-label">習慣六 · Habit 6</div>
+      <div class="habit-title">統合綜效</div>
+      <div class="habit-desc">整體大於部分之和。差異不是你要解決的問題，差異是你可以使用的材料。真正的創造，發生在有分歧的地方。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念</div>
+      <p>統合綜效需要三個條件：<br><br>
+      <strong>第一：</strong>你要夠有安全感——你不需要對方同意你，才能把自己的想法說出來。<br>
+      <strong>第二：</strong>你要真的對對方的觀點感到好奇，不是為了找漏洞，而是真的想搞懂。<br>
+      <strong>第三：</strong>你要願意接受，最後的結果可能跟你一開始想的完全不一樣——而那個結果，往往比你原本的想法還要好。<br><br>
+      你上一次因為有人跟你想法不同，而創造出更好的結果，是什麼時候？</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「如果兩個人意見完全相同，其中一個人是多餘的。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">想想你跟別人合作或討論的狀態。</div>
+      <div class="check-items" id="check-h6">
+        <div class="check-item" onclick="toggleCheck(this,'h6')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>遇到跟我想法不同的人，我的第一反應是好奇而不是防禦</strong>
+            我想知道他為什麼這樣想，不是急著說他哪裡錯了。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h6')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我不需要對方同意我，也能把我的想法說清楚</strong>
+            我的安全感來自內在，不是來自別人的認可。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h6')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我有過因為不同意見，最後找到比原本更好方案的經驗</strong>
+            我知道差異可以創造價值。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h6')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我會主動找跟我背景、觀點不同的人討論重要決策</strong>
+            我不只待在同溫層裡尋求確認。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h6')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>合作之後的結果，通常比我一個人想到的還要好</strong>
+            我真的相信一加一可以大於二。
+          </div>
+        </div>
+      </div>
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">統合綜效程度</span>
+          <span class="score-num" id="score-h6-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" id="bar-h6"></div></div>
+        <div class="score-feedback" id="feedback-h6">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">差異是材料，不是障礙。</p>
+      <label>你現在有沒有一個跟你想法很不同的人，你可以主動找他聊？</label>
+      <textarea id="h6-q1" placeholder="例：我爸對創業很保守，但他對長期主義的理解比我深，我可以主動問他怎麼看待一件事情的十年後⋯⋯"></textarea>
+      <label>你們的差異，有沒有可能創造出你一個人想不到的東西？</label>
+      <textarea id="h6-q2" placeholder="例：他的穩定思維＋我的資本市場視角，可能幫我找到一個更穩健的創業切入點⋯⋯" style="min-height:70px;"></textarea>
+      <div class="commit-box">
+        <div class="commit-label">🔀 我的第三條路</div>
+        <div class="commit-text" id="h6-commit">填寫上方之後，你的想法會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goNext('h5')">← 返回</button>
+      <button class="btn-h6" onclick="goNext('h7')">下一個習慣：不斷更新 →</button>
+    </div>
+  </div>
+
+  <!-- PANEL H7 -->
+  <div class="panel panel-h7" id="panel-h7">
+    <div class="habit-header" data-num="07">
+      <div class="habit-label">習慣七 · Habit 7</div>
+      <div class="habit-title">不斷更新</div>
+      <div class="habit-desc">磨刀不誤砍柴工。習慣七是所有習慣的基礎——你需要持續更新自己，前六個習慣才不會退化。</div>
+    </div>
+
+    <div class="concept-box">
+      <div class="concept-label">核心概念｜四個維度</div>
+      <p>柯維說，不斷更新需要投資四個面向：<br><br>
+      <strong>生理：</strong>運動、飲食、休息——身體是一切的基礎<br>
+      <strong>心智：</strong>閱讀、學習、思考——讓大腦保持銳利<br>
+      <strong>社會情感：</strong>關係、服務、移情聆聽——情感帳戶的充電<br>
+      <strong>靈性：</strong>價值觀、使命、靜思——確認你走在對的路上<br><br>
+      四個維度都需要主動投資，不是等到撐不住才休息。</p>
+    </div>
+
+    <div class="quote-box">
+      <p>「磨利你的鋸子，是你能做的最重要的事——它能讓其他所有事情發生。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="check-section">
+      <div class="check-title">你現在在哪裡？</div>
+      <div class="check-desc">想想你最近一個月，有沒有主動投資這四個面向。</div>
+      <div class="check-items" id="check-h7">
+        <div class="check-item" onclick="toggleCheck(this,'h7')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我有規律的運動習慣，不是心情好才去</strong>
+            我把身體當成長期資產在經營。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h7')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我有固定的閱讀或學習時間，不是有空才讀</strong>
+            我主動保護這段時間，不讓其他事情佔走。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h7')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我會定期回顧自己的狀態，不是一路衝到倒下</strong>
+            我知道什麼時候需要充電，然後真的去充電。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h7')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>我有定期檢視自己的目標和方向的習慣</strong>
+            確認我還在走向我想去的地方。
+          </div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this,'h7')">
+          <div class="check-box">✓</div>
+          <div class="check-item-text">
+            <strong>忙完一個大任務之後，我會給自己時間盤點和復原</strong>
+            不是馬上衝進下一件事，而是先整理這段經歷。
+          </div>
+        </div>
+      </div>
+      <div class="score-area">
+        <div class="score-label">
+          <span class="score-text">不斷更新程度</span>
+          <span class="score-num" id="score-h7-num">0 / 5</span>
+        </div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" id="bar-h7"></div></div>
+        <div class="score-feedback" id="feedback-h7">勾選上方的狀態，看看你現在在哪裡。</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <h3>你的行動區</h3>
+      <p class="input-desc">刀磨得夠利，才能砍得快。</p>
+      <label>你現在最需要投資哪一個維度（生理、心智、社會情感、靈性）？</label>
+      <textarea id="h7-q1" placeholder="例：最近幾個月幾乎沒有運動，身體狀態很差，這讓我工作效率也下降⋯⋯"></textarea>
+      <label>你要用什麼具體的方式來更新這個維度？多久做一次？</label>
+      <textarea id="h7-q2" placeholder="例：每週三次、每次30分鐘的跑步，固定在早上7點，先排進行事曆⋯⋯" style="min-height:70px;"></textarea>
+      <div class="commit-box">
+        <div class="commit-label">🔄 我的更新計畫</div>
+        <div class="commit-text" id="h7-commit">填寫上方之後，你的計畫會出現在這裡。</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goNext('h6')">← 返回</button>
+      <button class="btn-h7" onclick="showSummary()">看我的公眾勝利報告 →</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-panel" id="summary-panel">
+    <div class="summary-header">
+      <h2>你的公眾勝利報告</h2>
+      <p>分數低的地方，就是你最值得投資的地方。<br>七個習慣是一個整體——它們互相支撐，缺一不可。</p>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card s4">
+        <div class="s-label">習慣四</div>
+        <div class="s-score" id="sum-s4">0/5</div>
+        <div class="s-name">雙贏思維</div>
+        <div class="s-action" id="sum-a4">—</div>
+      </div>
+      <div class="summary-card s5">
+        <div class="s-label">習慣五</div>
+        <div class="s-score" id="sum-s5">0/5</div>
+        <div class="s-name">知彼解己</div>
+        <div class="s-action" id="sum-a5">—</div>
+      </div>
+      <div class="summary-card s6">
+        <div class="s-label">習慣六</div>
+        <div class="s-score" id="sum-s6">0/5</div>
+        <div class="s-name">統合綜效</div>
+        <div class="s-action" id="sum-a6">—</div>
+      </div>
+      <div class="summary-card s7">
+        <div class="s-label">習慣七</div>
+        <div class="s-score" id="sum-s7">0/5</div>
+        <div class="s-name">不斷更新</div>
+        <div class="s-action" id="sum-a7">—</div>
+      </div>
+    </div>
+
+    <div class="covey-final">
+      <p>「七個習慣不是七個獨立的技巧，它們是一個整體。思維定式決定習慣，習慣決定你的人生軌跡。」</p>
+      <cite>— 史蒂芬．柯維《與成功有約》</cite>
+    </div>
+
+    <div class="save-row">
+      <button class="btn-save" onclick="saveResult()">📋 複製這份報告</button>
+      <button class="btn-restart" onclick="restart()">↩ 重新填寫</button>
+    </div>
+    <div class="save-msg" id="saveMsg">已複製到剪貼簿 ✓</div>
+  </div>
+
+</div>
+
+<script>
+  let scores = { h4: 0, h5: 0, h6: 0, h7: 0 };
+
+  const feedbacks = {
+    h4: [
+      '你目前可能習慣贏／輸的模式。試著在下一次談事情之前，先問自己：對方真正需要的是什麼？',
+      '開始有雙贏意識了。選一段重要關係，這週做一件存款的事——不求回報。',
+      '你懂雙贏的邏輯，但情感帳戶可能還不夠穩。先專注把最重要的那一兩段關係的帳戶充滿。',
+      '你的雙贏思維已經很紮實了。現在可以想：你有沒有幫身邊的人也建立這個意識？',
+      '你已經把雙贏思維活出來了。你的存在本身就是在為周圍的人示範什麼是真正的合作。'
+    ],
+    h5: [
+      '你可能大部分時間都在等機會說話，而不是真正在聽。試著今天找一個人，只聽不說，看看你能堅持多久。',
+      '有些時候你能做到，但還不穩定。選一段對你重要的關係，這週刻意練習移情聆聽。',
+      '你的聆聽能力比大多數人好，但還有空間。下次對話，試著在對方說完之後，先重述一遍他說的，確認你理解對了。',
+      '你真的在聽。現在的挑戰是把這個能力帶進壓力大或有衝突的對話裡。',
+      '你的聆聽能力是你最強的資產之一。身邊的人信任你，願意跟你說真話——這比任何技巧都值錢。'
+    ],
+    h6: [
+      '你可能還在用說服或妥協來處理分歧。試著在下一次意見不同的時候，改問：我們有沒有可能找到一個更好的第三條路？',
+      '你知道差異的價值，但還沒有穩定做到。試著主動找一個跟你想法非常不同的人，認真聽他的觀點。',
+      '你有統合綜效的能力，但可能只在安全的關係裡用。試著把它帶進更有挑戰性的情境裡。',
+      '你真的相信一加一可以大於二，而且你有能力創造這個結果。繼續主動打破同溫層。',
+      '你把差異當成禮物在使用。你合作出來的東西，往往讓參與的人都驚喜——包括你自己。'
+    ],
+    h7: [
+      '你的鋸子可能已經很鈍了。先從最小的一個動作開始：今天，哪一個維度你可以投資五分鐘？',
+      '你知道要磨刀，但還沒有建立系統。選一個維度，這週固定一個時間，不管多忙都不取消。',
+      '你有在更新自己，但可能不夠均衡。看看四個維度，哪一個你最久沒有投資了？',
+      '你的更新習慣很穩定。現在可以問：這些習慣有沒有真的讓你在六個月後比現在更好？',
+      '你把不斷更新變成生活方式了。你不只是在維持，你是在真正進化——而且你知道為什麼要這樣做。'
+    ]
+  };
+
+  function toggleCheck(el, habit) {
+    el.classList.toggle('checked');
+    const checked = document.querySelectorAll(`#check-${habit} .check-item.checked`).length;
+    scores[habit] = checked;
+    updateScore(habit, checked);
+  }
+
+  function updateScore(habit, n) {
+    document.getElementById(`bar-${habit}`).style.width = (n / 5 * 100) + '%';
+    document.getElementById(`score-${habit}-num`).textContent = `${n} / 5`;
+    document.getElementById(`feedback-${habit}`).textContent = feedbacks[habit][Math.min(n, 4)];
+  }
+
+  function switchTab(habit) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`.tab.${habit}`).classList.add('active');
+    document.getElementById(`panel-${habit}`).classList.add('active');
+    updateDots(habit);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goNext(habit) {
+    updateCommits();
+    switchTab(habit);
+  }
+
+  function updateDots(current) {
+    const map = { h4: 0, h5: 1, h6: 2, h7: 3 };
+    const idx = map[current];
+    ['dot1','dot2','dot3','dot4','dot5'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'dot';
+      if (i < idx) el.classList.add('done');
+      else if (i === idx) el.classList.add(`${current}-active`);
+    });
+  }
+
+  function updateCommits() {
+    const map = {
+      'h4-q2': 'h4-commit', 'h5-q2': 'h5-commit',
+      'h6-q2': 'h6-commit', 'h7-q2': 'h7-commit'
+    };
+    const labels = {
+      'h4-commit': '💰 這週的存款計畫：',
+      'h5-commit': '👂 我的聆聽承諾：',
+      'h6-commit': '🔀 我的第三條路：',
+      'h7-commit': '🔄 我的更新計畫：'
+    };
+    Object.entries(map).forEach(([inputId, commitId]) => {
+      const val = document.getElementById(inputId)?.value.trim();
+      if (val) document.getElementById(commitId).textContent = labels[commitId] + val;
+    });
+  }
+
+  function showSummary() {
+    updateCommits();
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('summary-panel').classList.add('active');
+
+    ['dot1','dot2','dot3','dot4'].forEach(id => {
+      document.getElementById(id).className = 'dot done';
+    });
+    document.getElementById('dot5').className = 'dot summary-active';
+
+    ['h4','h5','h6','h7'].forEach(h => {
+      document.getElementById(`sum-s${h.slice(1)}`).textContent = `${scores[h]}/5`;
+      document.getElementById(`sum-a${h.slice(1)}`).textContent = feedbacks[h][Math.min(scores[h], 4)];
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function saveResult() {
+    const text = `【公眾勝利報告｜習慣四到七】\n\n` +
+      `📊 分數總覽\n` +
+      `習慣四・雙贏思維：${scores.h4}/5\n` +
+      `習慣五・知彼解己：${scores.h5}/5\n` +
+      `習慣六・統合綜效：${scores.h6}/5\n` +
+      `習慣七・不斷更新：${scores.h7}/5\n\n` +
+      ['h4','h5','h6','h7'].map(h => {
+        const names = {h4:'雙贏思維',h5:'知彼解己',h6:'統合綜效',h7:'不斷更新'};
+        const q1 = document.getElementById(`${h}-q1`)?.value.trim();
+        const q2 = document.getElementById(`${h}-q2`)?.value.trim();
+        return `習慣${h.slice(1)}｜${names[h]}\n${q1 ? '現況：' + q1 + '\n' : ''}${q2 ? '行動：' + q2 + '\n' : ''}`;
+      }).join('\n') +
+      `——\n基於《與成功有約：高效能人士的七個習慣》`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const msg = document.getElementById('saveMsg');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 2500);
+    });
+  }
+
+  function restart() {
+    scores = { h4: 0, h5: 0, h6: 0, h7: 0 };
+    document.querySelectorAll('.check-item').forEach(el => el.classList.remove('checked'));
+    ['h4','h5','h6','h7'].forEach(h => updateScore(h, 0));
+    ['h4-q1','h4-q2','h5-q1','h5-q2','h6-q1','h6-q2','h7-q1','h7-q2'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    ['h4-commit','h5-commit','h6-commit','h7-commit'].forEach(id => {
+      document.getElementById(id).textContent = '填寫上方之後，你的計畫會出現在這裡。';
+    });
+    document.getElementById('summary-panel').classList.remove('active');
+    switchTab('h4');
+  }
+
+  ['h4-q2','h5-q2','h6-q2','h7-q2'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateCommits);
+  });
+</script>
+</body>
+</html>
