@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不費力的狀態｜自我檢核模板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f0e8;
+    --accent: #c8a96e;
+    --accent-dark: #9a7a45;
+    --light: #ede8dc;
+    --muted: #8a8070;
+    --check: #4a7c59;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #d8d2c4;
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .page {
+    background: var(--paper);
+    width: 794px;
+    min-height: 1123px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.3);
+  }
+
+  /* Texture overlay */
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Gold border frame */
+  .frame {
+    position: absolute;
+    inset: 20px;
+    border: 1px solid var(--accent);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 0.5px solid rgba(200,169,110,0.4);
+  }
+
+  /* Corner ornaments */
+  .corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    z-index: 2;
+  }
+  .corner svg { width: 100%; height: 100%; }
+  .corner-tl { top: 14px; left: 14px; }
+  .corner-tr { top: 14px; right: 14px; transform: scaleX(-1); }
+  .corner-bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+  .corner-br { bottom: 14px; right: 14px; transform: scale(-1); }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    padding: 60px 70px 50px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .series-label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .title-main {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 42px;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+
+  .title-main span {
+    color: var(--accent-dark);
+  }
+
+  .title-sub {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  .divider-line {
+    height: 0.5px;
+    width: 80px;
+    background: linear-gradient(90deg, transparent, var(--accent));
+  }
+  .divider-line.right {
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .divider-diamond {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+
+  .intro-text {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-top: 14px;
+    font-weight: 300;
+  }
+
+  /* Sections */
+  .sections {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .section {
+    background: white;
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(200,169,110,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .section-number {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    letter-spacing: 2px;
+    min-width: 24px;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+
+  .section-tagline {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 12.5px;
+    color: #3a3830;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: white;
+    position: relative;
+  }
+
+  .reflection {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--light);
+  }
+
+  .reflection-label {
+    font-size: 10px;
+    color: var(--accent-dark);
+    letter-spacing: 2px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .reflection-line {
+    height: 0.5px;
+    background: var(--light);
+    margin: 8px 0;
+  }
+
+  /* Key insight box */
+  .insight-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 22px 28px;
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-box::before {
+    content: '❝';
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    font-size: 80px;
+    color: var(--accent);
+    opacity: 0.2;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .insight-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .insight-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+  }
+
+  .insight-text em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--accent);
+  }
+
+  .footer-brand {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+
+  .footer-brand span {
+    color: var(--accent-dark);
+  }
+
+  .footer-note {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    font-weight: 300;
+  }
+
+  .footer-book {
+    font-size: 10px;
+    color: var(--muted);
+    font-style: italic;
+    text-align: right;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Frame -->
+  <div class="frame"></div>
+
+  <!-- Corner ornaments -->
+  <div class="corner corner-tl">
+    <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/>
+      <path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="corner corner-tr">
+    <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/>
+      <path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="corner corner-bl">
+    <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/>
+      <path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="corner corner-br">
+    <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/>
+      <path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <div class="content">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="series-label">《努力，但不費力》讀書筆記 · 第一部</div>
+      <div class="title-main">不費力的<span>狀態</span></div>
+      <div class="title-sub">Effortless State · 自我檢核模板</div>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-diamond"></div>
+        <div class="divider-line right"></div>
+      </div>
+      <div class="intro-text">
+        狀態不對，努力只是消耗。每週花 5 分鐘做一次這份檢核，<br>
+        讓自己確認是否進入「不費力」的頻道。
+      </div>
+    </div>
+
+    <!-- Sections -->
+    <div class="sections">
+
+      <!-- 翻轉 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">01</div>
+          <div class="section-title">翻轉</div>
+          <div class="section-tagline">把問題翻過來問</div>
+        </div>
+        <ul class="checklist">
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有把「這件事很難」的假設，翻轉成「這件事可以很簡單」？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>面對令我吃不消的工作，我問過自己「我是不是把它弄得毫無必要的難？」</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我這週有沒有找到至少一件「迂迴前進的方法」，化不可能為可能？</span>
+          </li>
+        </ul>
+        <div class="reflection">
+          <div class="reflection-label">本週我想翻轉的一件事</div>
+          <div class="reflection-line"></div>
+          <div class="reflection-line" style="margin-top: 16px;"></div>
+        </div>
+      </div>
+
+      <!-- 享受 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">02</div>
+          <div class="section-title">享受</div>
+          <div class="section-tagline">堅持靠意志力，上癮靠享受</div>
+        </div>
+        <ul class="checklist">
+          <li>
+            <div class="checkbox"></div>
+            <span>我正在做的事，有沒有讓我感到「不去反而渾身不對勁」的成分？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有把最重要的事和最有樂趣的活動結合起來做？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有為繁瑣的任務設計一個讓自己期待的儀式感？</span>
+          </li>
+        </ul>
+        <div class="reflection">
+          <div class="reflection-label">讓我感到上癮（而非堅持）的一件事</div>
+          <div class="reflection-line"></div>
+          <div class="reflection-line" style="margin-top: 16px;"></div>
+        </div>
+      </div>
+
+      <!-- 釋放 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">03</div>
+          <div class="section-title">釋放</div>
+          <div class="section-tagline">你放下的不是東西，是它佔用你的力氣</div>
+        </div>
+        <ul class="checklist">
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有放下心上的情緒負擔，而不是一直背著它繼續工作？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我的待辦清單上，有沒有「感覺應該做但根本不重要」的事可以刪掉？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我這週有沒有練習把抱怨轉化成感恩，說出至少一句由衷感謝的話？</span>
+          </li>
+        </ul>
+        <div class="reflection">
+          <div class="reflection-label">我這週可以放下的一件事</div>
+          <div class="reflection-line"></div>
+          <div class="reflection-line" style="margin-top: 16px;"></div>
+        </div>
+      </div>
+
+      <!-- 休息 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">04</div>
+          <div class="section-title">休息</div>
+          <div class="section-tagline">休息不是偷懶，是讓努力真正發揮效果</div>
+        </div>
+        <ul class="checklist">
+          <li>
+            <div class="checkbox"></div>
+            <span>我這週有沒有安排至少一段「什麼都不做」的時間（不是滑手機）？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有把重要工作分成三個時段完成，每段不超過 90 分鐘？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有讓自己在一天之內，做超過隔天一早可以完全恢復的事情？</span>
+          </li>
+        </ul>
+        <div class="reflection">
+          <div class="reflection-label">我下週要保護的一段休息時間</div>
+          <div class="reflection-line"></div>
+          <div class="reflection-line" style="margin-top: 16px;"></div>
+        </div>
+      </div>
+
+      <!-- 覺察 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">05</div>
+          <div class="section-title">覺察</div>
+          <div class="section-tagline">覺察不是想更多，是真的回到當下</div>
+        </div>
+        <ul class="checklist">
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有練習「提升感官」的五步驟：給空間 → 身體休息 → 精神放鬆 → 釋放情緒 → 深呼吸三次？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>這週我的注意力，有多少時間是真正在當下，而不是在想下一件事？</span>
+          </li>
+          <li>
+            <div class="checkbox"></div>
+            <span>我有沒有在重要對話前，先清理現實環境中的雜亂，再讓腦子靜下來？</span>
+          </li>
+        </ul>
+        <div class="reflection">
+          <div class="reflection-label">我這週最需要專注的一件事</div>
+          <div class="reflection-line"></div>
+          <div class="reflection-line" style="margin-top: 16px;"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Insight box -->
+    <div class="insight-box">
+      <div class="insight-label">本週核心提醒</div>
+      <div class="insight-text">
+        狀態不對，再努力也只是在<em>消耗</em>。<br>
+        先讓自己對了，事情自然會變得沒有你想像的那麼難。
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">讀本郝書 <span>·</span> 說書影片系列</div>
+      <div class="footer-note">每週檢核 · 持續累積 · 不費力前進</div>
+      <div class="footer-book">《努力，但不費力》<br>葛瑞格．麥基昂 著</div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
