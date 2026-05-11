@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不費力的行動｜自我檢核模板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f0e8;
+    --accent: #c8a96e;
+    --accent-dark: #9a7a45;
+    --light: #ede8dc;
+    --muted: #8a8070;
+    --section-bg: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #d8d2c4;
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    gap: 0;
+  }
+
+  .page {
+    background: var(--paper);
+    width: 794px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.3);
+  }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 20px;
+    border: 1px solid var(--accent);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 0.5px solid rgba(200,169,110,0.4);
+  }
+
+  .corner { position: absolute; width: 30px; height: 30px; z-index: 2; }
+  .corner svg { width: 100%; height: 100%; }
+  .corner-tl { top: 14px; left: 14px; }
+  .corner-tr { top: 14px; right: 14px; transform: scaleX(-1); }
+  .corner-bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+  .corner-br { bottom: 14px; right: 14px; transform: scale(-1); }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    padding: 55px 70px 50px;
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 28px; }
+
+  .series-label {
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .title-main {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 40px;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+  .title-main span { color: var(--accent-dark); }
+
+  .title-sub {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .divider { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 8px; }
+  .divider-line { height: 0.5px; width: 80px; background: linear-gradient(90deg, transparent, var(--accent)); }
+  .divider-line.right { background: linear-gradient(90deg, var(--accent), transparent); }
+  .divider-diamond { width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); }
+
+  .intro-text {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-top: 12px;
+    font-weight: 300;
+  }
+
+  /* 開始前的三個問題 */
+  .before-box {
+    background: var(--ink);
+    padding: 22px 26px;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .before-box::before {
+    content: '?';
+    position: absolute;
+    right: 20px;
+    top: -20px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 120px;
+    font-weight: 900;
+    color: rgba(200,169,110,0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .before-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--paper);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+
+  .before-subtitle {
+    font-size: 11px;
+    color: rgba(200,169,110,0.7);
+    margin-bottom: 18px;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  .before-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .before-q {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .before-q-text {
+    font-size: 12px;
+    color: rgba(245,240,232,0.85);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .before-q-text span {
+    color: var(--accent);
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  textarea.before-input {
+    width: 100%;
+    min-height: 44px;
+    background: rgba(255,255,255,0.05);
+    border: none;
+    border-bottom: 0.5px solid rgba(200,169,110,0.3);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 12px;
+    color: var(--paper);
+    resize: vertical;
+    outline: none;
+    padding: 6px 4px;
+    line-height: 1.8;
+  }
+
+  textarea.before-input::placeholder { color: rgba(200,169,110,0.3); font-style: italic; }
+
+  .before-note {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 0.5px solid rgba(200,169,110,0.2);
+    font-size: 11px;
+    color: rgba(200,169,110,0.6);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  /* Sections */
+  .sections { display: flex; flex-direction: column; gap: 14px; }
+
+  .section {
+    background: white;
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .section-number {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    letter-spacing: 2px;
+    min-width: 20px;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+
+  .section-tagline {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  /* Question Item */
+  .question-item {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--light);
+  }
+  .question-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+  .question-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .checkbox {
+    width: 15px;
+    height: 15px;
+    border: 1.5px solid var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+  }
+
+  .checkbox.checked {
+    background: var(--accent);
+  }
+
+  .checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    top: -2px;
+    left: 1px;
+    font-size: 11px;
+    color: white;
+    font-weight: 700;
+  }
+
+  .question-text {
+    font-size: 12px;
+    color: #3a3830;
+    line-height: 1.6;
+    font-weight: 400;
+    flex: 1;
+  }
+
+  .answer-label {
+    font-size: 10px;
+    color: var(--accent-dark);
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    padding-left: 25px;
+  }
+
+  textarea.answer-input {
+    width: 100%;
+    min-height: 44px;
+    background: rgba(200,169,110,0.04);
+    border: none;
+    border-left: 2px solid rgba(200,169,110,0.3);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 12px;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    padding: 6px 10px;
+    line-height: 1.7;
+    margin-left: 25px;
+    width: calc(100% - 25px);
+  }
+
+  textarea.answer-input::placeholder { color: rgba(138,128,112,0.35); font-style: italic; }
+
+  /* Insight */
+  .insight-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 18px 24px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-box::before {
+    content: '❝';
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    font-size: 80px;
+    color: var(--accent);
+    opacity: 0.15;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .insight-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .insight-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+  }
+  .insight-text em { color: var(--accent); font-style: normal; }
+
+  /* Copy Section */
+  .copy-section {
+    margin-top: 24px;
+    background: white;
+    border: 1px solid var(--accent);
+    padding: 20px 24px;
+  }
+
+  .copy-section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  .copy-section-desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .copy-section-desc strong {
+    color: var(--accent-dark);
+    font-weight: 600;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .copy-btn:hover { background: #2a2a28; }
+
+  .copy-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(200,169,110,0.1) 0%, transparent 50%);
+  }
+
+  .copy-btn-icon { font-size: 16px; }
+
+  .copy-success {
+    display: none;
+    text-align: center;
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(74,124,89,0.08);
+    border: 1px solid rgba(74,124,89,0.3);
+    font-size: 12px;
+    color: #4a7c59;
+    line-height: 1.7;
+  }
+
+  .copy-success a {
+    color: var(--accent-dark);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--accent);
+  }
+
+  .footer-brand {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+  .footer-brand span { color: var(--accent-dark); }
+
+  .footer-note { font-size: 10px; color: var(--muted); letter-spacing: 1px; font-weight: 300; }
+
+  .footer-book { font-size: 10px; color: var(--muted); font-style: italic; text-align: right; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="frame"></div>
+
+  <div class="corner corner-tl">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+  <div class="corner corner-tr">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+  <div class="corner corner-bl">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+  <div class="corner corner-br">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+
+  <div class="content">
+
+    <div class="header">
+      <div class="series-label">《努力，但不費力》讀書筆記 · 第二部</div>
+      <div class="title-main">不費力的<span>行動</span></div>
+      <div class="title-sub">Effortless Action · 自我檢核模板</div>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-diamond"></div>
+        <div class="divider-line right"></div>
+      </div>
+      <div class="intro-text">
+        行動不是靠意志力撐，是用對方法讓它自然發生。<br>
+        填完這份檢核，把你的答案複製下來，到 Skool 社群跟群友分享你的90天目標！
+      </div>
+    </div>
+
+    <!-- 開始前的三個問題 -->
+    <div class="before-box">
+      <div class="before-title">在開始填之前，先問自己三個問題</div>
+      <div class="before-subtitle">帶著你的答案，去套用下面五個面向的檢核</div>
+      <div class="before-questions">
+
+        <div class="before-q">
+          <div class="before-q-text"><span>Q1</span>你現在最想做、但一直沒有開始的事是什麼？</div>
+          <textarea class="before-input" id="bq1" placeholder="不用想太多，第一個浮現在腦海的是…"></textarea>
+        </div>
+
+        <div class="before-q">
+          <div class="before-q-text"><span>Q2</span>你最想養成的一個習慣是什麼？為什麼對你來說重要？</div>
+          <textarea class="before-input" id="bq2" placeholder="這個習慣對我重要，是因為…"></textarea>
+        </div>
+
+        <div class="before-q">
+          <div class="before-q-text"><span>Q3</span>如果可以用不費力的方式做一件事，你會選什麼？</div>
+          <textarea class="before-input" id="bq3" placeholder="如果做起來不費力，我最想做的是…"></textarea>
+        </div>
+
+      </div>
+      <div class="before-note">💡 把你的答案帶進下面五個面向，思考怎麼用不費力的方式讓它真正發生。</div>
+    </div>
+
+    <!-- Sections -->
+    <div class="sections">
+
+      <!-- 01 界定 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">01</div>
+          <div class="section-title">界定</div>
+          <div class="section-tagline">你不知道什麼是完成，就永遠不會完成</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">我最想做的那件事，「完成」長什麼樣子？做到什麼程度，我可以說今天達標了？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a1q1" placeholder="寫下你對「完成」的具體定義…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">今天我的完成清單上，最重要的三件事是什麼？（只能三件，多了不算）</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a1q2" placeholder="1. &#10;2. &#10;3. "></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">上週有沒有「做完了還不停」的時候？那件事如果早點歇手，省下的時間可以拿去做什麼？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a1q3" placeholder="寫下你的反思…"></textarea>
+        </div>
+      </div>
+
+      <!-- 02 起跑 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">02</div>
+          <div class="section-title">起跑</div>
+          <div class="section-tagline">把第一步縮小到你不可能說不的程度</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">我最想做的那件事，第一步是什麼？把它拆得小到「今天就能做」、「做了不可能失敗」的程度。</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a2q1" placeholder="我的第一步是…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">我打算給自己幾分鐘的「微爆氣流」時間？這段時間我只做一件事，其他全部關掉。</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a2q2" placeholder="我計畫每天給自己___分鐘，專注做___…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">現在有什麼事是我一直在「等準備好了再開始」的？那個「準備好」的標準，合理嗎？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a2q3" placeholder="我一直在等…其實我現在就可以…"></textarea>
+        </div>
+      </div>
+
+      <!-- 03 簡化 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">03</div>
+          <div class="section-title">簡化</div>
+          <div class="section-tagline">最有效率的步驟，是根本不需要做的步驟</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">完成我最想做的那件事，最少需要哪幾個步驟？把它列出來，然後看看哪個可以省掉。</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a3q1" placeholder="必要步驟：&#10;可以省掉的："></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">我現在的日常流程裡，有沒有「感覺應該做，但省掉也不會怎樣」的事？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a3q2" placeholder="可以省掉的事是…省掉後可以把精力放在…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">我最核心、最值得投入的事是什麼？其他所有事情，能不能為了這件事讓路？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a3q3" placeholder="我最核心的事是…我打算為它省掉…"></textarea>
+        </div>
+      </div>
+
+      <!-- 04 推進 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">04</div>
+          <div class="section-title">推進</div>
+          <div class="section-tagline">先讓它存在，再讓它變好</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">我想做的這件事，每週進展增加的上限設多少比較合理？（參考：跑量每週增加不超過10%）</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a4q1" placeholder="我設定每週進展增加不超過___，持續下去後我會達到…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">現在有什麼事是我因為「還不夠好」而遲遲不開始或不發布的？如果今天就讓它存在，會怎樣？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a4q2" placeholder="我一直在等它夠好的事是…今天讓它存在，最壞的結果是…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">上週腦中的批評聲音有沒有讓我停下來？那個聲音說了什麼？我現在怎麼回應它？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a4q3" placeholder="那個聲音說…我現在的回應是…"></textarea>
+        </div>
+      </div>
+
+      <!-- 05 步調 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">05</div>
+          <div class="section-title">步調</div>
+          <div class="section-tagline">慢即穩，穩即快</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">這週我的每日行動上下限是什麼？填入：「我至少要做到＿＿＿，最多做到＿＿＿。」</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a5q1" placeholder="我至少要做到…&#10;最多做到…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">上週有沒有狀態好就衝過頭、然後接下來幾天沒辦法動的情況？怎麼避免下次再發生？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a5q2" placeholder="上週發生了…下次我打算…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">如果像阿蒙森一樣，不管狀態好壞都維持同樣的步調，一段時間後我會在哪裡？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a5q3" placeholder="持續維持步調，我會…"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Insight -->
+    <div class="insight-box">
+      <div class="insight-label">本週核心提醒</div>
+      <div class="insight-text">
+        意志力會耗盡，對的方法不會。<br>
+        阿蒙森用<em>穩定的步調</em>抵達南極，史考特用蠻力幾乎全軍覆沒。<br>
+        你的步調，決定你能走多遠。
+      </div>
+    </div>
+
+    <!-- Copy Section -->
+    <div class="copy-section">
+      <div class="copy-section-title">📋 一鍵複製你的檢核結果</div>
+      <div class="copy-section-desc">
+        填完了嗎？點下方按鈕，把你的答案一次複製下來。<br>
+        然後到 <strong>Skool 社群</strong>貼出你的答案，讓群友一起見證你的行動！<br>
+        分享出去，你完成的機率會大幅提升。
+      </div>
+      <button class="copy-btn" onclick="copyResults()">
+        <span class="copy-btn-icon">📋</span>
+        複製我的檢核結果
+      </button>
+      <div class="copy-success" id="copy-success">
+        ✅ 複製成功！現在去 Skool 社群貼上你的答案，跟群友分享你想做的事 👉
+        <a href="https://www.skool.com/timefaction/about" target="_blank">點這裡進入社群</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">Steven <span>·</span> 說書影片系列</div>
+      <div class="footer-note">每週檢核 · 持續累積 · 不費力前進</div>
+      <div class="footer-book">《努力，但不費力》<br>葛瑞格．麥基昂 著</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+  }
+
+  function copyResults() {
+    const bq1 = document.getElementById('bq1').value || '（未填寫）';
+    const bq2 = document.getElementById('bq2').value || '（未填寫）';
+    const bq3 = document.getElementById('bq3').value || '（未填寫）';
+
+    const questions = [
+      { section: '01 界定', items: [
+        { q: '「完成」的具體定義', id: 'a1q1' },
+        { q: '今天最重要的三件事', id: 'a1q2' },
+        { q: '做完還不停的反思', id: 'a1q3' },
+      ]},
+      { section: '02 起跑', items: [
+        { q: '我的第一步', id: 'a2q1' },
+        { q: '微爆氣流計畫', id: 'a2q2' },
+        { q: '我一直在等準備好的事', id: 'a2q3' },
+      ]},
+      { section: '03 簡化', items: [
+        { q: '必要步驟 vs 可省掉的', id: 'a3q1' },
+        { q: '感覺應該做但可省的事', id: 'a3q2' },
+        { q: '我最核心的事', id: 'a3q3' },
+      ]},
+      { section: '04 推進', items: [
+        { q: '每週進展上限設定', id: 'a4q1' },
+        { q: '遲遲不開始的事', id: 'a4q2' },
+        { q: '批評聲音的回應', id: 'a4q3' },
+      ]},
+      { section: '05 步調', items: [
+        { q: '每日行動上下限', id: 'a5q1' },
+        { q: '避免衝過頭的計畫', id: 'a5q2' },
+        { q: '維持步調後的想像', id: 'a5q3' },
+      ]},
+    ];
+
+    let text = `📌 我的《不費力的行動》自我檢核\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    text += `【開始前的三個問題】\n`;
+    text += `▸ 最想做但一直沒開始的事\n${bq1}\n\n`;
+    text += `▸ 最想養成的習慣\n${bq2}\n\n`;
+    text += `▸ 如果可以不費力，我會選\n${bq3}\n\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    questions.forEach(section => {
+      text += `【${section.section}】\n`;
+      section.items.forEach(item => {
+        const val = document.getElementById(item.id).value || '（未填寫）';
+        text += `▸ ${item.q}\n${val}\n\n`;
+      });
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    });
+
+    text += `來自《努力，但不費力》說書系列 · Steven\n`;
+    text += `#不費力的行動 #自我成長 #讀書筆記`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const successEl = document.getElementById('copy-success');
+      successEl.style.display = 'block';
+      setTimeout(() => { successEl.style.display = 'none'; }, 8000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const successEl = document.getElementById('copy-success');
+      successEl.style.display = 'block';
+      setTimeout(() => { successEl.style.display = 'none'; }, 8000);
+    });
+  }
+</script>
+
+</body>
+</html>
