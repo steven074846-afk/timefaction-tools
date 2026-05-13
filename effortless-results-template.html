@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不費力的成果｜自我檢核模板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f0e8;
+    --accent: #c8a96e;
+    --accent-dark: #9a7a45;
+    --light: #ede8dc;
+    --muted: #8a8070;
+    --section-bg: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #d8d2c4;
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+  }
+
+  .page {
+    background: var(--paper);
+    width: 794px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.3);
+  }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 20px;
+    border: 1px solid var(--accent);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 0.5px solid rgba(200,169,110,0.4);
+  }
+
+  .corner { position: absolute; width: 30px; height: 30px; z-index: 2; }
+  .corner svg { width: 100%; height: 100%; }
+  .corner-tl { top: 14px; left: 14px; }
+  .corner-tr { top: 14px; right: 14px; transform: scaleX(-1); }
+  .corner-bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+  .corner-br { bottom: 14px; right: 14px; transform: scale(-1); }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    padding: 55px 70px 50px;
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 28px; }
+
+  .series-label {
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .title-main {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 40px;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+  .title-main span { color: var(--accent-dark); }
+
+  .title-sub {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .divider { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 8px; }
+  .divider-line { height: 0.5px; width: 80px; background: linear-gradient(90deg, transparent, var(--accent)); }
+  .divider-line.right { background: linear-gradient(90deg, var(--accent), transparent); }
+  .divider-diamond { width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); }
+
+  .intro-text {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-top: 12px;
+    font-weight: 300;
+  }
+
+  /* 核心願景區塊 */
+  .vision-box {
+    background: var(--ink);
+    padding: 24px 28px;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vision-box::before {
+    content: '∞';
+    position: absolute;
+    right: 20px;
+    top: -15px;
+    font-size: 120px;
+    font-weight: 900;
+    color: rgba(200,169,110,0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .vision-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--paper);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+
+  .vision-subtitle {
+    font-size: 11px;
+    color: rgba(200,169,110,0.7);
+    margin-bottom: 20px;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  .vision-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .vision-q {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .vision-q-text {
+    font-size: 12px;
+    color: rgba(245,240,232,0.85);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .vision-q-text span {
+    color: var(--accent);
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  textarea.vision-input {
+    width: 100%;
+    min-height: 48px;
+    background: rgba(255,255,255,0.05);
+    border: none;
+    border-bottom: 0.5px solid rgba(200,169,110,0.3);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 12px;
+    color: var(--paper);
+    resize: vertical;
+    outline: none;
+    padding: 6px 4px;
+    line-height: 1.8;
+  }
+
+  textarea.vision-input::placeholder { color: rgba(200,169,110,0.3); font-style: italic; }
+
+  .vision-note {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 0.5px solid rgba(200,169,110,0.2);
+    font-size: 11px;
+    color: rgba(200,169,110,0.6);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  /* Sections */
+  .sections { display: flex; flex-direction: column; gap: 14px; }
+
+  .section {
+    background: white;
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .section-number {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    letter-spacing: 2px;
+    min-width: 20px;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+
+  .section-tagline {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  /* Question Item */
+  .question-item {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--light);
+  }
+  .question-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+  .question-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .checkbox {
+    width: 15px;
+    height: 15px;
+    border: 1.5px solid var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+  }
+
+  .checkbox.checked { background: var(--accent); }
+  .checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    top: -2px;
+    left: 1px;
+    font-size: 11px;
+    color: white;
+    font-weight: 700;
+  }
+
+  .question-text {
+    font-size: 12px;
+    color: #3a3830;
+    line-height: 1.6;
+    font-weight: 400;
+    flex: 1;
+  }
+
+  .answer-label {
+    font-size: 10px;
+    color: var(--accent-dark);
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    padding-left: 25px;
+  }
+
+  textarea.answer-input {
+    width: calc(100% - 25px);
+    min-height: 44px;
+    background: rgba(200,169,110,0.04);
+    border: none;
+    border-left: 2px solid rgba(200,169,110,0.3);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 12px;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    padding: 6px 10px;
+    line-height: 1.7;
+    margin-left: 25px;
+  }
+
+  textarea.answer-input::placeholder { color: rgba(138,128,112,0.35); font-style: italic; }
+
+  /* Insight */
+  .insight-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 18px 24px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-box::before {
+    content: '❝';
+    position: absolute;
+    top: -10px;
+    left: 18px;
+    font-size: 80px;
+    color: var(--accent);
+    opacity: 0.15;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .insight-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .insight-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+  }
+  .insight-text em { color: var(--accent); font-style: normal; }
+
+  /* Copy Section */
+  .copy-section {
+    margin-top: 24px;
+    background: white;
+    border: 1px solid var(--accent);
+    padding: 20px 24px;
+  }
+
+  .copy-section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  .copy-section-desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .copy-section-desc strong { color: var(--accent-dark); font-weight: 600; }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .copy-btn:hover { background: #2a2a28; }
+  .copy-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(200,169,110,0.1) 0%, transparent 50%);
+  }
+
+  .copy-success {
+    display: none;
+    text-align: center;
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(74,124,89,0.08);
+    border: 1px solid rgba(74,124,89,0.3);
+    font-size: 12px;
+    color: #4a7c59;
+    line-height: 1.7;
+  }
+  .copy-success a { color: var(--accent-dark); font-weight: 600; text-decoration: underline; }
+
+  /* Footer */
+  .footer {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 0.5px solid var(--accent);
+  }
+
+  .footer-brand {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+  .footer-brand span { color: var(--accent-dark); }
+
+  .footer-note { font-size: 10px; color: var(--muted); letter-spacing: 1px; font-weight: 300; }
+  .footer-book { font-size: 10px; color: var(--muted); font-style: italic; text-align: right; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="frame"></div>
+
+  <div class="corner corner-tl">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+  <div class="corner corner-tr">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+  <div class="corner corner-bl">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+  <div class="corner corner-br">
+    <svg viewBox="0 0 30 30" fill="none"><path d="M2 28 L2 2 L28 2" stroke="#c8a96e" stroke-width="1.5" fill="none"/><path d="M2 2 L8 8" stroke="#c8a96e" stroke-width="0.8" opacity="0.5"/></svg>
+  </div>
+
+  <div class="content">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="series-label">《努力，但不費力》讀書筆記 · 第三部</div>
+      <div class="title-main">不費力的<span>成果</span></div>
+      <div class="title-sub">Effortless Results · 引導式思考模板</div>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-diamond"></div>
+        <div class="divider-line right"></div>
+      </div>
+      <div class="intro-text">
+        成果不是靠更努力換來的，是靠更聰明的系統養出來的。<br>
+        填完這份模板，把你的答案複製到 Skool 社群，讓群友一起見證你的複利計畫！
+      </div>
+    </div>
+
+    <!-- 核心願景 -->
+    <div class="vision-box">
+      <div class="vision-title">先想清楚你要的複利結果是什麼</div>
+      <div class="vision-subtitle">帶著這個答案，去思考下面五個面向怎麼為你服務</div>
+      <div class="vision-questions">
+
+        <div class="vision-q">
+          <div class="vision-q-text"><span>Q1</span>你最想透過複利效應達到的結果是什麼？（可以是技能、收入、影響力、健康…）</div>
+          <textarea class="vision-input" id="vq1" placeholder="如果一件事可以持續為我帶來回報，我希望它是…"></textarea>
+        </div>
+
+        <div class="vision-q">
+          <div class="vision-q-text"><span>Q2</span>你現在做的哪一件事，最有可能隨著時間複利增長？</div>
+          <textarea class="vision-input" id="vq2" placeholder="我現在做的___，如果持續累積，一年後可能會…"></textarea>
+        </div>
+
+        <div class="vision-q">
+          <div class="vision-q-text"><span>Q3</span>你希望五年後，你的哪個成果可以在你不主動出力的情況下，繼續為你運作？</div>
+          <textarea class="vision-input" id="vq3" placeholder="五年後，我希望___可以自動為我…"></textarea>
+        </div>
+
+      </div>
+      <div class="vision-note">💡 帶著你的答案往下填，思考怎麼用學習、提升、自動化、信任、預防，讓這個複利結果真正發生。</div>
+    </div>
+
+    <!-- Sections -->
+    <div class="sections">
+
+      <!-- 01 學習 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">01</div>
+          <div class="section-title">學習</div>
+          <div class="section-tagline">學一次，用一輩子</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在學的東西，背後的核心原理是什麼？如果只能記住一個原理，你會記哪個？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a1q1" placeholder="這件事背後最根本的原理是…這個原理可以應用在…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你目前最有可能「學一次用很久」的知識或技能是什麼？它能為你帶來哪些複利回報？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a1q2" placeholder="我最值得深耕的知識是…掌握它之後，我可以…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在學習的方式，有沒有在真正理解原理，還是只是在記住方法和步驟？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a1q3" placeholder="我通常的學習方式是…我可以怎麼調整讓自己更理解原理…"></textarea>
+        </div>
+      </div>
+
+      <!-- 02 提升 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">02</div>
+          <div class="section-title">提升</div>
+          <div class="section-tagline">你分享的每一次，都是給自己最深的一堂課</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在有沒有在輸出你學到的東西？用什麼形式？如果還沒有，你最容易開始的輸出方式是什麼？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a2q1" placeholder="我目前的輸出方式是…或我可以從___開始輸出…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你有沒有一技之長，是你可以教別人、同時讓自己成長更快的？把它說清楚。</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a2q2" placeholder="我最擅長的是___，如果我開始教別人，我自己會因此更深入理解…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">如果你的知識可以透過某種形式持續觸及更多人，你會選擇哪種方式？這個方式可以怎麼讓你的時間複利？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a2q3" placeholder="我希望透過___讓我的知識觸及更多人，這樣即使我不在，我的___還是可以…"></textarea>
+        </div>
+      </div>
+
+      <!-- 03 自動化 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">03</div>
+          <div class="section-title">自動化</div>
+          <div class="section-tagline">設計好的系統，替你做不想每天重新決定的事</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你生活或工作裡，有哪件重要的事是你每次都要重新做決定的？它可以怎麼變成自動化？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a3q1" placeholder="我每次都要重新決定的事是___，我可以透過___讓它自動發生…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在最想建立的一個「高科技自動化」是什麼？最想固定下來的一個「低科技習慣」是什麼？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a3q2" placeholder="高科技自動化：___&#10;低科技固定習慣：___"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">如果你把決策能量省下來，你最想把它用在哪件真正需要思考的事情上？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a3q3" placeholder="如果我不需要每天決定___，我可以把那些精力拿去…"></textarea>
+        </div>
+      </div>
+
+      <!-- 04 信任 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">04</div>
+          <div class="section-title">信任</div>
+          <div class="section-tagline">信任是最貴的潤滑劑，也是最難補的耗材</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在身邊有沒有你高度信任的人？他們符合三個I嗎：正直（Integrity）、有頭腦（Intelligent）、積極主動（Initiative）？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a4q1" placeholder="我最信任的人是___，他們讓我省下了___…&#10;我在選擇合作對象時，最容易忽略的I是…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你有沒有因為「找錯人」而花了大量時間或成本修補的經驗？那次教了你什麼？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a4q2" placeholder="那次我學到，選擇合作對象時最重要的標準是…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在有哪個合作關係或夥伴關係，值得花時間把成果、角色、原則說清楚，建立更高信任的協議？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a4q3" placeholder="我想跟___建立更清楚的協議，需要說清楚的是…"></textarea>
+        </div>
+      </div>
+
+      <!-- 05 預防 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-number">05</div>
+          <div class="section-title">預防</div>
+          <div class="section-tagline">現在多花2分鐘，省下未來幾小時的修補</div>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你生活或工作裡，有沒有一個問題是一直重複出現的？你有沒有真正解決它，還是每次只是應付？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a5q1" placeholder="一直重複出現的問題是___&#10;我可以做什麼讓它永遠不再出現：___"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你現在最大的一個潛在風險是什麼？今天可以採取什麼簡單行動來防範它？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a5q2" placeholder="我最大的潛在風險是___&#10;今天我可以做的一個預防行動是…"></textarea>
+        </div>
+
+        <div class="question-item">
+          <div class="question-row">
+            <div class="checkbox" onclick="toggleCheck(this)"></div>
+            <div class="question-text">你有沒有一個「丈量兩次，裁切一次」的習慣？在哪件事上，你可以在行動前多確認一次？</div>
+          </div>
+          <div class="answer-label">我的答案</div>
+          <textarea class="answer-input" id="a5q3" placeholder="我在___這件事上，行動前可以多花___分鐘確認___，避免之後…"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Insight -->
+    <div class="insight-box">
+      <div class="insight-label">整個系列的核心提醒</div>
+      <div class="insight-text">
+        狀態對了，行動才有效。行動對了，成果才能複利。<br>
+        你要的成果，不是靠<em>更努力</em>換來的，<br>
+        是靠<em>更聰明的系統</em>養出來的。
+      </div>
+    </div>
+
+    <!-- Copy Section -->
+    <div class="copy-section">
+      <div class="copy-section-title">📋 一鍵複製你的複利計畫</div>
+      <div class="copy-section-desc">
+        填完了嗎？點下方按鈕，把你的答案一次複製下來。<br>
+        然後到 <strong>Skool 社群</strong>貼出你的複利計畫，讓群友一起見證你的成果！<br>
+        你說出來的目標，完成的機率會大幅提升。
+      </div>
+      <button class="copy-btn" onclick="copyResults()">
+        <span>📋</span>
+        複製我的複利計畫
+      </button>
+      <div class="copy-success" id="copy-success">
+        ✅ 複製成功！現在去 Skool 社群貼上你的答案，讓群友一起見證你的複利計畫 👉
+        <a href="https://www.skool.com/timefaction/about" target="_blank">點這裡進入社群</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">Steven <span>·</span> 說書影片系列</div>
+      <div class="footer-note">學習 · 提升 · 自動化 · 信任 · 預防</div>
+      <div class="footer-book">《努力，但不費力》<br>葛瑞格．麥基昂 著</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+  }
+
+  function copyResults() {
+    const vq1 = document.getElementById('vq1').value || '（未填寫）';
+    const vq2 = document.getElementById('vq2').value || '（未填寫）';
+    const vq3 = document.getElementById('vq3').value || '（未填寫）';
+
+    const sections = [
+      { title: '01 學習｜學一次，用一輩子', items: [
+        { q: '核心原理是什麼', id: 'a1q1' },
+        { q: '最值得深耕的知識', id: 'a1q2' },
+        { q: '學習方式的反思', id: 'a1q3' },
+      ]},
+      { title: '02 提升｜開始輸出，加速複利', items: [
+        { q: '我的輸出方式', id: 'a2q1' },
+        { q: '我可以教別人的一技之長', id: 'a2q2' },
+        { q: '讓知識觸及更多人的方式', id: 'a2q3' },
+      ]},
+      { title: '03 自動化｜系統替我運作', items: [
+        { q: '可以自動化的重要決策', id: 'a3q1' },
+        { q: '高科技自動化 vs 低科技習慣', id: 'a3q2' },
+        { q: '省下決策能量後要用在哪', id: 'a3q3' },
+      ]},
+      { title: '04 信任｜找對的人，事半功倍', items: [
+        { q: '我身邊高度信任的人', id: 'a4q1' },
+        { q: '找錯人的教訓', id: 'a4q2' },
+        { q: '想建立更清楚協議的關係', id: 'a4q3' },
+      ]},
+      { title: '05 預防｜丈量兩次，裁切一次', items: [
+        { q: '反覆出現的問題和解法', id: 'a5q1' },
+        { q: '最大潛在風險和預防行動', id: 'a5q2' },
+        { q: '行動前多確認一次的習慣', id: 'a5q3' },
+      ]},
+    ];
+
+    let text = `🌱 我的《不費力的成果》複利計畫\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    text += `【我的複利願景】\n`;
+    text += `▸ 我想透過複利達到的結果\n${vq1}\n\n`;
+    text += `▸ 最有可能複利增長的事\n${vq2}\n\n`;
+    text += `▸ 五年後希望自動運作的成果\n${vq3}\n\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    sections.forEach(section => {
+      text += `【${section.title}】\n`;
+      section.items.forEach(item => {
+        const val = document.getElementById(item.id).value || '（未填寫）';
+        text += `▸ ${item.q}\n${val}\n\n`;
+      });
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    });
+
+    text += `來自《努力，但不費力》說書系列 · Steven\n`;
+    text += `#不費力的成果 #複利思維 #自我成長 #讀書筆記`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const el = document.getElementById('copy-success');
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 8000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const el = document.getElementById('copy-success');
+      el.style.display = 'block';
+      setTimeout(() => { el.style.display = 'none'; }, 8000);
+    });
+  }
+</script>
+
+</body>
+</html>
