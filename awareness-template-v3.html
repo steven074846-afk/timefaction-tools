@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>現況覺察表 — Steven</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #1A1A1A;
+    --dark-2: #222222;
+    --dark-3: #2A2A2A;
+    --dark-4: #303030;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --cream: #F5F0E8;
+    --text-muted: #777;
+    --border: rgba(201,168,76,0.2);
+    --border-dim: rgba(201,168,76,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--cream);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; }
+
+  .header {
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.1s forwards;
+  }
+
+  .eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .main-title {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .main-title span { color: var(--gold); }
+
+  .header-body {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.9;
+    border-left: 2px solid var(--gold);
+    padding-left: 20px;
+    margin-top: 24px;
+  }
+
+  .progress-wrap {
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .progress-bar {
+    height: 1px;
+    background: var(--dark-4);
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--gold), var(--gold-light));
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .block {
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s forwards;
+  }
+
+  .block:nth-child(1) { animation-delay: 0.3s; }
+  .block:nth-child(2) { animation-delay: 0.4s; }
+  .block:nth-child(3) { animation-delay: 0.5s; }
+  .block:nth-child(4) { animation-delay: 0.6s; }
+  .block:nth-child(5) { animation-delay: 0.7s; }
+
+  .block-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .block-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .block-meta { flex: 1; }
+
+  .block-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+
+  .block-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .questions { display: flex; flex-direction: column; gap: 20px; }
+
+  .q-item { position: relative; }
+
+  .q-num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+
+  .q-text {
+    font-size: 0.875rem;
+    color: var(--cream);
+    line-height: 1.7;
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+
+  .q-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.6;
+    padding-left: 12px;
+    border-left: 1px solid rgba(201,168,76,0.3);
+    font-style: italic;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--dark-2);
+    border: 1px solid var(--border-dim);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    color: var(--cream);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 300;
+    padding: 14px 16px;
+    resize: vertical;
+    min-height: 76px;
+    line-height: 1.8;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  textarea::placeholder { color: #444; font-size: 0.8rem; }
+  textarea:focus {
+    border-color: var(--gold);
+    background: #252525;
+  }
+
+  .q-item.final textarea {
+    border-color: rgba(201,168,76,0.4);
+    background: rgba(201,168,76,0.03);
+  }
+
+  .q-item.final .q-text {
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+
+  .feeling-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .feeling-btn {
+    padding: 12px 16px;
+    background: var(--dark-2);
+    border: 1px solid var(--border-dim);
+    color: var(--text-muted);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    line-height: 1.4;
+  }
+
+  .feeling-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    background: rgba(201,168,76,0.05);
+  }
+
+  .feeling-btn.active {
+    background: rgba(201,168,76,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .copy-section {
+    margin-top: 56px;
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    background: var(--dark-2);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.8s forwards;
+  }
+
+  .copy-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .copy-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .copy-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+
+  .copy-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.8;
+    padding-left: 20px;
+  }
+
+  .copy-preview {
+    background: var(--dark-3);
+    border: 1px solid var(--border-dim);
+    padding: 20px;
+    font-size: 0.8rem;
+    color: #aaa;
+    line-height: 2;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 100px;
+    margin-bottom: 16px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .copy-preview.has-content { color: var(--cream); }
+
+  .copy-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .copy-btn:hover { background: var(--gold-light); }
+  .copy-btn.copied { background: #4a9960; color: white; }
+
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.72rem;
+    color: #555;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.7s 1s forwards;
+  }
+
+  .footer strong { color: var(--gold); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 500px) {
+    .feeling-options { grid-template-columns: 1fr; }
+    .copy-section { padding: 24px 20px; }
+    body { padding: 32px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="eyebrow">現況覺察表 · Steven</div>
+    <h1 class="main-title">誰在替<span>誰</span>工作？</h1>
+    <div class="header-body">
+      Meta今天裁了8,000人。留下來的人更忙、更累、還以為自己在進步。<br>
+      在繼續往前跑之前，先停下來問自己這幾個問題。<br>
+      沒有標準答案，只有一個要求：誠實。
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span>完成進度</span>
+      <span id="progressPct">0 / 20</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 1 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-icon">💼</div>
+      <div class="block-meta">
+        <div class="block-title">工作現實</div>
+        <div class="block-desc">公司說看重你的努力。但數字不會說謊，你的數字說什麼？</div>
+      </div>
+    </div>
+    <div class="questions">
+      <div class="q-item">
+        <div class="q-num">— 01</div>
+        <div class="q-text">你上一次調薪是什麼時候？幅度大概是多少？</div>
+        <div class="q-hint">具體的時間和數字。如果記不清楚，這本身就是一個答案。</div>
+        <textarea id="w1" placeholder="例如：去年三月，調了2%，大概多了800塊..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 02</div>
+        <div class="q-text">那個幅度，跟你那一年的實際付出比起來，你覺得合理嗎？差距在哪裡？</div>
+        <div class="q-hint">不是在問你有沒有抱怨的資格，是在問你有沒有認真計算過這個比例。</div>
+        <textarea id="w2" placeholder="我那一年加班了多少小時、承擔了多少額外工作、但調薪幅度是..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 03</div>
+        <div class="q-text">你身邊有沒有人，付出比你少但得到比你多？他和你的差別是什麼？</div>
+        <div class="q-hint">不用指名道姓，但要誠實說出你觀察到的差異。</div>
+        <textarea id="w3" placeholder="他的工作方式、和主管的關係、或是純粹就是運氣？" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 04</div>
+        <div class="q-text">如果公司不是在獎勵努力，它在獎勵什麼？</div>
+        <div class="q-hint">根據你自己的觀察，不是根據公司的官方說法。</div>
+        <textarea id="w4" placeholder="忠誠？不製造麻煩？讓主管有安全感？不會想離開？" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item final">
+        <div class="q-num">— 05</div>
+        <div class="q-text">對一間隨時可以因為AI把你換掉的公司，你現在繼續努力，是在替自己還是替這套邏輯服務？</div>
+        <div class="q-hint">這題慢慢想，不用急著回答。</div>
+        <textarea id="w5" placeholder="..." oninput="updateAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 2 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-icon">💰</div>
+      <div class="block-meta">
+        <div class="block-title">金錢與自由</div>
+        <div class="block-desc">你以為你在賺錢。但你的錢到底流去哪裡了？</div>
+      </div>
+    </div>
+    <div class="questions">
+      <div class="q-item">
+        <div class="q-num">— 01</div>
+        <div class="q-text">你每個月薪水進來，扣掉所有固定支出，剩下多少？</div>
+        <div class="q-hint">算一個真實的數字，不是大概，是真的算。</div>
+        <textarea id="m1" placeholder="薪水是___，房租/房貸___，車貸___，其他固定___，剩下___" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 02</div>
+        <div class="q-text">那些固定支出裡面，哪些是你主動選擇的，哪些是你覺得「不得不有」的？</div>
+        <div class="q-hint">主動選擇和被推著走，是兩件完全不同的事。</div>
+        <textarea id="m2" placeholder="我主動選擇的有：___。感覺不得不有的有：___" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 03</div>
+        <div class="q-text">那些「不得不有」的支出，是誰告訴你你需要它的？</div>
+        <div class="q-hint">父母？社會期待？廣告？還是你自己真的想要？</div>
+        <textarea id="m3" placeholder="仔細想想這些支出的來源..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 04</div>
+        <div class="q-text">如果沒有這些固定支出，你還需要現在這份薪水嗎？</div>
+        <div class="q-hint">不是在叫你去砍支出，是在問你：困住你的到底是工作，還是你的支出結構？</div>
+        <textarea id="m4" placeholder="如果沒有房貸/租金，我需要的薪水其實是___" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item final">
+        <div class="q-num">— 05</div>
+        <div class="q-text">所以你現在每天去上班，有多少比例是在替自己賺錢，有多少比例是在替這些支出打工？</div>
+        <div class="q-hint">這個問題沒有好的答案。但你需要知道這個數字。</div>
+        <textarea id="m5" placeholder="..." oninput="updateAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-icon">👥</div>
+      <div class="block-meta">
+        <div class="block-title">主管與職場</div>
+        <div class="block-desc">那些你以為是鼓勵的話，背後真正的意思是什麼？</div>
+      </div>
+    </div>
+    <div class="questions">
+      <div class="q-item">
+        <div class="q-num">— 01</div>
+        <div class="q-text">你的主管說過最多次的一句話是什麼？</div>
+        <div class="q-hint">不是你覺得他應該說的，是他真的說最多次的那句。</div>
+        <textarea id="b1" placeholder="例如：「你們的努力我們都看在眼裡」、「再忍一下」..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 02</div>
+        <div class="q-text">這句話背後，他希望你做什麼？</div>
+        <div class="q-hint">不是表面的意思，是他說這句話想讓你產生什麼行為。</div>
+        <textarea id="b2" placeholder="他希望我繼續留下來、繼續付出、不要提加薪..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 03</div>
+        <div class="q-text">如果你照他說的做，最終得益的是誰？</div>
+        <div class="q-hint">把利益方向想清楚。</div>
+        <textarea id="b3" placeholder="是我自己、是他、還是公司？" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 04</div>
+        <div class="q-text">你有沒有照做？結果呢？</div>
+        <div class="q-hint">用你自己的經歷來驗證，不要用假設。</div>
+        <textarea id="b4" placeholder="我照做了___次，結果是..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item final">
+        <div class="q-num">— 05</div>
+        <div class="q-text">下次他再說這句話，你會怎麼解讀它？</div>
+        <div class="q-hint">覺察不是叫你去對抗，是讓你清醒地選擇自己的反應。</div>
+        <textarea id="b5" placeholder="..." oninput="updateAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-icon">🔍</div>
+      <div class="block-meta">
+        <div class="block-title">價值觀覺察</div>
+        <div class="block-desc">買房、買車、結婚——這些你在追求的東西，是你的夢還是別人給你的劇本？</div>
+      </div>
+    </div>
+    <div class="questions">
+      <div class="q-item">
+        <div class="q-num">— 01</div>
+        <div class="q-text">你現在最想得到的一樣東西是什麼？買房、升職、加薪、還是別的？</div>
+        <div class="q-hint">具體說出來，不要說「我想要更好的生活」這種答案。</div>
+        <textarea id="v1" placeholder="我最想要的是___" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 02</div>
+        <div class="q-text">你想要它，是因為它會讓你的生活變得更好，還是因為身邊的人都覺得你應該要有？</div>
+        <div class="q-hint">這兩個理由都沒有對錯，但你必須知道自己的答案是哪一個。</div>
+        <textarea id="v2" placeholder="我誠實的答案是..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 03</div>
+        <div class="q-text">如果你得到它，然後呢？你的生活會有什麼具體的改變？</div>
+        <div class="q-hint">不是感覺上會更好，是具體哪些事情會不一樣。</div>
+        <textarea id="v3" placeholder="得到之後，我的每一天會具體變成..." oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-num">— 04</div>
+        <div class="q-text">如果五年後你還沒有得到它，你的生活真的會更差嗎？還是只是別人眼中的你會更差？</div>
+        <div class="q-hint">區分真實的損失和社會評價的損失，這兩件事完全不同。</div>
+        <textarea id="v4" placeholder="五年後沒得到，真正受影響的是我的___，還是別人對我的看法？" oninput="updateAll()"></textarea>
+      </div>
+      <div class="q-item final">
+        <div class="q-num">— 05</div>
+        <div class="q-text">所以你在追求的，是你真正想過的生活，還是一個讓別人覺得你過得不錯的證明？</div>
+        <div class="q-hint">這題不需要一個「正確」的答案。只需要一個誠實的答案。</div>
+        <textarea id="v5" placeholder="..." oninput="updateAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 5 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-icon">📊</div>
+      <div class="block-meta">
+        <div class="block-title">填完之後</div>
+        <div class="block-desc">你現在的感受是什麼？選一個最接近的。</div>
+      </div>
+    </div>
+    <div class="feeling-options">
+      <button class="feeling-btn" onclick="selectFeeling(this, '😶 還好，沒什麼特別感覺')">😶 還好，沒什麼感覺</button>
+      <button class="feeling-btn" onclick="selectFeeling(this, '🤔 有些地方讓我開始想很多')">🤔 開始想很多</button>
+      <button class="feeling-btn" onclick="selectFeeling(this, '😤 有點憤怒，但說不清楚為什麼')">😤 有點憤怒</button>
+      <button class="feeling-btn" onclick="selectFeeling(this, '😮 有點震驚，原來我從來沒想過這些')">😮 有點震驚</button>
+      <button class="feeling-btn" onclick="selectFeeling(this, '😔 有點難過，但說不上來為什麼')">😔 有點難過</button>
+      <button class="feeling-btn" onclick="selectFeeling(this, '💡 我想開始做些什麼了')">💡 想開始行動</button>
+    </div>
+  </div>
+
+  <!-- COPY SECTION -->
+  <div class="copy-section">
+    <div class="copy-header">
+      <div class="copy-dot"></div>
+      <div class="copy-title">一鍵複製，貼到 Skool 社群</div>
+    </div>
+    <p class="copy-desc">
+      你的覺察結果只有你自己看到，沒有任何意義。<br>
+      貼出來，讓更多人看到你的真實狀況。<br>
+      越多人分享，我們就越能看清楚這些「理所當然」的價值觀，到底哪裡出了問題。
+    </p>
+    <div class="copy-preview" id="copyPreview">填完上方問題後，你的覺察結果會自動出現在這裡。</div>
+    <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">一鍵複製，前往 Skool 分享</button>
+  </div>
+
+  <div class="footer">
+    現況覺察表 · 由 <strong>Steven</strong> 製作<br>
+    加入免費 Skool 社群，和同樣在思考這些問題的人一起覺察、一起找方向。
+  </div>
+
+</div>
+
+<script>
+  let feeling = '';
+  const TOTAL = 20;
+
+  function selectFeeling(btn, val) {
+    document.querySelectorAll('.feeling-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    feeling = val;
+    updateAll();
+  }
+
+  function g(id) { return (document.getElementById(id).value || '').trim(); }
+
+  function countFilled() {
+    const ids = ['w1','w2','w3','w4','w5','m1','m2','m3','m4','m5','b1','b2','b3','b4','b5','v1','v2','v3','v4','v5'];
+    return ids.filter(id => g(id).length > 0).length;
+  }
+
+  function updateAll() {
+    const filled = countFilled();
+    const pct = Math.round((filled / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = filled + ' / ' + TOTAL;
+
+    const sections = [
+      {
+        title: '💼 工作現實',
+        qs: [
+          { label: '上次調薪', id: 'w1' },
+          { label: '努力與回報的落差', id: 'w2' },
+          { label: '付出少但得到多的人', id: 'w3' },
+          { label: '公司真正在獎勵什麼', id: 'w4' },
+          { label: '我在替誰服務', id: 'w5' },
+        ]
+      },
+      {
+        title: '💰 金錢與自由',
+        qs: [
+          { label: '每月剩餘', id: 'm1' },
+          { label: '主動vs被動支出', id: 'm2' },
+          { label: '支出的來源', id: 'm3' },
+          { label: '真正需要的薪水', id: 'm4' },
+          { label: '替自己還是替支出打工', id: 'm5' },
+        ]
+      },
+      {
+        title: '👥 主管與職場',
+        qs: [
+          { label: '主管最常說的話', id: 'b1' },
+          { label: '這句話想讓我做什麼', id: 'b2' },
+          { label: '照做後誰得益', id: 'b3' },
+          { label: '我照做的結果', id: 'b4' },
+          { label: '下次我的解讀', id: 'b5' },
+        ]
+      },
+      {
+        title: '🔍 價值觀覺察',
+        qs: [
+          { label: '我最想得到的', id: 'v1' },
+          { label: '為什麼想要它', id: 'v2' },
+          { label: '得到後具體的改變', id: 'v3' },
+          { label: '五年後沒得到的真實損失', id: 'v4' },
+          { label: '我追求的是誰的生活', id: 'v5' },
+        ]
+      }
+    ];
+
+    let lines = [];
+    lines.push('【現況覺察表｜誰在替誰工作？】');
+    lines.push('');
+
+    let hasAny = false;
+
+    sections.forEach(sec => {
+      const filled = sec.qs.filter(q => g(q.id).length > 0);
+      if (filled.length === 0) return;
+      hasAny = true;
+      lines.push(sec.title);
+      filled.forEach(q => {
+        lines.push('→ ' + q.label + '：' + g(q.id));
+      });
+      lines.push('');
+    });
+
+    if (feeling) {
+      hasAny = true;
+      lines.push('📊 填完後的感受：' + feeling);
+      lines.push('');
+    }
+
+    if (hasAny) {
+      lines.push('——');
+      lines.push('這個覺察表來自 Steven 的頻道');
+      lines.push('你也來填填看，貼出來讓大家看看你的覺察 👇');
+      lines.push('[模板連結放這裡]');
+
+      const preview = document.getElementById('copyPreview');
+      preview.textContent = lines.join('\n');
+      preview.classList.add('has-content');
+    } else {
+      const preview = document.getElementById('copyPreview');
+      preview.textContent = '填完上方問題後，你的覺察結果會自動出現在這裡。';
+      preview.classList.remove('has-content');
+    }
+  }
+
+  function copyToClipboard() {
+    const text = document.getElementById('copyPreview').textContent;
+    if (!document.getElementById('copyPreview').classList.contains('has-content')) {
+      alert('請先填寫至少一個問題！');
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ 已複製！前往 Skool 貼上';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '一鍵複製，前往 Skool 分享';
+        btn.classList.remove('copied');
+      }, 3000);
+    });
+  }
+</script>
+</body>
+</html>
