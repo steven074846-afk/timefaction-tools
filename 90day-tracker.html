@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>90天計畫追蹤器 — Steven</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #0F0F0F;
+    --dark-2: #171717;
+    --dark-3: #1F1F1F;
+    --dark-4: #272727;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --gold-dim: rgba(201,168,76,0.15);
+    --cream: #F5F0E8;
+    --text-muted: #666;
+    --border: rgba(201,168,76,0.2);
+    --border-dim: rgba(201,168,76,0.08);
+    --green: #4a9960;
+    --green-dim: rgba(74,153,96,0.15);
+    --red-dim: rgba(180,60,60,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--cream);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ── SETUP SCREEN ── */
+  #setup-screen {
+    padding: 48px 24px 80px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .setup-header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeUp 0.7s forwards;
+  }
+
+  .eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .main-title {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .main-title span { color: var(--gold); }
+
+  .setup-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .setup-section {
+    margin-bottom: 36px;
+    animation: fadeUp 0.7s forwards;
+  }
+
+  .setup-section:nth-child(2) { animation-delay: 0.1s; opacity: 0; }
+  .setup-section:nth-child(3) { animation-delay: 0.2s; opacity: 0; }
+  .setup-section:nth-child(4) { animation-delay: 0.3s; opacity: 0; }
+  .setup-section:nth-child(5) { animation-delay: 0.4s; opacity: 0; }
+  .setup-section:nth-child(6) { animation-delay: 0.5s; opacity: 0; }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-dim);
+  }
+
+  .section-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  input[type="text"], textarea, input[type="date"] {
+    width: 100%;
+    background: var(--dark-2);
+    border: 1px solid var(--border-dim);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    color: var(--cream);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 300;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    resize: vertical;
+  }
+
+  input[type="text"]:focus, textarea:focus, input[type="date"]:focus {
+    border-color: var(--gold);
+    background: #1a1a1a;
+  }
+
+  textarea { min-height: 80px; }
+
+  .goal-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: start;
+  }
+
+  .goal-row input { margin-bottom: 0; }
+
+  .remove-btn {
+    width: 40px;
+    height: 46px;
+    background: var(--dark-3);
+    border: 1px solid var(--border-dim);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover { border-color: #b44444; color: #b44444; }
+
+  .add-btn {
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--gold);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.78rem;
+    padding: 10px 16px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .add-btn:hover { background: var(--gold-dim); }
+
+  .time-block-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .time-block-item label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  /* Affirmation fields */
+  .affirmation-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+  .aff-field { background: var(--dark-2); border: 1px solid var(--border-dim); padding: 14px 16px; }
+
+  .aff-field-prefix {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .aff-field input {
+    border: none;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    background: transparent;
+    padding: 8px 0;
+    font-size: 0.875rem;
+    margin-bottom: 6px;
+  }
+
+  .aff-field input:focus { border-bottom-color: var(--gold); }
+
+  .aff-field-suffix {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    font-style: italic;
+  }
+
+  .aff-preview-wrap {
+    background: var(--dark-3);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .aff-preview-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .aff-preview {
+    font-size: 0.875rem;
+    color: var(--cream);
+    line-height: 2;
+    white-space: pre-line;
+    font-style: italic;
+  }
+
+  .aff-preview.empty { color: var(--text-muted); font-style: normal; }
+
+  .start-btn {
+    width: 100%;
+    padding: 20px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    margin-top: 16px;
+    animation: fadeUp 0.7s 0.6s forwards;
+    opacity: 0;
+  }
+
+  .start-btn:hover { background: var(--gold-light); }
+
+  /* ── DASHBOARD SCREEN ── */
+  #dashboard-screen { padding-bottom: 80px; }
+
+  .dash-header {
+    background: var(--dark-2);
+    border-bottom: 1px solid var(--border-dim);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .dash-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  .dash-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--border-dim);
+    color: var(--text-muted);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.7rem;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { border-color: #b44444; color: #b44444; }
+
+  /* Vision Panel */
+  .vision-panel {
+    background: var(--dark-2);
+    border-bottom: 1px solid var(--border-dim);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .vision-panel:hover { background: var(--dark-3); }
+
+  .vision-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .vision-toggle-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .vision-toggle-icon {
+    color: var(--text-muted);
+    transition: transform 0.3s;
+    font-size: 0.8rem;
+  }
+
+  .vision-toggle-icon.open { transform: rotate(180deg); }
+
+  .vision-content {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-dim);
+  }
+
+  .vision-content.open { display: block; }
+
+  .vision-item {
+    margin-bottom: 12px;
+  }
+
+  .vision-item-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .vision-item-value {
+    font-size: 0.875rem;
+    color: var(--cream);
+    line-height: 1.6;
+  }
+
+  .vision-item-value.gold { color: var(--gold-light); font-style: italic; }
+
+  /* Stats Bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border-dim);
+    margin: 1px 0;
+  }
+
+  .stat-item {
+    background: var(--dark-2);
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    font-style: italic;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* Week Progress */
+  .week-section {
+    padding: 24px;
+  }
+
+  .week-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .week-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-dim);
+  }
+
+  /* 90-day Grid */
+  .grid-section {
+    padding: 0 24px 24px;
+  }
+
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .day-cell {
+    aspect-ratio: 1;
+    background: var(--dark-3);
+    border: 1px solid var(--border-dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+  }
+
+  .day-cell:hover { border-color: var(--gold); background: var(--dark-4); }
+
+  .day-cell.today { border-color: var(--gold); }
+
+  .day-cell.completed {
+    background: var(--green-dim);
+    border-color: rgba(74,153,96,0.4);
+    color: #4a9960;
+  }
+
+  .day-cell.partial {
+    background: rgba(201,168,76,0.08);
+    border-color: rgba(201,168,76,0.3);
+    color: var(--gold);
+  }
+
+  .day-cell.week-review {
+    background: rgba(100,100,200,0.1);
+    border-color: rgba(100,100,200,0.3);
+    color: #8888dd;
+  }
+
+  .day-cell.week-review.completed {
+    background: rgba(100,100,200,0.2);
+  }
+
+  .day-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1;
+  }
+
+  .day-icon { font-size: 0.6rem; margin-top: 2px; }
+
+  .day-cell.future { opacity: 0.3; cursor: default; }
+  .day-cell.future:hover { border-color: var(--border-dim); background: var(--dark-3); }
+
+  /* ── DAY MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 560px;
+    margin: auto;
+    animation: fadeUp 0.3s forwards;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .modal-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover { color: var(--cream); }
+
+  .modal-body { padding: 24px; }
+
+  /* Daily affirmation */
+  .affirmation-box {
+    background: var(--dark-3);
+    border-left: 2px solid var(--gold);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 0.82rem;
+    color: var(--gold-light);
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  .affirmation-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-style: normal;
+  }
+
+  /* Checklist */
+  .checklist-section { margin-bottom: 24px; }
+
+  .checklist-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--dark-3);
+    border: 1px solid var(--border-dim);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .check-item:hover { border-color: var(--gold); }
+
+  .check-item.checked {
+    background: var(--green-dim);
+    border-color: rgba(74,153,96,0.4);
+  }
+
+  .check-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    color: transparent;
+    transition: all 0.2s;
+  }
+
+  .check-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .check-label {
+    font-size: 0.875rem;
+    color: var(--cream);
+    flex: 1;
+  }
+
+  .check-item.checked .check-label {
+    color: var(--text-muted);
+    text-decoration: line-through;
+  }
+
+  .check-points {
+    font-size: 0.7rem;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  /* Score display */
+  .day-score {
+    background: var(--dark-3);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .score-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .score-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-style: italic;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .score-bar {
+    height: 4px;
+    background: var(--dark-4);
+    margin-top: 12px;
+    position: relative;
+  }
+
+  .score-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.5s ease;
+  }
+
+  .score-threshold {
+    position: absolute;
+    right: 15%;
+    top: -8px;
+    width: 1px;
+    height: 20px;
+    background: rgba(74,153,96,0.6);
+  }
+
+  .score-threshold::after {
+    content: '85';
+    position: absolute;
+    top: -16px;
+    right: 4px;
+    font-size: 0.6rem;
+    color: var(--green);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  /* Notes */
+  .notes-section { margin-bottom: 24px; }
+
+  .notes-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.95rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .save-btn:hover { background: var(--gold-light); }
+
+  /* ── WEEK REVIEW MODAL ── */
+  .week-score-display {
+    text-align: center;
+    padding: 32px;
+    background: var(--dark-3);
+    margin-bottom: 24px;
+  }
+
+  .week-score-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-style: italic;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .week-score-big.good { color: var(--green); }
+  .week-score-big.ok { color: var(--gold); }
+  .week-score-big.low { color: #b44444; }
+
+  .week-score-msg {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .emotion-cycle {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+
+  .emotion-item {
+    background: var(--dark-3);
+    border: 1px solid var(--border-dim);
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .emotion-item:hover { border-color: var(--gold); }
+  .emotion-item.selected { background: var(--gold-dim); border-color: var(--gold); }
+
+  .emotion-icon { font-size: 1.4rem; margin-bottom: 6px; }
+
+  .emotion-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+  }
+
+  .emotion-item.selected .emotion-label { color: var(--gold-light); }
+
+  /* Copy section */
+  .copy-section {
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-top: 24px;
+  }
+
+  .copy-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.9rem;
+    color: var(--gold-light);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .copy-preview {
+    background: var(--dark-3);
+    padding: 16px;
+    font-size: 0.78rem;
+    color: #aaa;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 160px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .copy-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: var(--gold-light); }
+  .copy-btn.copied { background: var(--green); color: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+    .day-grid { grid-template-columns: repeat(7,1fr); gap: 2px; }
+    .day-num { font-size: 0.75rem; }
+    .emotion-cycle { grid-template-columns: repeat(2,1fr); }
+    .time-block-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SETUP SCREEN
+══════════════════════════════════ -->
+<div id="setup-screen" class="screen active">
+  <div class="setup-header">
+    <span class="eyebrow">90天計畫追蹤器 · Steven</span>
+    <h1 class="main-title">設計你的<br><span>90天</span></h1>
+    <p class="setup-desc">填完以下資料，你的個人化追蹤系統就會啟動。<br>每天打開，每天前進。</p>
+  </div>
+
+  <!-- 願景 -->
+  <div class="setup-section">
+    <div class="section-label">願景</div>
+    <p class="section-hint">90天後，你希望你的生活有什麼具體的改變？閉上眼睛想，然後寫下來。</p>
+    <textarea id="vision" placeholder="例如：90天後，我每天5點起床已經是習慣，投資帳戶自動運作，身體狀態是三年來最好的..." rows="4"></textarea>
+  </div>
+
+  <!-- 目標 -->
+  <div class="setup-section">
+    <div class="section-label">12週目標（1-3個）</div>
+    <p class="section-hint">如果你還在上班，建議先從1個目標開始。目標要可以量化。</p>
+    <div id="goals-container">
+      <div class="goal-row">
+        <input type="text" class="goal-input" placeholder="例如：12週結束，投資帳戶增加36,000元">
+      </div>
+    </div>
+    <button class="add-btn" onclick="addGoal()">＋ 新增目標（最多3個）</button>
+  </div>
+
+  <!-- 關鍵策略行動 -->
+  <div class="setup-section">
+    <div class="section-label">每日關鍵策略行動</div>
+    <p class="section-hint">達成目標，你每天必須做的那一件最重要的事是什麼？</p>
+    <input type="text" id="key-action" placeholder="例如：每天6-7點完成閱讀30分鐘＋運動30分鐘">
+  </div>
+
+  <!-- 領先指標 -->
+  <div class="setup-section">
+    <div class="section-label">領先指標 × 落後指標</div>
+    <p class="section-hint">領先指標是你每週能控制的行為；落後指標是最終結果。</p>
+    <input type="text" id="leading" placeholder="領先指標：例如每週投入10,000元、每週跑量30公里" style="margin-bottom:8px">
+    <input type="text" id="lagging" placeholder="落後指標：例如90天後帳戶增加36,000元、完成全馬">
+  </div>
+
+  <!-- 時間塊 -->
+  <div class="setup-section">
+    <div class="section-label">三種時間塊設計</div>
+    <p class="section-hint">策略時間塊建議設在5-7點，那是上班族一天中唯一不會被打擾的時間。</p>
+    <div class="time-block-grid">
+      <div class="time-block-item">
+        <label>⚡ 策略時間塊</label>
+        <input type="text" id="block-strategy" placeholder="例如：5:00-7:00">
+      </div>
+      <div class="time-block-item">
+        <label>📋 緩衝時間塊</label>
+        <input type="text" id="block-buffer" placeholder="例如：上班中午">
+      </div>
+      <div class="time-block-item">
+        <label>🌿 抽離時間塊</label>
+        <input type="text" id="block-rest" placeholder="例如：晚上跑步">
+      </div>
+    </div>
+  </div>
+
+  <!-- 目標宣言 -->
+  <div class="setup-section">
+    <div class="section-label">目標宣言（每天3分鐘大聲念）</div>
+    <p class="section-hint">填完六個空格，系統會自動為你生成一段約1.5分鐘的個人宣言。每天早上大聲念出來，讓大腦持續對齊你的目標方向。</p>
+
+    <div class="affirmation-fields">
+      <div class="aff-field">
+        <div class="aff-field-prefix">「我是一個</div>
+        <input type="text" id="aff-1" placeholder="你想成為的人的樣子，例如：每天主動為自己而活、持續累積籌碼" oninput="generateAffirmation()">
+        <div class="aff-field-suffix">的人。」</div>
+      </div>
+      <div class="aff-field">
+        <div class="aff-field-prefix">「我清楚地看到，過去我一直</div>
+        <input type="text" id="aff-2" placeholder="舊的模式，例如：用時間換薪水卻從不質疑這件事、下班後太累而什麼都不做" oninput="generateAffirmation()">
+        <div class="aff-field-suffix">，但我現在選擇不同的路。」</div>
+      </div>
+      <div class="aff-field">
+        <div class="aff-field-prefix">「我的90天目標是</div>
+        <input type="text" id="aff-3" placeholder="你的具體目標，例如：投資帳戶增加36,000元、完成全馬訓練計畫" oninput="generateAffirmation()">
+        <div class="aff-field-suffix">，這不是我應該做的事，這是我選擇做的事。」</div>
+      </div>
+      <div class="aff-field">
+        <div class="aff-field-prefix">「每一天，我會</div>
+        <input type="text" id="aff-4" placeholder="你的關鍵策略行動，例如：6點起床完成閱讀30分鐘和運動30分鐘" oninput="generateAffirmation()">
+        <div class="aff-field-suffix">，因為我知道每一個小行動都在複利累積。」</div>
+      </div>
+      <div class="aff-field">
+        <div class="aff-field-prefix">「90天後，我將</div>
+        <input type="text" id="aff-5" placeholder="具體的結果，例如：帶著300萬的籌碼，清醒地面對我的下一個選擇" oninput="generateAffirmation()">
+        <div class="aff-field-suffix">，那個時候的我，會感謝今天沒有放棄的自己。」</div>
+      </div>
+      <div class="aff-field">
+        <div class="aff-field-prefix">「我掌握我的主控權——我的時間、我的選擇、</div>
+        <input type="text" id="aff-6" placeholder="你最在乎的那件事，例如：我的財務、我的身體、我的未來" oninput="generateAffirmation()">
+        <div class="aff-field-suffix">，都由我來決定。」</div>
+      </div>
+    </div>
+
+    <div class="aff-preview-wrap">
+      <div class="aff-preview-label">📖 你的目標宣言預覽（約1.5分鐘）</div>
+      <div class="aff-preview" id="aff-preview">填完上方六個空格，你的宣言會自動出現在這裡。</div>
+    </div>
+
+    <input type="hidden" id="affirmation">
+  </div>
+
+  <!-- 開始日期 -->
+  <div class="setup-section">
+    <div class="section-label">開始日期</div>
+    <input type="date" id="start-date">
+  </div>
+
+  <button class="start-btn" onclick="startTracker()">啟動我的90天計畫 →</button>
+</div>
+
+<!-- ══════════════════════════════════
+     DASHBOARD SCREEN
+══════════════════════════════════ -->
+<div id="dashboard-screen" class="screen">
+
+  <div class="dash-header">
+    <div>
+      <div class="dash-title" id="dash-title">我的90天計畫</div>
+      <div class="dash-subtitle" id="dash-subtitle">載入中...</div>
+    </div>
+    <button class="reset-btn" onclick="resetTracker()">重設</button>
+  </div>
+
+  <!-- Vision Panel -->
+  <div class="vision-panel" onclick="toggleVision()">
+    <div class="vision-toggle">
+      <span class="vision-toggle-label">📍 願景 · 目標 · 宣言</span>
+      <span class="vision-toggle-icon" id="vision-icon">▼</span>
+    </div>
+    <div class="vision-content" id="vision-content">
+      <div class="vision-item">
+        <div class="vision-item-label">願景</div>
+        <div class="vision-item-value" id="vision-display"></div>
+      </div>
+      <div class="vision-item" id="goals-display-wrap">
+        <div class="vision-item-label">12週目標</div>
+        <div class="vision-item-value" id="goals-display"></div>
+      </div>
+      <div class="vision-item">
+        <div class="vision-item-label">領先指標</div>
+        <div class="vision-item-value" id="leading-display"></div>
+      </div>
+      <div class="vision-item">
+        <div class="vision-item-label">落後指標</div>
+        <div class="vision-item-value" id="lagging-display"></div>
+      </div>
+      <div class="vision-item">
+        <div class="vision-item-label">策略時間塊</div>
+        <div class="vision-item-value" id="blocks-display"></div>
+      </div>
+      <div class="vision-item">
+        <div class="vision-item-label">每日宣言</div>
+        <div class="vision-item-value gold" id="affirmation-display"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-value" id="stat-day">0</div>
+      <div class="stat-label">今天Day</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="stat-completed">0</div>
+      <div class="stat-label">完成天數</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="stat-streak">0</div>
+      <div class="stat-label">連續天數</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" id="stat-week-score">—</div>
+      <div class="stat-label">本週達成率</div>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid-section">
+    <div class="week-label">90天全覽</div>
+    <div class="day-grid" id="day-grid"></div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:0.65rem;color:var(--text-muted)"><div style="width:12px;height:12px;background:var(--green-dim);border:1px solid rgba(74,153,96,0.4)"></div>完成</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:0.65rem;color:var(--text-muted)"><div style="width:12px;height:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3)"></div>部分完成</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:0.65rem;color:var(--text-muted)"><div style="width:12px;height:12px;background:rgba(100,100,200,0.1);border:1px solid rgba(100,100,200,0.3)"></div>週回顧日</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     DAY MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="day-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-day-title">Day 1</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="affirmation-box">
+        <div class="affirmation-label">🌅 今日3分鐘宣言</div>
+        <div id="modal-affirmation"></div>
+      </div>
+
+      <div class="day-score">
+        <div class="score-label">今日達成率</div>
+        <div class="score-value" id="modal-score">0<span style="font-size:1.5rem">%</span></div>
+        <div class="score-bar">
+          <div class="score-fill" id="modal-score-fill" style="width:0%"></div>
+          <div class="score-threshold"></div>
+        </div>
+      </div>
+
+      <div class="checklist-section">
+        <div class="checklist-title">⚡ 策略時間塊完成項目</div>
+        <div class="check-item" id="check-affirmation" onclick="toggleCheck('affirmation-done')">
+          <div class="check-box" id="box-affirmation-done">✓</div>
+          <div class="check-label">完成3分鐘目標宣言</div>
+          <div class="check-points">25分</div>
+        </div>
+        <div class="check-item" id="check-action" onclick="toggleCheck('action-done')">
+          <div class="check-box" id="box-action-done">✓</div>
+          <div class="check-label" id="check-action-label">完成每日關鍵策略行動</div>
+          <div class="check-points">50分</div>
+        </div>
+      </div>
+
+      <div class="checklist-section">
+        <div class="checklist-title">📋 時間塊完成情況</div>
+        <div class="check-item" id="check-strategy" onclick="toggleCheck('strategy-done')">
+          <div class="check-box" id="box-strategy-done">✓</div>
+          <div class="check-label" id="check-strategy-label">策略時間塊</div>
+          <div class="check-points">15分</div>
+        </div>
+        <div class="check-item" id="check-buffer" onclick="toggleCheck('buffer-done')">
+          <div class="check-box" id="box-buffer-done">✓</div>
+          <div class="check-label" id="check-buffer-label">緩衝時間塊</div>
+          <div class="check-points">5分</div>
+        </div>
+        <div class="check-item" id="check-rest" onclick="toggleCheck('rest-done')">
+          <div class="check-box" id="box-rest-done">✓</div>
+          <div class="check-label" id="check-rest-label">抽離時間塊</div>
+          <div class="check-points">5分</div>
+        </div>
+      </div>
+
+      <div class="notes-section">
+        <div class="notes-label">今日筆記（可選）</div>
+        <textarea id="modal-notes" placeholder="今天做了什麼？遇到什麼？有什麼想法..." rows="3"></textarea>
+      </div>
+
+      <button class="save-btn" onclick="saveDay()">儲存今日記錄</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     WEEK REVIEW MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="week-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="week-modal-title">第1週回顧</div>
+      <button class="modal-close" onclick="closeWeekModal()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="week-score-display">
+        <div class="score-label">本週達成率</div>
+        <div class="week-score-big" id="week-score-display">—</div>
+        <div class="week-score-msg" id="week-score-msg"></div>
+        <div class="score-bar" style="margin-top:16px">
+          <div class="score-fill" id="week-score-fill" style="width:0%"></div>
+          <div class="score-threshold"></div>
+        </div>
+      </div>
+
+      <div class="checklist-section">
+        <div class="checklist-title">情緒週期——你現在在哪裡？</div>
+        <div class="emotion-cycle">
+          <div class="emotion-item" onclick="selectEmotion(this,'optimistic')">
+            <div class="emotion-icon">🌟</div>
+            <div class="emotion-label">無知的樂觀</div>
+          </div>
+          <div class="emotion-item" onclick="selectEmotion(this,'pessimistic')">
+            <div class="emotion-icon">😟</div>
+            <div class="emotion-label">知情的悲觀</div>
+          </div>
+          <div class="emotion-item" onclick="selectEmotion(this,'valley')">
+            <div class="emotion-icon">😔</div>
+            <div class="emotion-label">絕望的低谷</div>
+          </div>
+          <div class="emotion-item" onclick="selectEmotion(this,'informed')">
+            <div class="emotion-icon">💪</div>
+            <div class="emotion-label">知情的樂觀</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes-section">
+        <div class="notes-label">本週最大的一個收穫</div>
+        <textarea id="week-win" placeholder="這週做到了什麼？哪個時刻讓你覺得有進步？" rows="3" style="margin-bottom:8px"></textarea>
+        <div class="notes-label" style="margin-top:12px">本週最大的一個卡關點</div>
+        <textarea id="week-block" placeholder="什麼事情讓你停下來？下週要怎麼調整？" rows="3" style="margin-bottom:8px"></textarea>
+        <div class="notes-label" style="margin-top:12px">下週最重要的一件事</div>
+        <textarea id="week-next" placeholder="下週你的關鍵行動是什麼？" rows="2"></textarea>
+      </div>
+
+      <div class="copy-section">
+        <div class="copy-title">一鍵複製，貼到Skool社群宣示</div>
+        <div class="copy-preview" id="week-copy-preview"></div>
+        <button class="copy-btn" id="week-copy-btn" onclick="copyWeekReport()">複製本週報告，前往Skool分享</button>
+      </div>
+
+      <button class="save-btn" style="margin-top:12px" onclick="saveWeekReview()">儲存週回顧</button>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── AFFIRMATION GENERATOR ──
+function generateAffirmation() {
+  const a1 = document.getElementById('aff-1').value.trim();
+  const a2 = document.getElementById('aff-2').value.trim();
+  const a3 = document.getElementById('aff-3').value.trim();
+  const a4 = document.getElementById('aff-4').value.trim();
+  const a5 = document.getElementById('aff-5').value.trim();
+  const a6 = document.getElementById('aff-6').value.trim();
+
+  const preview = document.getElementById('aff-preview');
+  const hidden = document.getElementById('affirmation');
+
+  if (!a1 && !a2 && !a3 && !a4 && !a5 && !a6) {
+    preview.textContent = '填完上方六個空格，你的宣言會自動出現在這裡。';
+    preview.classList.add('empty');
+    hidden.value = '';
+    return;
+  }
+
+  const lines = [
+    a1 ? `我是一個${a1}的人。` : '',
+    '',
+    a2 ? `我清楚地看到，過去我一直${a2}，但我現在選擇不同的路。` : '',
+    '',
+    a3 ? `我的90天目標是${a3}，這不是我應該做的事，這是我選擇做的事。` : '',
+    '',
+    a4 ? `每一天，我會${a4}，因為我知道每一個小行動都在複利累積。` : '',
+    '',
+    a5 ? `90天後，我將${a5}，那個時候的我，會感謝今天沒有放棄的自己。` : '',
+    '',
+    a6 ? `我掌握我的主控權——我的時間、我的選擇、${a6}，都由我來決定。` : '',
+  ].filter((l, i, arr) => !(l === '' && arr[i-1] === '')).join('\n');
+
+  preview.textContent = lines;
+  preview.classList.remove('empty');
+  hidden.value = lines;
+}
+
+// ── STATE ──
+let config = {};
+let dayData = {};
+let currentDay = null;
+let currentWeek = null;
+let selectedEmotion = '';
+
+const CHECKS = ['affirmation-done','action-done','strategy-done','buffer-done','rest-done'];
+const POINTS = {'affirmation-done':25,'action-done':50,'strategy-done':15,'buffer-done':5,'rest-done':5};
+
+// ── SETUP ──
+document.getElementById('start-date').value = new Date().toISOString().split('T')[0];
+
+function addGoal() {
+  const container = document.getElementById('goals-container');
+  if (container.children.length >= 3) return;
+  const row = document.createElement('div');
+  row.className = 'goal-row';
+  row.innerHTML = `<input type="text" class="goal-input" placeholder="目標 ${container.children.length+1}">
+    <button class="remove-btn" onclick="this.parentElement.remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function startTracker() {
+  const goals = [...document.querySelectorAll('.goal-input')].map(i=>i.value.trim()).filter(Boolean);
+  const vision = document.getElementById('vision').value.trim();
+  const affirmation = document.getElementById('affirmation').value.trim();
+  const keyAction = document.getElementById('key-action').value.trim();
+  const leading = document.getElementById('leading').value.trim();
+  const lagging = document.getElementById('lagging').value.trim();
+  const startDate = document.getElementById('start-date').value;
+  const blockStrategy = document.getElementById('block-strategy').value.trim();
+  const blockBuffer = document.getElementById('block-buffer').value.trim();
+  const blockRest = document.getElementById('block-rest').value.trim();
+
+  if (!vision || !goals.length || !keyAction || !startDate) {
+    alert('請填寫願景、至少一個目標、關鍵策略行動和開始日期！');
+    return;
+  }
+
+  config = { vision, goals, affirmation, keyAction, leading, lagging, startDate, blockStrategy, blockBuffer, blockRest };
+  saveConfig();
+  showDashboard();
+}
+
+function saveConfig() {
+  try { localStorage.setItem('tracker_config', JSON.stringify(config)); } catch(e){}
+}
+
+function loadConfig() {
+  try {
+    const c = localStorage.getItem('tracker_config');
+    if (c) { config = JSON.parse(c); return true; }
+  } catch(e){}
+  return false;
+}
+
+function saveDayData() {
+  try { localStorage.setItem('tracker_days', JSON.stringify(dayData)); } catch(e){}
+}
+
+function loadDayData() {
+  try {
+    const d = localStorage.getItem('tracker_days');
+    if (d) { dayData = JSON.parse(d); }
+  } catch(e){}
+}
+
+// ── DASHBOARD ──
+function showDashboard() {
+  document.getElementById('setup-screen').classList.remove('active');
+  document.getElementById('dashboard-screen').classList.add('active');
+  renderDashboard();
+}
+
+function renderDashboard() {
+  // Header
+  const goals = config.goals || [];
+  document.getElementById('dash-title').textContent = goals[0] || '我的90天計畫';
+  
+  const today = getTodayDay();
+  document.getElementById('dash-subtitle').textContent =
+    today > 0 && today <= 90 ? `Day ${today} · ${90-today} 天後完成` : today > 90 ? '90天計畫已完成！' : '計畫還未開始';
+
+  // Vision panel
+  document.getElementById('vision-display').textContent = config.vision || '—';
+  document.getElementById('goals-display').innerHTML = (config.goals||[]).map((g,i)=>`<div style="margin-bottom:4px">${i+1}. ${g}</div>`).join('');
+  document.getElementById('leading-display').textContent = config.leading || '—';
+  document.getElementById('lagging-display').textContent = config.lagging || '—';
+  const blocks = [config.blockStrategy,config.blockBuffer,config.blockRest].filter(Boolean).join(' · ');
+  document.getElementById('blocks-display').textContent = blocks || '—';
+  document.getElementById('affirmation-display').textContent = config.affirmation || '—';
+
+  // Stats
+  document.getElementById('stat-day').textContent = Math.max(1, Math.min(today, 90));
+
+  let completed = 0, streak = 0, streakBroken = false;
+  for (let d = 1; d <= Math.min(today-1, 90); d++) {
+    const dd = dayData[d];
+    if (dd && dd.score >= 50) {
+      completed++;
+      if (!streakBroken) streak++;
+    } else {
+      streakBroken = true;
+    }
+  }
+  document.getElementById('stat-completed').textContent = completed;
+  document.getElementById('stat-streak').textContent = streak;
+
+  // Week score
+  const currentWeekNum = Math.ceil(today / 7);
+  const weekScore = getWeekScore(currentWeekNum);
+  document.getElementById('stat-week-score').textContent = weekScore !== null ? weekScore + '%' : '—';
+
+  // Grid
+  renderGrid(today);
+}
+
+function getTodayDay() {
+  if (!config.startDate) return 1;
+  const start = new Date(config.startDate);
+  const now = new Date();
+  start.setHours(0,0,0,0); now.setHours(0,0,0,0);
+  return Math.floor((now - start) / 86400000) + 1;
+}
+
+function renderGrid(today) {
+  const grid = document.getElementById('day-grid');
+  grid.innerHTML = '';
+  for (let d = 1; d <= 90; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    const isWeekReview = d % 7 === 0;
+    const isFuture = d > today;
+    const dd = dayData[d];
+    const score = dd ? dd.score : 0;
+
+    if (isWeekReview) cell.classList.add('week-review');
+    if (d === today) cell.classList.add('today');
+    if (isFuture) {
+      cell.classList.add('future');
+    } else if (dd) {
+      if (score >= 85) cell.classList.add('completed');
+      else if (score > 0) cell.classList.add('partial');
+    }
+
+    const icon = isWeekReview ? '📋' : (dd && score >= 85 ? '✓' : (dd && score > 0 ? '·' : ''));
+    cell.innerHTML = `<div class="day-num">${d}</div><div class="day-icon">${icon}</div>`;
+
+    if (!isFuture) {
+      if (isWeekReview) {
+        cell.onclick = () => openWeekModal(Math.ceil(d/7));
+      } else {
+        cell.onclick = () => openDayModal(d);
+      }
+    }
+    grid.appendChild(cell);
+  }
+}
+
+function getWeekScore(weekNum) {
+  let total = 0, count = 0;
+  const start = (weekNum-1)*7+1, end = Math.min(weekNum*7-1, 90);
+  for (let d = start; d <= end; d++) {
+    if (dayData[d]) { total += dayData[d].score; count++; }
+  }
+  return count > 0 ? Math.round(total/count) : null;
+}
+
+// ── DAY MODAL ──
+function openDayModal(day) {
+  currentDay = day;
+  const dd = dayData[day] || {};
+  const today = getTodayDay();
+
+  document.getElementById('modal-day-title').textContent =
+    `Day ${day} ${day === today ? '· 今天' : ''}`;
+  document.getElementById('modal-affirmation').textContent =
+    config.affirmation || '（還沒設定目標宣言）';
+  document.getElementById('check-action-label').textContent =
+    config.keyAction || '完成每日關鍵策略行動';
+  document.getElementById('check-strategy-label').textContent =
+    `策略時間塊 ${config.blockStrategy ? '(' + config.blockStrategy + ')' : ''}`;
+  document.getElementById('check-buffer-label').textContent =
+    `緩衝時間塊 ${config.blockBuffer ? '(' + config.blockBuffer + ')' : ''}`;
+  document.getElementById('check-rest-label').textContent =
+    `抽離時間塊 ${config.blockRest ? '(' + config.blockRest + ')' : ''}`;
+  document.getElementById('modal-notes').value = dd.notes || '';
+
+  // Restore checks
+  CHECKS.forEach(k => {
+    const checked = dd[k] || false;
+    const item = document.getElementById('check-' + k.replace('-done',''));
+    const box = document.getElementById('box-' + k);
+    if (checked) {
+      item?.classList.add('checked');
+      if (box) box.textContent = '✓';
+    } else {
+      item?.classList.remove('checked');
+      if (box) box.textContent = '✓';
+    }
+  });
+
+  updateDayScore();
+  document.getElementById('day-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('day-modal').classList.remove('open');
+  currentDay = null;
+}
+
+function toggleCheck(key) {
+  const item = document.getElementById('check-' + key.replace('-done',''));
+  const box = document.getElementById('box-' + key);
+  const isChecked = item?.classList.contains('checked');
+  if (isChecked) {
+    item?.classList.remove('checked');
+  } else {
+    item?.classList.add('checked');
+  }
+  updateDayScore();
+}
+
+function updateDayScore() {
+  let score = 0;
+  CHECKS.forEach(k => {
+    const item = document.getElementById('check-' + k.replace('-done',''));
+    if (item?.classList.contains('checked')) score += POINTS[k];
+  });
+  document.getElementById('modal-score').innerHTML = `${score}<span style="font-size:1.5rem">%</span>`;
+  document.getElementById('modal-score-fill').style.width = score + '%';
+}
+
+function saveDay() {
+  if (!currentDay) return;
+  let score = 0;
+  const checks = {};
+  CHECKS.forEach(k => {
+    const item = document.getElementById('check-' + k.replace('-done',''));
+    const checked = item?.classList.contains('checked') || false;
+    checks[k] = checked;
+    if (checked) score += POINTS[k];
+  });
+  dayData[currentDay] = {
+    ...checks,
+    score,
+    notes: document.getElementById('modal-notes').value,
+    savedAt: new Date().toISOString()
+  };
+  saveDayData();
+  renderDashboard();
+  closeModal();
+}
+
+// ── WEEK MODAL ──
+function openWeekModal(weekNum) {
+  currentWeek = weekNum;
+  const wd = dayData['week_' + weekNum] || {};
+  document.getElementById('week-modal-title').textContent = `第${weekNum}週回顧`;
+
+  const score = getWeekScore(weekNum);
+  const scoreEl = document.getElementById('week-score-display');
+  const msgEl = document.getElementById('week-score-msg');
+  const fillEl = document.getElementById('week-score-fill');
+
+  if (score !== null) {
+    scoreEl.textContent = score + '%';
+    scoreEl.className = 'week-score-big ' + (score >= 85 ? 'good' : score >= 60 ? 'ok' : 'low');
+    fillEl.style.width = score + '%';
+    if (score >= 85) {
+      msgEl.textContent = '優秀！按照這個節奏，你幾乎一定會達成12週目標。';
+    } else if (score >= 60) {
+      msgEl.textContent = '還不錯，但要達成目標，這週需要再提升一點。找出卡關點，下週調整。';
+    } else {
+      msgEl.textContent = '這週遇到挑戰了。沒關係，這是情緒週期的一部分。誠實找出原因，重新來過。';
+    }
+  } else {
+    scoreEl.textContent = '—';
+    msgEl.textContent = '這週還沒有記錄，先完成每日打卡再來做週回顧。';
+    fillEl.style.width = '0%';
+  }
+
+  document.getElementById('week-win').value = wd.win || '';
+  document.getElementById('week-block').value = wd.block || '';
+  document.getElementById('week-next').value = wd.next || '';
+
+  // Emotion
+  selectedEmotion = wd.emotion || '';
+  document.querySelectorAll('.emotion-item').forEach(el => el.classList.remove('selected'));
+  if (selectedEmotion) {
+    document.querySelector(`[onclick="selectEmotion(this,'${selectedEmotion}')"]`)?.classList.add('selected');
+  }
+
+  generateWeekCopy(weekNum, score);
+  document.getElementById('week-modal').classList.add('open');
+}
+
+function closeWeekModal() {
+  document.getElementById('week-modal').classList.remove('open');
+  currentWeek = null;
+}
+
+function selectEmotion(el, val) {
+  document.querySelectorAll('.emotion-item').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedEmotion = val;
+}
+
+const emotionLabels = {
+  optimistic:'無知的樂觀 🌟',
+  pessimistic:'知情的悲觀 😟',
+  valley:'絕望的低谷 😔',
+  informed:'知情的樂觀 💪'
+};
+
+function generateWeekCopy(weekNum, score) {
+  const win = document.getElementById('week-win').value;
+  const block = document.getElementById('week-block').value;
+  const next = document.getElementById('week-next').value;
+  const emotion = selectedEmotion ? emotionLabels[selectedEmotion] : '—';
+  const goals = (config.goals||[]).join('、');
+
+  const text = `【90天計畫 · 第${weekNum}週回顧】
+
+🎯 目標：${goals || '—'}
+
+📊 本週達成率：${score !== null ? score + '%' : '—'}
+${score >= 85 ? '✅ 達標！（目標85分以上）' : score >= 60 ? '⚡ 接近目標，繼續推進' : '🔄 需要調整，下週重新來過'}
+
+😌 情緒週期位置：${emotion}
+
+🏆 本週最大收穫：
+${win || '（未填寫）'}
+
+🔍 本週卡關點：
+${block || '（未填寫）'}
+
+📌 下週最重要的一件事：
+${next || '（未填寫）'}
+
+——
+這是我90天計畫的第${weekNum}週紀錄。
+加入Steven的Skool社群，一起問責、一起前進。`;
+
+  document.getElementById('week-copy-preview').textContent = text;
+}
+
+function copyWeekReport() {
+  const text = document.getElementById('week-copy-preview').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('week-copy-btn');
+    btn.textContent = '✓ 已複製！前往Skool貼上';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '複製本週報告，前往Skool分享';
+      btn.classList.remove('copied');
+    }, 3000);
+  });
+}
+
+function saveWeekReview() {
+  if (!currentWeek) return;
+  dayData['week_' + currentWeek] = {
+    win: document.getElementById('week-win').value,
+    block: document.getElementById('week-block').value,
+    next: document.getElementById('week-next').value,
+    emotion: selectedEmotion,
+    savedAt: new Date().toISOString()
+  };
+  saveDayData();
+  renderDashboard();
+  closeWeekModal();
+}
+
+// ── VISION TOGGLE ──
+function toggleVision() {
+  const content = document.getElementById('vision-content');
+  const icon = document.getElementById('vision-icon');
+  content.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+// ── RESET ──
+function resetTracker() {
+  if (!confirm('確定要重設所有資料嗎？這個動作無法還原。')) return;
+  try {
+    localStorage.removeItem('tracker_config');
+    localStorage.removeItem('tracker_days');
+  } catch(e){}
+  config = {}; dayData = {};
+  document.getElementById('dashboard-screen').classList.remove('active');
+  document.getElementById('setup-screen').classList.add('active');
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  loadDayData();
+  if (loadConfig() && config.startDate) {
+    showDashboard();
+  }
+});
+</script>
+</body>
+</html>
