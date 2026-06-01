@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>拖延破解模板 — Steven</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #0F0F0F;
+  --dark-2: #161616;
+  --dark-3: #1E1E1E;
+  --dark-4: #262626;
+  --gold: #C9A84C;
+  --gold-light: #E8D5A3;
+  --gold-dim: rgba(201,168,76,0.12);
+  --cream: #F5F0E8;
+  --muted: #666;
+  --border: rgba(201,168,76,0.2);
+  --border-dim: rgba(201,168,76,0.07);
+  --green: #4a9960;
+  --green-dim: rgba(74,153,96,0.12);
+  --red-dim: rgba(180,60,60,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--dark-2);
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 14px 16px;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.nav-tab:hover { color: var(--gold-light); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.section { display: none; padding: 36px 24px; max-width: 680px; margin: 0 auto; }
+.section.active { display: block; animation: fadeUp 0.4s forwards; }
+
+.sec-eyebrow {
+  font-size: 0.62rem;
+  letter-spacing: 0.45em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+.sec-title {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem,5vw,2.2rem);
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.sec-title span { color: var(--gold); }
+.sec-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+}
+
+.card {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 24px 20px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.card:focus-within { border-color: var(--gold); }
+
+.card-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.92rem;
+  color: var(--cream);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.card-hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(201,168,76,0.25);
+  font-style: italic;
+}
+
+textarea, input[type="text"], input[type="number"] {
+  width: 100%;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  padding: 11px 13px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.8;
+}
+textarea { min-height: 68px; }
+textarea:focus, input:focus { border-color: var(--gold); background: #1c1c1c; }
+textarea::placeholder, input::placeholder { color: #3a3a3a; font-size: 0.78rem; }
+
+/* Reverse todo list */
+.add-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.add-row input { flex: 1; min-height: auto; }
+.add-btn-sm {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-size: 1.1rem;
+  width: 42px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.add-btn-sm:hover { background: var(--gold-dim); }
+
+.todo-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.todo-item:hover { border-color: var(--gold); }
+.todo-item.done { background: var(--green-dim); border-color: rgba(74,153,96,0.3); text-decoration: line-through; color: var(--muted); }
+.todo-check {
+  width: 18px; height: 18px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.todo-item.done .todo-check { background: var(--green); border-color: var(--green); color: white; }
+.todo-text { font-size: 0.82rem; flex: 1; }
+
+/* Timer */
+.timer-wrap {
+  text-align: center;
+  padding: 28px 20px;
+  background: var(--dark-3);
+  margin-bottom: 16px;
+}
+.timer-display {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  font-style: italic;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.timer-label { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted); margin-bottom: 20px; }
+.timer-btns { display: flex; gap: 8px; justify-content: center; }
+.timer-btn {
+  padding: 10px 24px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.timer-btn:hover { background: var(--gold-dim); border-color: var(--gold); }
+.timer-btn.primary { background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 500; }
+.timer-btn.primary:hover { background: var(--gold-light); }
+.timer-running .timer-display { color: var(--green); }
+
+/* Body check */
+.body-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.body-item {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 14px;
+}
+.body-item-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.05em; }
+.body-score-row { display: flex; align-items: center; gap: 8px; }
+.body-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 2px;
+  background: var(--dark-4);
+  outline: none;
+  cursor: pointer;
+}
+.body-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  background: var(--gold);
+  border-radius: 0;
+  cursor: pointer;
+  transform: rotate(45deg);
+}
+.body-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  font-style: italic;
+  width: 20px;
+  text-align: center;
+}
+
+/* Garbage version checklist */
+.gv-steps { display: flex; flex-direction: column; gap: 6px; }
+.gv-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.gv-step:hover { border-color: var(--gold); }
+.gv-step.done { background: var(--green-dim); border-color: rgba(74,153,96,0.3); }
+.gv-check {
+  width: 18px; height: 18px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.2s;
+}
+.gv-step.done .gv-check { background: var(--green); border-color: var(--green); color: white; }
+.gv-step-text { font-size: 0.82rem; line-height: 1.5; flex: 1; }
+.gv-step.done .gv-step-text { color: var(--muted); }
+
+/* Sims skill tracker */
+.sims-grid { display: flex; flex-direction: column; gap: 6px; }
+.sims-item { background: var(--dark-2); border: 1px solid var(--border-dim); padding: 14px 16px; }
+.sims-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 10px; }
+.sims-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.sims-bar-wrap { flex: 1; height: 6px; background: var(--dark-4); position: relative; }
+.sims-bar-fill { height: 100%; background: var(--gold); transition: width 0.4s; }
+.sims-bar-fill.low { background: #b44444; }
+.sims-bar-fill.mid { background: var(--gold); }
+.sims-bar-fill.high { background: var(--green); }
+.sims-pct { font-size: 0.72rem; color: var(--gold); width: 36px; text-align: right; font-family: 'Playfair Display', serif; font-style: italic; }
+
+/* Gold divider */
+.gold-div { width: 40px; height: 1px; background: var(--gold); opacity: 0.35; margin: 24px 0; }
+
+/* Copy box */
+.copy-box {
+  border: 1px solid var(--border);
+  padding: 20px;
+  background: var(--dark-2);
+  margin-top: 24px;
+}
+.copy-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.88rem;
+  color: var(--gold-light);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.copy-desc { font-size: 0.76rem; color: var(--muted); margin-bottom: 14px; line-height: 1.7; }
+.copy-preview {
+  background: var(--dark-3);
+  padding: 14px;
+  font-size: 0.76rem;
+  color: #555;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.copy-preview.has-content { color: var(--cream); }
+.copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--dark);
+  border: none;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: var(--gold-light); }
+.copy-btn.copied { background: var(--green); color: white; }
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.68rem;
+  color: #3a3a3a;
+  line-height: 1.8;
+}
+.footer strong { color: var(--gold); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media(max-width:480px){
+  .section { padding: 28px 14px; }
+  .body-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('m1')">① 反向清單</button>
+  <button class="nav-tab" onclick="showTab('m2')">② 兩分鐘</button>
+  <button class="nav-tab" onclick="showTab('m3')">③ 身體狀態</button>
+  <button class="nav-tab" onclick="showTab('m4')">④ 15分鐘</button>
+  <button class="nav-tab" onclick="showTab('m5')">⑤ 垃圾版本</button>
+  <button class="nav-tab" onclick="showTab('m6')">⑥ 模擬市民</button>
+</nav>
+
+<!-- ══ ① 反向待辦清單 ══ -->
+<div id="m1" class="section active">
+  <span class="sec-eyebrow">方法 01 · 反向待辦清單</span>
+  <h1 class="sec-title">乾脆就去做<span>你在逃避的事</span></h1>
+  <p class="sec-desc">與其一邊鬼混一邊內疚，不如把鬼混變成一個有計畫的任務。把你想逃避去做的事全部寫下來，然後認真執行它。</p>
+
+  <div class="card">
+    <div class="card-num">— 今天想逃避的正事是什麼？</div>
+    <div class="card-title">我一直在拖延的那件事</div>
+    <div class="card-hint">具體說出那件事。不是「工作」，是「那份下週要交的報告第二章」。</div>
+    <textarea id="real-task" placeholder="我一直在拖延的是..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 反向待辦清單</div>
+    <div class="card-title">你打算用什麼來逃避它？寫下來，然後認真去做。</div>
+    <div class="card-hint">你要刷哪些帳號？刷多久？你希望找到什麼？把鬼混變成一個專業任務，有意識地完成它，而不是漫無目的地漂流。</div>
+    <div class="add-row">
+      <input type="text" id="todo-input" placeholder="例如：刷IG限時動態 15分鐘" onkeydown="if(event.key==='Enter')addTodo()">
+      <button class="add-btn-sm" onclick="addTodo()">＋</button>
+    </div>
+    <div class="todo-list" id="todo-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 作弊餐計畫</div>
+    <div class="card-title">這週的作弊餐，你要吃什麼？</div>
+    <div class="card-hint">有計畫地吃那一餐，比意志力崩潰亂吃更有效。認真規劃你想吃什麼、去哪裡吃——有計畫的放縱，反而讓你更有控制感，飲控期間的皮質醇也會降低。但記住：那天要做那週最強的訓練。</div>
+    <textarea id="cheat-meal" placeholder="我這週的作弊餐要吃：___&#10;地點：___&#10;那天的訓練計畫：___" oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的反向清單</div>
+    <p class="copy-desc">貼到Skool社群，讓大家知道你今天要破解什麼。</p>
+    <div class="copy-preview" id="m1-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="m1-btn" onclick="copySection('m1')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ② 兩分鐘法則 ══ -->
+<div id="m2" class="section">
+  <span class="sec-eyebrow">方法 02 · 兩分鐘法則</span>
+  <h1 class="sec-title">讓球<span>開始滾動</span></h1>
+  <p class="sec-desc">不是找最重要的事，是找最快能完成的事。任何有生產力的事情，對一個習慣拖延的人來說都是巨大的升級。</p>
+
+  <div class="card">
+    <div class="card-num">— 兩分鐘任務清單</div>
+    <div class="card-title">現在可以在兩分鐘內完成的事，全部寫下來。</div>
+    <div class="card-hint">不要想太多，就是那些一直放著沒做的小事。回一封email、整理桌面、丟掉空水瓶、把杯子拿去洗。先讓球滾起來。</div>
+    <div class="add-row">
+      <input type="text" id="two-min-input" placeholder="例如：把桌上的杯子拿去洗" onkeydown="if(event.key==='Enter')addTwoMin()">
+      <button class="add-btn-sm" onclick="addTwoMin()">＋</button>
+    </div>
+    <div class="todo-list" id="two-min-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 完成之後</div>
+    <div class="card-title">做完幾件兩分鐘的事，你的狀態有沒有改變？</div>
+    <div class="card-hint">記錄一下。這不是為了分析，是讓你看到「稍微有點生產力的感覺」和「完全沒有生產力的感覺」有什麼不同。</div>
+    <textarea id="two-min-reflection" placeholder="做完之後，我感覺..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的兩分鐘清單</div>
+    <p class="copy-desc">貼到Skool，讓大家看到你今天讓球滾起來了。</p>
+    <div class="copy-preview" id="m2-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="m2-btn" onclick="copySection('m2')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ③ 身體狀態評估 ══ -->
+<div id="m3" class="section">
+  <span class="sec-eyebrow">方法 03 · 身體狀態評估</span>
+  <h1 class="sec-title">你昨晚對自己<span>做了什麼？</span></h1>
+  <p class="sec-desc">很多時候你的拖延不是心態問題，是身體狀態問題。先評估你今天的起點，才能知道你能期待自己有多少產出。</p>
+
+  <div class="body-grid" id="bodyGrid"></div>
+
+  <div class="card">
+    <div class="card-num">— 今天的身體告訴你什麼？</div>
+    <div class="card-title">根據以上分數，今天你對自己的合理期待是什麼？</div>
+    <div class="card-hint">不是要你在身體狀態很差的時候強迫自己達到滿分。是讓你誠實評估，今天能做到什麼程度，然後把那個程度做好。</div>
+    <textarea id="body-reflection" placeholder="今天我的狀態大概是___分。合理的期待是今天完成___..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 明天的計畫</div>
+    <div class="card-title">今晚你要怎麼善待自己，讓明天的身體狀態更好？</div>
+    <div class="card-hint">睡前一小時不滑手機、幾點上床、早餐要吃什麼。具體計畫，不是「我會努力早睡」。</div>
+    <textarea id="tomorrow-plan" placeholder="今晚___點上床、睡前不做___、明早早餐吃___..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的身體狀態報告</div>
+    <p class="copy-desc">貼到Skool，讓大家知道你今天的起點。</p>
+    <div class="copy-preview" id="m3-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="m3-btn" onclick="copySection('m3')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ④ 15分鐘痛苦窗口 ══ -->
+<div id="m4" class="section">
+  <span class="sec-eyebrow">方法 04 · 15分鐘痛苦窗口</span>
+  <h1 class="sec-title">只要<span>15分鐘</span></h1>
+  <p class="sec-desc">幾乎所有任務，最痛苦的都是前15分鐘。撐過去，你就會熱開了。計時器設好，告訴自己只要做15分鐘。</p>
+
+  <div class="card">
+    <div class="card-num">— 今天要用15分鐘啟動的任務</div>
+    <div class="card-title">你要啟動哪一件事？</div>
+    <div class="card-hint">就那一件你最不想開始的事。不需要做完，只要開始15分鐘。</div>
+    <input type="text" id="task-15" placeholder="例如：開始寫那份報告的第一段" style="margin-bottom:0" oninput="updatePreviews()">
+  </div>
+
+  <div class="timer-wrap" id="timerWrap">
+    <div class="timer-display" id="timerDisplay">15:00</div>
+    <div class="timer-label">分鐘計時器</div>
+    <div class="timer-btns">
+      <button class="timer-btn primary" id="timerStartBtn" onclick="toggleTimer()">開始計時</button>
+      <button class="timer-btn" onclick="resetTimer()">重設</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 15分鐘後</div>
+    <div class="card-title">計時器響了，你想繼續嗎？</div>
+    <div class="card-hint">不需要停下來。如果你想繼續，就繼續。如果你真的需要休息，也沒關係——你已經完成了最難的部分。</div>
+    <textarea id="timer-reflection" placeholder="15分鐘後我的感覺是___。我決定___..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的15分鐘紀錄</div>
+    <p class="copy-desc">貼到Skool，讓大家知道你今天啟動了。</p>
+    <div class="copy-preview" id="m4-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="m4-btn" onclick="copySection('m4')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ⑤ 垃圾版本 ══ -->
+<div id="m5" class="section">
+  <span class="sec-eyebrow">方法 05 · 垃圾版本</span>
+  <h1 class="sec-title">先求有<span>再求好</span></h1>
+  <p class="sec-desc">你現在什麼都沒有，一個爛版本總比什麼都沒有來得好。把你的標準扔到地板上，去做那個垃圾版本。</p>
+
+  <div class="card">
+    <div class="card-num">— 你要做什麼的垃圾版本？</div>
+    <div class="card-title">那件你一直在等「條件成熟」才要開始的事</div>
+    <div class="card-hint">是什麼讓你一直拖著？是因為你覺得它必須夠完美才能開始嗎？把你的標準具體說出來，然後把它調低50%。</div>
+    <textarea id="gv-task" placeholder="我一直在等___才開始。但其實我現在就可以做___的垃圾版本..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 垃圾版本啟動清單</div>
+    <div class="card-title">完成以下步驟，讓你的垃圾版本真的動起來</div>
+    <div class="card-hint">一個步驟一個步驟來，不要想整件事，只看眼前這一步。</div>
+    <div class="gv-steps" id="gvSteps"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 做完垃圾版本之後</div>
+    <div class="card-title">你做了什麼？和你想像中的「完美版本」差多少？</div>
+    <div class="card-hint">記錄下來。你會發現，垃圾版本往往比你想像的好很多。而且它存在了，你可以在它的基礎上繼續改進。</div>
+    <textarea id="gv-reflection" placeholder="我做了___。和我想像中的差距是___。下一步我可以改進___..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的垃圾版本記錄</div>
+    <p class="copy-desc">貼到Skool，讓大家知道你今天做出來了。</p>
+    <div class="copy-preview" id="m5-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="m5-btn" onclick="copySection('m5')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ⑥ 模擬市民視角 ══ -->
+<div id="m6" class="section">
+  <span class="sec-eyebrow">方法 06 · 模擬市民視角</span>
+  <h1 class="sec-title">你在升級<span>哪些技能？</span></h1>
+  <p class="sec-desc">把自己想成一個模擬市民的角色。你把時間花在哪裡，那個技能就提升。用這個視角看你的時間，你會看到你真正在往哪裡走。</p>
+
+  <div class="card">
+    <div class="card-num">— 你的技能樹</div>
+    <div class="card-title">這週你把時間花在哪裡？各個技能大概升了多少？</div>
+    <div class="card-hint">誠實評估，不是你希望的樣子，是真實的狀況。滑IG也是一種技能，只是它帶不來機會。</div>
+    <div class="sims-grid" id="simsGrid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 你真正想升級的技能</div>
+    <div class="card-title">如果你可以選擇，你最想提升的三個技能是什麼？</div>
+    <div class="card-hint">不是別人覺得重要的，是你自己清楚知道，如果這個技能提升了，你的生活會真的不一樣的那三個。</div>
+    <textarea id="sims-want" placeholder="我最想提升的三個技能是：&#10;1. ___&#10;2. ___&#10;3. ___" oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 這週的調整</div>
+    <div class="card-title">要提升你真正想要的技能，你這週要把時間從哪裡移過來？</div>
+    <div class="card-hint">時間是零和遊戲。你想多花時間在某件事上，就必須少花時間在另一件事上。說清楚你要做什麼取捨。</div>
+    <textarea id="sims-adjust" placeholder="我要把___的時間，移到___上。具體做法是___..." oninput="updatePreviews()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的技能樹分析</div>
+    <p class="copy-desc">貼到Skool，讓大家看到你的時間真正流向哪裡。</p>
+    <div class="copy-preview" id="m6-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="m6-btn" onclick="copySection('m6')">複製，前往Skool分享</button>
+  </div>
+
+  <div class="footer">
+    拖延破解模板 · 由 <strong>Steven</strong> 製作<br>
+    加入免費Skool自律實戰社群，和同樣在對抗拖延的人一起問責。
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let todoItems = [];
+let twoMinItems = [];
+let bodyScores = { sleep:5, diet:5, exercise:5, focus:5 };
+let simsSkills = [
+  { key:'ig', label:'📱 滑IG/Threads', val:50 },
+  { key:'learn', label:'📚 學習/閱讀', val:20 },
+  { key:'work', label:'💼 工作/正事', val:30 },
+  { key:'health', label:'💪 運動/健康', val:20 },
+  { key:'social', label:'👥 真實社交', val:10 },
+  { key:'other', label:'🎮 其他娛樂', val:20 },
+];
+let gvChecks = {};
+let timerInterval = null;
+let timerSeconds = 900;
+let timerRunning = false;
+let data = {};
+
+const GV_STEPS = [
+  '把完美標準先放一邊——告訴自己：爛沒關係',
+  '找一個最小的起點，只需要做第一個動作',
+  '設定15分鐘計時器，只管開始',
+  '做完第一個最小的單位，停下來看看',
+  '決定要繼續還是留到明天——但你已經開始了',
+];
+
+// ── LOAD/SAVE ──
+function load() {
+  try {
+    const s = localStorage.getItem('procrastination_v1');
+    if (!s) return;
+    const d = JSON.parse(s);
+    todoItems = d.todoItems || [];
+    twoMinItems = d.twoMinItems || [];
+    bodyScores = d.bodyScores || bodyScores;
+    simsSkills = d.simsSkills || simsSkills;
+    gvChecks = d.gvChecks || {};
+    data = d.data || {};
+    Object.keys(data).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = data[id];
+    });
+    if (d.timerSeconds !== undefined) timerSeconds = d.timerSeconds;
+  } catch(e){}
+}
+
+function save() {
+  const ids = ['real-task','cheat-meal','two-min-reflection','body-reflection','tomorrow-plan','task-15','timer-reflection','gv-task','gv-reflection','sims-want','sims-adjust'];
+  ids.forEach(id => { const el = document.getElementById(id); if(el) data[id] = el.value; });
+  try {
+    localStorage.setItem('procrastination_v1', JSON.stringify({ todoItems, twoMinItems, bodyScores, simsSkills, gvChecks, data, timerSeconds }));
+  } catch(e){}
+  updatePreviews();
+}
+
+// ── TABS ──
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── TODO ──
+function renderTodos(listId, items, toggleFn) {
+  const el = document.getElementById(listId);
+  el.innerHTML = '';
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'todo-item' + (item.done ? ' done' : '');
+    div.innerHTML = `<div class="todo-check">${item.done?'✓':''}</div><div class="todo-text">${item.text}</div>`;
+    div.onclick = () => toggleFn(i);
+    el.appendChild(div);
+  });
+}
+
+function addTodo() {
+  const input = document.getElementById('todo-input');
+  if (!input.value.trim()) return;
+  todoItems.push({ text: input.value.trim(), done: false });
+  input.value = '';
+  renderTodos('todo-list', todoItems, toggleTodo);
+  save();
+}
+
+function toggleTodo(i) {
+  todoItems[i].done = !todoItems[i].done;
+  renderTodos('todo-list', todoItems, toggleTodo);
+  save();
+}
+
+function addTwoMin() {
+  const input = document.getElementById('two-min-input');
+  if (!input.value.trim()) return;
+  twoMinItems.push({ text: input.value.trim(), done: false });
+  input.value = '';
+  renderTodos('two-min-list', twoMinItems, toggleTwoMin);
+  save();
+}
+
+function toggleTwoMin(i) {
+  twoMinItems[i].done = !twoMinItems[i].done;
+  renderTodos('two-min-list', twoMinItems, toggleTwoMin);
+  save();
+}
+
+// ── BODY CHECK ──
+function buildBodyGrid() {
+  const items = [
+    { key:'sleep', label:'😴 睡眠品質' },
+    { key:'diet', label:'🥗 今日飲食' },
+    { key:'exercise', label:'💪 身體活動' },
+    { key:'focus', label:'🧠 腦霧程度（10=清醒）' },
+  ];
+  const grid = document.getElementById('bodyGrid');
+  grid.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'body-item';
+    div.innerHTML = `
+      <div class="body-item-label">${item.label}</div>
+      <div class="body-score-row">
+        <input type="range" class="body-slider" min="1" max="10" value="${bodyScores[item.key]}"
+          oninput="updateBodyScore('${item.key}', this.value)">
+        <div class="body-val" id="body-val-${item.key}">${bodyScores[item.key]}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function updateBodyScore(key, val) {
+  bodyScores[key] = parseInt(val);
+  document.getElementById('body-val-'+key).textContent = val;
+  save();
+}
+
+// ── TIMER ──
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds/60).toString().padStart(2,'0');
+  const s = (timerSeconds%60).toString().padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = m + ':' + s;
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = '繼續計時';
+    document.getElementById('timerWrap').classList.remove('timer-running');
+  } else {
+    if (timerSeconds <= 0) { resetTimer(); return; }
+    timerRunning = true;
+    document.getElementById('timerStartBtn').textContent = '暫停';
+    document.getElementById('timerWrap').classList.add('timer-running');
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById('timerDisplay').textContent = '完成！';
+        document.getElementById('timerStartBtn').textContent = '開始計時';
+        document.getElementById('timerWrap').classList.remove('timer-running');
+      }
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = 900;
+  updateTimerDisplay();
+  document.getElementById('timerStartBtn').textContent = '開始計時';
+  document.getElementById('timerWrap').classList.remove('timer-running');
+}
+
+// ── GV STEPS ──
+function buildGvSteps() {
+  const el = document.getElementById('gvSteps');
+  el.innerHTML = '';
+  GV_STEPS.forEach((step, i) => {
+    const div = document.createElement('div');
+    div.className = 'gv-step' + (gvChecks[i] ? ' done' : '');
+    div.innerHTML = `<div class="gv-check">${gvChecks[i]?'✓':''}</div><div class="gv-step-text">${step}</div>`;
+    div.onclick = () => toggleGv(i, div);
+    el.appendChild(div);
+  });
+}
+
+function toggleGv(i, el) {
+  gvChecks[i] = !gvChecks[i];
+  el.classList.toggle('done');
+  el.querySelector('.gv-check').textContent = gvChecks[i] ? '✓' : '';
+  save();
+}
+
+// ── SIMS ──
+function buildSimsGrid() {
+  const el = document.getElementById('simsGrid');
+  el.innerHTML = '';
+  simsSkills.forEach((skill, i) => {
+    const pct = skill.val;
+    const colorClass = pct >= 60 ? 'high' : pct >= 30 ? 'mid' : 'low';
+    const div = document.createElement('div');
+    div.className = 'sims-item';
+    div.innerHTML = `
+      <div class="sims-label">${skill.label}</div>
+      <div class="sims-bar-row">
+        <div class="sims-bar-wrap">
+          <div class="sims-bar-fill ${colorClass}" id="sims-fill-${i}" style="width:${pct}%"></div>
+        </div>
+        <div class="sims-pct" id="sims-pct-${i}">${pct}%</div>
+      </div>
+      <input type="range" min="0" max="100" value="${pct}" style="width:100%;margin-top:4px;height:1px;-webkit-appearance:none;background:transparent;cursor:pointer"
+        oninput="updateSims(${i}, this.value)">`;
+    el.appendChild(div);
+  });
+}
+
+function updateSims(i, val) {
+  simsSkills[i].val = parseInt(val);
+  const pct = simsSkills[i].val;
+  const colorClass = pct >= 60 ? 'high' : pct >= 30 ? 'mid' : 'low';
+  const fill = document.getElementById('sims-fill-'+i);
+  fill.style.width = pct + '%';
+  fill.className = 'sims-bar-fill ' + colorClass;
+  document.getElementById('sims-pct-'+i).textContent = pct + '%';
+  save();
+}
+
+// ── PREVIEWS ──
+function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function updatePreviews() {
+  // M1
+  const todos = todoItems.map(t => (t.done?'✓ ':'○ ') + t.text).join('\n');
+  const m1 = ['【反向待辦清單】','',
+    g('real-task') ? '📌 今天拖延的正事：\n' + g('real-task') : '',
+    todos ? '📋 反向清單：\n' + todos : '',
+    g('cheat-meal') ? '🍗 作弊餐計畫：\n' + g('cheat-meal') : '',
+    '','——','來自 Steven 的拖延破解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('m1-preview', m1, todoItems.length > 0 || g('real-task'));
+
+  // M2
+  const twoMins = twoMinItems.map(t => (t.done?'✓ ':'○ ') + t.text).join('\n');
+  const done2 = twoMinItems.filter(t=>t.done).length;
+  const m2 = ['【兩分鐘法則】','',
+    twoMins ? '清單：\n' + twoMins : '',
+    twoMinItems.length ? `完成：${done2}/${twoMinItems.length}` : '',
+    g('two-min-reflection') ? '做完後的感覺：\n' + g('two-min-reflection') : '',
+    '','——','來自 Steven 的拖延破解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('m2-preview', m2, twoMinItems.length > 0);
+
+  // M3
+  const bodyTotal = Object.values(bodyScores).reduce((a,b)=>a+b,0);
+  const m3 = ['【身體狀態評估】','',
+    `😴 睡眠：${bodyScores.sleep}/10`,
+    `🥗 飲食：${bodyScores.diet}/10`,
+    `💪 運動：${bodyScores.exercise}/10`,
+    `🧠 腦霧：${bodyScores.focus}/10`,
+    `平均：${(bodyTotal/4).toFixed(1)}/10`,
+    '',
+    g('body-reflection') ? '今天的期待：\n' + g('body-reflection') : '',
+    g('tomorrow-plan') ? '明天的計畫：\n' + g('tomorrow-plan') : '',
+    '','——','來自 Steven 的拖延破解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('m3-preview', m3, true);
+
+  // M4
+  const m4 = ['【15分鐘痛苦窗口】','',
+    g('task-15') ? '今天要啟動的任務：' + g('task-15') : '',
+    g('timer-reflection') ? '15分鐘後：\n' + g('timer-reflection') : '',
+    '','——','來自 Steven 的拖延破解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('m4-preview', m4, g('task-15').length > 0);
+
+  // M5
+  const gvDone = GV_STEPS.filter((_,i)=>gvChecks[i]).length;
+  const m5 = ['【垃圾版本啟動記錄】','',
+    g('gv-task') ? '任務：\n' + g('gv-task') : '',
+    GV_STEPS.length ? `啟動步驟完成：${gvDone}/${GV_STEPS.length}` : '',
+    g('gv-reflection') ? '完成後：\n' + g('gv-reflection') : '',
+    '','——','來自 Steven 的拖延破解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('m5-preview', m5, g('gv-task').length > 0 || gvDone > 0);
+
+  // M6
+  const skillLines = simsSkills.map(s => `${s.label}：${'█'.repeat(Math.round(s.val/10))}${'░'.repeat(10-Math.round(s.val/10))} ${s.val}%`).join('\n');
+  const m6 = ['【模擬市民技能樹】','',
+    skillLines,
+    '',
+    g('sims-want') ? '我真正想提升的：\n' + g('sims-want') : '',
+    g('sims-adjust') ? '這週的調整：\n' + g('sims-adjust') : '',
+    '','——','來自 Steven 的拖延破解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('m6-preview', m6, true);
+}
+
+function setPreview(id, text, hasContent) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (hasContent) {
+    el.textContent = text;
+    el.classList.add('has-content');
+  }
+}
+
+function copySection(sec) {
+  const preview = document.getElementById(sec+'-preview');
+  const btn = document.getElementById(sec+'-btn');
+  if (!preview.classList.contains('has-content')) { alert('請先填寫內容！'); return; }
+  navigator.clipboard.writeText(preview.textContent).then(() => {
+    btn.textContent = '✓ 已複製！前往Skool貼上';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '複製，前往Skool分享';
+      btn.classList.remove('copied');
+    }, 3000);
+  });
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  load();
+  buildBodyGrid();
+  buildGvSteps();
+  buildSimsGrid();
+  renderTodos('todo-list', todoItems, toggleTodo);
+  renderTodos('two-min-list', twoMinItems, toggleTwoMin);
+  updateTimerDisplay();
+  updatePreviews();
+
+  // restore body sliders
+  Object.keys(bodyScores).forEach(key => {
+    const slider = document.querySelector(`input[oninput="updateBodyScore('${key}', this.value)"]`);
+    if (slider) slider.value = bodyScores[key];
+  });
+
+  // input listeners
+  const ids = ['real-task','cheat-meal','two-min-reflection','body-reflection','tomorrow-plan','task-15','timer-reflection','gv-task','gv-reflection','sims-want','sims-adjust'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', save);
+  });
+});
+</script>
+</body>
+</html>
