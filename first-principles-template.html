@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一性原理目標拆解模板 — Steven</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #0F0F0F;
+  --dark-2: #161616;
+  --dark-3: #1E1E1E;
+  --dark-4: #262626;
+  --gold: #C9A84C;
+  --gold-light: #E8D5A3;
+  --gold-dim: rgba(201,168,76,0.12);
+  --cream: #F5F0E8;
+  --muted: #666;
+  --border: rgba(201,168,76,0.2);
+  --border-dim: rgba(201,168,76,0.07);
+  --green: #4a9960;
+  --green-dim: rgba(74,153,96,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--dark-2);
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 14px 18px;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.nav-tab:hover { color: var(--gold-light); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.section { display: none; padding: 36px 24px; max-width: 680px; margin: 0 auto; }
+.section.active { display: block; animation: fadeUp 0.4s forwards; }
+
+.sec-eyebrow {
+  font-size: 0.62rem;
+  letter-spacing: 0.45em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+.sec-title {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem,5vw,2.2rem);
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.sec-title span { color: var(--gold); }
+.sec-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+}
+
+.card {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 24px 20px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.card:focus-within { border-color: var(--gold); }
+
+.card-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.92rem;
+  color: var(--cream);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.card-hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(201,168,76,0.25);
+  font-style: italic;
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  padding: 11px 13px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.8;
+}
+textarea { min-height: 68px; }
+textarea:focus, input:focus { border-color: var(--gold); background: #1c1c1c; }
+textarea::placeholder, input::placeholder { color: #3a3a3a; font-size: 0.78rem; }
+
+/* 5W Block */
+.why-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.why-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 12px 14px;
+  transition: border-color 0.2s;
+}
+.why-row:focus-within { border-color: var(--gold); }
+.why-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-style: italic;
+  white-space: nowrap;
+  padding-top: 2px;
+  min-width: 32px;
+}
+.why-row textarea {
+  background: transparent;
+  border: none;
+  padding: 0;
+  min-height: 40px;
+  font-size: 0.82rem;
+}
+.why-row textarea:focus { background: transparent; border: none; }
+
+/* Action list */
+.action-list { display: flex; flex-direction: column; gap: 6px; }
+.action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 10px 14px;
+  transition: all 0.2s;
+}
+.action-item.kept { border-color: rgba(74,153,96,0.4); background: var(--green-dim); }
+.action-item.deleted { border-color: rgba(180,60,60,0.3); opacity: 0.5; }
+.action-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.7rem;
+  color: var(--gold);
+  font-style: italic;
+  min-width: 20px;
+  padding-top: 2px;
+}
+.action-item textarea {
+  background: transparent;
+  border: none;
+  padding: 0;
+  min-height: 36px;
+  font-size: 0.82rem;
+  flex: 1;
+}
+.action-item textarea:focus { background: transparent; border: none; }
+.action-btns { display: flex; flex-direction: column; gap: 4px; }
+.action-btn {
+  background: none;
+  border: 1px solid var(--border-dim);
+  color: var(--muted);
+  font-size: 0.6rem;
+  padding: 3px 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.action-btn.keep { border-color: rgba(74,153,96,0.4); color: var(--green); }
+.action-btn.keep:hover { background: var(--green-dim); }
+.action-btn.delete { border-color: rgba(180,60,60,0.3); color: #b44444; }
+.action-btn.delete:hover { background: rgba(180,60,60,0.1); }
+
+.add-btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.add-btn-row input { flex: 1; min-height: auto; }
+.add-sm-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-size: 1.1rem;
+  width: 42px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.add-sm-btn:hover { background: var(--gold-dim); }
+
+/* Keep 3 highlight */
+.keep-counter {
+  text-align: center;
+  padding: 16px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  margin: 12px 0;
+}
+.keep-count-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: var(--gold);
+  font-style: italic;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.keep-count-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.2em; }
+
+/* Loop visualization */
+.loop-box {
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 20px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.loop-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.loop-items { display: flex; flex-direction: column; gap: 8px; }
+.loop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.loop-arrow {
+  color: var(--gold);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.loop-item input {
+  flex: 1;
+  min-height: auto;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
+/* Feedback mechanism */
+.feedback-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.feedback-item {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 14px;
+}
+.feedback-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+/* Time block */
+.time-block {
+  background: var(--dark-2);
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin-bottom: 10px;
+}
+.time-block-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  color: var(--gold-light);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Commitment */
+.commitment-box {
+  background: var(--dark-3);
+  border: 2px solid var(--gold);
+  padding: 24px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.commitment-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  font-weight: 900;
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+.commitment-sign {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 16px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* Gold divider */
+.gold-div { width: 40px; height: 1px; background: var(--gold); opacity: 0.35; margin: 24px 0; }
+
+/* Copy box */
+.copy-box {
+  border: 1px solid var(--border);
+  padding: 20px;
+  background: var(--dark-2);
+  margin-top: 24px;
+}
+.copy-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.88rem;
+  color: var(--gold-light);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.copy-desc { font-size: 0.76rem; color: var(--muted); margin-bottom: 14px; line-height: 1.7; }
+.copy-preview {
+  background: var(--dark-3);
+  padding: 14px;
+  font-size: 0.76rem;
+  color: #555;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.copy-preview.has-content { color: var(--cream); }
+.copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--dark);
+  border: none;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: var(--gold-light); }
+.copy-btn.copied { background: var(--green); color: white; }
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.68rem;
+  color: #3a3a3a;
+  line-height: 1.8;
+}
+.footer strong { color: var(--gold); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media(max-width:480px){
+  .section { padding: 28px 14px; }
+  .feedback-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('s1')">① 質疑需求</button>
+  <button class="nav-tab" onclick="showTab('s2')">② 刪除不必要</button>
+  <button class="nav-tab" onclick="showTab('s3')">③ 簡化優化</button>
+  <button class="nav-tab" onclick="showTab('s4')">④ 加快迭代</button>
+  <button class="nav-tab" onclick="showTab('s5')">⑤ 自動化執行</button>
+</nav>
+
+<!-- ══ ① 質疑需求 ══ -->
+<div id="s1" class="section active">
+  <span class="sec-eyebrow">步驟 01 · 質疑需求</span>
+  <h1 class="sec-title">你的目標<span>真正的問題</span>是什麼？</h1>
+  <p class="sec-desc">在做任何事之前，先把你的目標說清楚，然後用Toyota的5個為什麼，一層一層往下挖，找到真正阻礙你進步的核心原因。</p>
+
+  <div class="card">
+    <div class="card-num">— 你的目標</div>
+    <div class="card-title">你現在最重要的一個目標是什麼？</div>
+    <div class="card-hint">要具體、可量化。不是「我想變得更好」，是「12週後我要達到___」。一個目標，一個數字。</div>
+    <textarea id="goal" placeholder="例如：12週後YT訂閱達到1000人、90天後體重減少5公斤..." oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— Toyota 5個為什麼</div>
+    <div class="card-title">用5個為什麼，找到真正卡住你的那個原因</div>
+    <div class="card-hint">規則很簡單：每一層都問「為什麼」，然後根據答案往下一層繼續問。很多人一開始以為自己知道問題在哪，但問到第四、第五層才發現，真正的原因根本不是他們想的那樣。
+
+📌 範例——目標：每個月存到20,000元
+
+Why 1：因為每個月的固定開銷太大
+引導動作：把上個月所有的支出全部列出來，分成「必要」和「非必要」兩類。
+
+Why 2：哪些開銷是真的非有不可？哪些有更省的替代方案？
+引導動作：逐條檢視你的「必要」清單，問自己：如果沒有這個，我真的沒辦法生活嗎？
+
+Why 3：哪些是衝動消費？什麼情況下你最容易亂花錢？
+引導動作：找出你的消費模式——是壓力大的時候？還是刷卡太方便？
+
+Why 4：這些衝動消費，有沒有辦法在源頭阻斷它？
+引導動作：思考能不能改變環境，讓消費變得更不容易發生。
+
+Why 5：有沒有更簡單的方式，讓省錢這件事不需要靠意志力？
+引導動作：把解法設計成自動化——例如咖啡自己泡、調低信用卡額度讓自己刷不夠、發薪日當天自動轉帳到投資帳戶。
+
+最終發現：你以為問題是「收入不夠」，其實問題是「支出從來沒有被認真檢視過，而且沒有系統讓省錢變成自動的事」。</div>
+    <div class="why-block">
+      <div class="why-row">
+        <div class="why-label">Why 1</div>
+        <textarea id="w1" placeholder="為什麼你現在還沒達到目標？把第一個想到的原因寫下來，不用想太多，寫最直覺的那個。" rows="2" oninput="updateAll()"></textarea>
+      </div>
+      <div class="why-row">
+        <div class="why-label">Why 2</div>
+        <textarea id="w2" placeholder="把你上面寫的原因攤開來看——裡面有哪些細節？哪些部分是可以改變的？哪些部分你從來沒有認真想過？" rows="2" oninput="updateAll()"></textarea>
+      </div>
+      <div class="why-row">
+        <div class="why-label">Why 3</div>
+        <textarea id="w3" placeholder="在這些原因裡，哪些是你真的沒有辦法控制的？哪些其實是你一直沒有做到某件事，才導致這個結果？" rows="2" oninput="updateAll()"></textarea>
+      </div>
+      <div class="why-row">
+        <div class="why-label">Why 4</div>
+        <textarea id="w4" placeholder="為什麼你一直沒有做那件事？是不知道怎麼做？還是知道但沒有行動？還是環境讓你很難做到？" rows="2" oninput="updateAll()"></textarea>
+      </div>
+      <div class="why-row">
+        <div class="why-label">Why 5</div>
+        <textarea id="w5" placeholder="如果你解決了這個最根本的原因，問題會不會真的消失？有沒有辦法讓這個解法變成自動的、不需要靠意志力的？" rows="2" oninput="updateAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 核心問題</div>
+    <div class="card-title">5個為什麼問完之後，你找到的最根本問題是什麼？</div>
+    <div class="card-hint">用一句話說清楚。這個就是你接下來要解決的真正問題，不是表面的症狀。</div>
+    <textarea id="core-problem" placeholder="我真正的核心問題是..." oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的目標拆解</div>
+    <p class="copy-desc">貼到Skool社群，讓大家幫你確認你找到的核心問題是否準確。</p>
+    <div class="copy-preview" id="s1-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s1-btn" onclick="copySection('s1')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ② 刪除不必要 ══ -->
+<div id="s2" class="section">
+  <span class="sec-eyebrow">步驟 02 · 刪除不必要</span>
+  <h1 class="sec-title">找出<span>真正的</span>關鍵行動</h1>
+  <p class="sec-desc">先把你認為要達成目標的所有行動全部列出來，然後問自己：如果只能留下三個，你會留哪三個？那三個才是真正的關鍵行動。</p>
+
+  <div class="card">
+    <div class="card-num">— 第一步：全部列出來</div>
+    <div class="card-title">要達到你的目標，你認為需要執行哪些行動？</div>
+    <div class="card-hint">先不要篩選，把所有你想到的都列出來。列完之後再決定哪些留、哪些刪。</div>
+    <div class="action-list" id="action-list"></div>
+    <div class="add-btn-row" style="margin-top:10px">
+      <input type="text" id="action-input" placeholder="新增一個行動..." onkeydown="if(event.key==='Enter')addAction()">
+      <button class="add-sm-btn" onclick="addAction()">＋</button>
+    </div>
+  </div>
+
+  <div class="keep-counter">
+    <div class="keep-count-val" id="keep-count">0</div>
+    <div class="keep-count-label">已保留的關鍵行動（目標：3個）</div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 第二步：你的三個關鍵行動</div>
+    <div class="card-title">如果只能留下三個，你保留了哪三個？為什麼？</div>
+    <div class="card-hint">說清楚你為什麼選這三個，不選其他的。這個思考過程比結果更重要——它讓你真正理解什麼是核心，什麼是雜訊。</div>
+    <textarea id="keep-reason" placeholder="我保留這三個行動的原因是..." oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的關鍵行動清單</div>
+    <p class="copy-desc">貼到Skool，讓大家幫你確認這三個選得對不對。</p>
+    <div class="copy-preview" id="s2-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s2-btn" onclick="copySection('s2')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ③ 簡化優化 ══ -->
+<div id="s3" class="section">
+  <span class="sec-eyebrow">步驟 03 · 簡化與優化</span>
+  <h1 class="sec-title">形成<span>良好閉環</span></h1>
+  <p class="sec-desc">馬斯克說，有時候第二步會刪過頭。這一步的任務是把你的三個關鍵行動組成一個閉環，如果哪裡卡住了，適時加回一個被刪掉的行動。目標是讓這個循環能夠自我強化。</p>
+
+  <div class="card">
+    <div class="card-num">— 建立你的策略行動閉環</div>
+    <div class="card-title">你的三個關鍵行動如何形成一個循環？</div>
+    <div class="card-hint">閉環的意思是：行動A產生的結果，讓你更容易執行行動B；行動B的結果，讓行動C更有效；行動C的結果，又回來強化行動A。這樣的系統會越跑越順。</div>
+    <div class="loop-box">
+      <div class="loop-title">策略行動閉環</div>
+      <div class="loop-items">
+        <div class="loop-item">
+          <div class="loop-arrow">①</div>
+          <input type="text" id="loop1" placeholder="關鍵行動一..." oninput="updateAll()">
+        </div>
+        <div class="loop-item">
+          <div class="loop-arrow">↓</div>
+          <input type="text" id="loop1-result" placeholder="這個行動產生什麼結果？" oninput="updateAll()" style="font-size:0.75rem;color:var(--muted)">
+        </div>
+        <div class="loop-item">
+          <div class="loop-arrow">②</div>
+          <input type="text" id="loop2" placeholder="關鍵行動二..." oninput="updateAll()">
+        </div>
+        <div class="loop-item">
+          <div class="loop-arrow">↓</div>
+          <input type="text" id="loop2-result" placeholder="這個行動產生什麼結果？" oninput="updateAll()" style="font-size:0.75rem;color:var(--muted)">
+        </div>
+        <div class="loop-item">
+          <div class="loop-arrow">③</div>
+          <input type="text" id="loop3" placeholder="關鍵行動三..." oninput="updateAll()">
+        </div>
+        <div class="loop-item">
+          <div class="loop-arrow">↓</div>
+          <input type="text" id="loop3-result" placeholder="這個行動產生什麼結果？如何回頭強化行動一？" oninput="updateAll()" style="font-size:0.75rem;color:var(--muted)">
+        </div>
+        <div class="loop-item">
+          <div class="loop-arrow">↩</div>
+          <div style="font-size:0.75rem;color:var(--gold);font-style:italic;">回到行動一，形成閉環</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 如果閉環卡住了</div>
+    <div class="card-title">哪個環節最容易斷掉？你需要加回哪個被刪掉的行動？</div>
+    <div class="card-hint">馬斯克說有時候會刪過頭。如果你的閉環某個地方一直卡，可能是你刪掉了一個其實必要的步驟。誠實評估，需要的話就加回來。</div>
+    <textarea id="loop-fix" placeholder="我的閉環最容易在___這個環節斷掉。我可能需要加回___這個行動，因為..." oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的策略閉環</div>
+    <p class="copy-desc">貼到Skool，讓大家幫你找出閉環的漏洞。</p>
+    <div class="copy-preview" id="s3-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s3-btn" onclick="copySection('s3')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ④ 加快迭代 ══ -->
+<div id="s4" class="section">
+  <span class="sec-eyebrow">步驟 04 · 加快迭代速度</span>
+  <h1 class="sec-title">讓閉環<span>跑得更快</span></h1>
+  <p class="sec-desc">找到最快能告訴你「方向對不對」的回饋機制。不要等三個月看結果，是設計一個幾天內就能感受到的領先指標，然後根據那個指標快速調整。</p>
+
+  <div class="card">
+    <div class="card-num">— 領先指標 vs 落後指標</div>
+    <div class="card-title">你的目標，最快能感受到的回饋是什麼？</div>
+    <div class="card-hint">落後指標是最終結果，需要很長時間才能看到。領先指標是幾天內就能感受到的變化。找到你的領先指標，它才是你每週真正要追蹤的東西。</div>
+    <div class="feedback-grid">
+      <div class="feedback-item">
+        <div class="feedback-label">落後指標（最終結果）</div>
+        <textarea id="lagging" placeholder="例如：12週後訂閱達1000人" rows="3" oninput="updateAll()"></textarea>
+      </div>
+      <div class="feedback-item">
+        <div class="feedback-label">領先指標（每週追蹤）</div>
+        <textarea id="leading" placeholder="例如：每週發布影片次數、每週觀看時間" rows="3" oninput="updateAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 最快回饋機制</div>
+    <div class="card-title">你的關鍵行動，幾天內就能感受到什麼變化？</div>
+    <div class="card-hint">就像調整飲食幾天後就能感受到身體恢復速度、睡眠品質、專注程度的變化。你的關鍵行動執行後，最快幾天能感受到什麼？這個感受就是你的即時回饋。</div>
+    <textarea id="fast-feedback" placeholder="執行我的關鍵行動___天後，我應該能感受到..." oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 本週調整計畫</div>
+    <div class="card-title">根據上週的回饋，這週你要調整什麼？</div>
+    <div class="card-hint">迭代不是否定上週，是在上週的基礎上微調一個變量。每次只調整一個變量，這樣你才能知道是哪個改變帶來了不同的結果。</div>
+    <textarea id="iteration" placeholder="上週我發現___。這週我要調整___。其他不變。" oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的迭代計畫</div>
+    <p class="copy-desc">貼到Skool，讓問責夥伴在下週問你這個調整有沒有效。</p>
+    <div class="copy-preview" id="s4-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s4-btn" onclick="copySection('s4')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ⑤ 自動化執行 ══ -->
+<div id="s5" class="section">
+  <span class="sec-eyebrow">步驟 05 · 自動化執行</span>
+  <h1 class="sec-title">簽下<span>不可妥協</span>條款</h1>
+  <p class="sec-desc">把已經驗證有效的關鍵行動，安排進你每天固定的時間段。這些行動不再依賴意志力，是你每天必須完成的不可妥協條款。</p>
+
+  <div class="card">
+    <div class="card-num">— 你的策略時間段</div>
+    <div class="card-title">你要把關鍵行動安排在每天哪個時間段執行？</div>
+    <div class="card-hint">上班前的5-7點是上班族一天中唯一不會被打擾的時間窗口。把你最重要的關鍵行動放在這裡，不接電話、不回訊息、只做這件事。</div>
+    <div class="time-block">
+      <div class="time-block-title">我的策略時間段設計</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="font-size:0.72rem;color:var(--muted);min-width:60px">開始時間</div>
+          <input type="text" id="time-start" placeholder="例如：05:30" oninput="updateAll()" style="flex:1">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="font-size:0.72rem;color:var(--muted);min-width:60px">結束時間</div>
+          <input type="text" id="time-end" placeholder="例如：07:00" oninput="updateAll()" style="flex:1">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="font-size:0.72rem;color:var(--muted);min-width:60px">執行內容</div>
+          <input type="text" id="time-content" placeholder="例如：30分鐘閱讀 + 30分鐘運動" oninput="updateAll()" style="flex:1">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 最小有效劑量版本</div>
+    <div class="card-title">如果那天特別忙或特別累，最低限度要做什麼？</div>
+    <div class="card-hint">習慣不是全有或全無。設計一個「最小有效劑量版本」，讓你在最糟糕的情況下也能執行一點點。這樣就不會因為某天沒做到完整版而完全放棄。</div>
+    <textarea id="minimum" placeholder="就算那天再忙再累，我至少要完成___，時間只需要___分鐘。" oninput="updateAll()"></textarea>
+  </div>
+
+  <div class="commitment-box">
+    <div class="commitment-title">不可妥協條款</div>
+    <div id="commitment-preview" style="font-size:0.82rem;line-height:1.9;color:var(--cream);font-style:italic;text-align:left">
+      填完上方的時間段和內容後，你的不可妥協條款會自動生成在這裡。
+    </div>
+    <div class="commitment-sign">
+      我承諾按照以上條款執行，並在Skool社群公開宣示。
+    </div>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的不可妥協條款</div>
+    <p class="copy-desc">貼到Skool社群公開宣示。讓大家知道你的承諾，讓問責夥伴每天問你有沒有做到。</p>
+    <div class="copy-preview" id="s5-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s5-btn" onclick="copySection('s5')">複製條款，前往Skool公開宣示</button>
+  </div>
+
+  <div class="footer">
+    第一性原理目標拆解模板 · 由 <strong>Steven</strong> 製作<br>
+    加入免費Skool自律實戰社群，和同樣在認真改變的人一起問責。
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let actions = [];
+let data = {};
+
+function load() {
+  try {
+    const s = localStorage.getItem('fp_template_v1');
+    if (!s) return;
+    const d = JSON.parse(s);
+    actions = d.actions || [];
+    data = d.data || {};
+    const ids = ['goal','w1','w2','w3','w4','w5','core-problem','keep-reason',
+      'loop1','loop1-result','loop2','loop2-result','loop3','loop3-result','loop-fix',
+      'lagging','leading','fast-feedback','iteration',
+      'time-start','time-end','time-content','minimum'];
+    ids.forEach(id => { const el = document.getElementById(id); if(el && data[id]) el.value = data[id]; });
+  } catch(e){}
+}
+
+function saveData() {
+  const ids = ['goal','w1','w2','w3','w4','w5','core-problem','keep-reason',
+    'loop1','loop1-result','loop2','loop2-result','loop3','loop3-result','loop-fix',
+    'lagging','leading','fast-feedback','iteration',
+    'time-start','time-end','time-content','minimum'];
+  ids.forEach(id => { const el = document.getElementById(id); if(el) data[id] = el.value; });
+  try { localStorage.setItem('fp_template_v1', JSON.stringify({ actions, data })); } catch(e){}
+}
+
+// ── TABS ──
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── ACTIONS ──
+function renderActions() {
+  const list = document.getElementById('action-list');
+  list.innerHTML = '';
+  actions.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'action-item' + (a.kept ? ' kept' : a.deleted ? ' deleted' : '');
+    div.innerHTML = `
+      <div class="action-num">${i+1}</div>
+      <textarea rows="2" oninput="actions[${i}].text=this.value;saveData();updateAll()">${a.text}</textarea>
+      <div class="action-btns">
+        <button class="action-btn keep" onclick="toggleKeep(${i})">✓ 保留</button>
+        <button class="action-btn delete" onclick="toggleDelete(${i})">✕ 刪除</button>
+      </div>`;
+    list.appendChild(div);
+  });
+  const kept = actions.filter(a=>a.kept).length;
+  document.getElementById('keep-count').textContent = kept;
+  document.getElementById('keep-count').style.color = kept === 3 ? 'var(--green)' : 'var(--gold)';
+}
+
+function addAction() {
+  const input = document.getElementById('action-input');
+  if (!input.value.trim()) return;
+  actions.push({ text: input.value.trim(), kept: false, deleted: false });
+  input.value = '';
+  renderActions();
+  saveData();
+  updateAll();
+}
+
+function toggleKeep(i) {
+  actions[i].kept = !actions[i].kept;
+  if (actions[i].kept) actions[i].deleted = false;
+  renderActions();
+  saveData();
+  updateAll();
+}
+
+function toggleDelete(i) {
+  actions[i].deleted = !actions[i].deleted;
+  if (actions[i].deleted) actions[i].kept = false;
+  renderActions();
+  saveData();
+  updateAll();
+}
+
+// ── COMMITMENT ──
+function updateCommitment() {
+  const start = g('time-start');
+  const end = g('time-end');
+  const content = g('time-content');
+  const minimum = g('minimum');
+  const goal = g('goal');
+
+  if (!start && !end && !content) return;
+
+  const text = [
+    goal ? `我的目標：${goal}` : '',
+    '',
+    `每天 ${start||'___'} 到 ${end||'___'}，我只做一件事：${content||'___'}`,
+    '不接電話、不回訊息、不開會。',
+    '',
+    minimum ? `就算再忙再累，我至少完成：${minimum}` : '',
+    '',
+    '這是我對自己的承諾，不可妥協。',
+  ].filter(Boolean).join('\n');
+
+  document.getElementById('commitment-preview').textContent = text;
+}
+
+// ── PREVIEWS ──
+function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function updateAll() {
+  saveData();
+  updateCommitment();
+
+  // S1
+  const s1 = ['【第一性原理 · 步驟一：質疑需求】','',
+    g('goal') ? `🎯 目標：${g('goal')}` : '',
+    '',
+    g('w1') ? `Why 1：${g('w1')}` : '',
+    g('w2') ? `Why 2：${g('w2')}` : '',
+    g('w3') ? `Why 3：${g('w3')}` : '',
+    g('w4') ? `Why 4：${g('w4')}` : '',
+    g('w5') ? `Why 5：${g('w5')}` : '',
+    '',
+    g('core-problem') ? `🔍 核心問題：${g('core-problem')}` : '',
+    '','——','來自 Steven 的第一性原理目標拆解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('s1-preview', s1, g('goal').length > 0);
+
+  // S2
+  const keptActions = actions.filter(a=>a.kept).map(a=>a.text);
+  const allActions = actions.map((a,i)=>`${i+1}. ${a.text}${a.kept?' ✓':a.deleted?' ✕':''}`).join('\n');
+  const s2 = ['【第一性原理 · 步驟二：刪除不必要】','',
+    allActions ? `所有行動：\n${allActions}` : '',
+    '',
+    keptActions.length ? `✓ 保留的三個關鍵行動：\n${keptActions.map((a,i)=>`${i+1}. ${a}`).join('\n')}` : '',
+    '',
+    g('keep-reason') ? `保留原因：${g('keep-reason')}` : '',
+    '','——','來自 Steven 的第一性原理目標拆解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('s2-preview', s2, actions.length > 0);
+
+  // S3
+  const s3 = ['【第一性原理 · 步驟三：簡化優化】','',
+    g('loop1') ? `① ${g('loop1')}` : '',
+    g('loop1-result') ? `   → ${g('loop1-result')}` : '',
+    g('loop2') ? `② ${g('loop2')}` : '',
+    g('loop2-result') ? `   → ${g('loop2-result')}` : '',
+    g('loop3') ? `③ ${g('loop3')}` : '',
+    g('loop3-result') ? `   → ${g('loop3-result')}` : '',
+    '   ↩ 回到①形成閉環',
+    '',
+    g('loop-fix') ? `卡關點與調整：${g('loop-fix')}` : '',
+    '','——','來自 Steven 的第一性原理目標拆解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('s3-preview', s3, g('loop1').length > 0);
+
+  // S4
+  const s4 = ['【第一性原理 · 步驟四：加快迭代】','',
+    g('lagging') ? `落後指標：${g('lagging')}` : '',
+    g('leading') ? `領先指標：${g('leading')}` : '',
+    '',
+    g('fast-feedback') ? `最快回饋：${g('fast-feedback')}` : '',
+    '',
+    g('iteration') ? `本週調整：${g('iteration')}` : '',
+    '','——','來自 Steven 的第一性原理目標拆解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('s4-preview', s4, g('lagging').length > 0 || g('leading').length > 0);
+
+  // S5
+  const s5 = ['【第一性原理 · 步驟五：不可妥協條款】','',
+    g('goal') ? `目標：${g('goal')}` : '',
+    '',
+    (g('time-start')||g('time-end')) ? `策略時間段：${g('time-start')||'___'} — ${g('time-end')||'___'}` : '',
+    g('time-content') ? `執行內容：${g('time-content')}` : '',
+    '',
+    g('minimum') ? `最小有效劑量：${g('minimum')}` : '',
+    '',
+    '這是我對自己的承諾，不可妥協。',
+    '請社群夥伴每天問我有沒有做到。',
+    '','——','來自 Steven 的第一性原理目標拆解模板'
+  ].filter(Boolean).join('\n');
+  setPreview('s5-preview', s5, g('time-start').length > 0 || g('time-content').length > 0);
+}
+
+function setPreview(id, text, hasContent) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (hasContent) { el.textContent = text; el.classList.add('has-content'); }
+}
+
+function copySection(sec) {
+  const preview = document.getElementById(sec+'-preview');
+  const btn = document.getElementById(sec+'-btn');
+  if (!preview.classList.contains('has-content')) { alert('請先填寫內容！'); return; }
+  navigator.clipboard.writeText(preview.textContent).then(() => {
+    btn.textContent = '✓ 已複製！前往Skool貼上';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = btn.id === 's5-btn' ? '複製條款，前往Skool公開宣示' : '複製，前往Skool分享';
+      btn.classList.remove('copied');
+    }, 3000);
+  });
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  load();
+  renderActions();
+  updateAll();
+
+  const ids = ['goal','w1','w2','w3','w4','w5','core-problem','keep-reason',
+    'loop1','loop1-result','loop2','loop2-result','loop3','loop3-result','loop-fix',
+    'lagging','leading','fast-feedback','iteration',
+    'time-start','time-end','time-content','minimum'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateAll);
+  });
+});
+</script>
+</body>
+</html>
