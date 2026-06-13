@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多巴胺自我審計模板 — Steven</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #0F0F0F;
+  --dark-2: #161616;
+  --dark-3: #1E1E1E;
+  --dark-4: #262626;
+  --gold: #C9A84C;
+  --gold-light: #E8D5A3;
+  --gold-dim: rgba(201,168,76,0.12);
+  --cream: #F5F0E8;
+  --muted: #666;
+  --border: rgba(201,168,76,0.2);
+  --border-dim: rgba(201,168,76,0.07);
+  --green: #4a9960;
+  --green-dim: rgba(74,153,96,0.12);
+  --red: #b44444;
+  --red-dim: rgba(180,68,68,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--dark-2);
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 16px 20px;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.nav-tab:hover { color: var(--gold-light); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.section { display: none; padding: 36px 24px; max-width: 680px; margin: 0 auto; }
+.section.active { display: block; animation: fadeUp 0.4s forwards; }
+
+.sec-eyebrow {
+  font-size: 0.62rem;
+  letter-spacing: 0.45em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+.sec-title {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem,5vw,2.2rem);
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.sec-title span { color: var(--gold); }
+.sec-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+}
+
+.card {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 24px 20px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.card:focus-within { border-color: var(--gold); }
+
+.card-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.92rem;
+  color: var(--cream);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.card-hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(201,168,76,0.25);
+  font-style: italic;
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  padding: 11px 13px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.8;
+}
+textarea { min-height: 68px; }
+textarea:focus, input:focus { border-color: var(--gold); background: #1c1c1c; }
+textarea::placeholder, input::placeholder { color: #3a3a3a; font-size: 0.78rem; }
+
+/* ── 慾望清單 ── */
+.desire-list { display: flex; flex-direction: column; gap: 8px; }
+.desire-item {
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 14px 16px;
+  transition: all 0.2s;
+}
+.desire-item.consume { border-color: rgba(180,68,68,0.4); background: var(--red-dim); }
+.desire-item.build { border-color: rgba(74,153,96,0.4); background: var(--green-dim); }
+
+.desire-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.desire-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-style: italic;
+  min-width: 20px;
+  padding-top: 12px;
+}
+.desire-row input { flex: 1; min-height: auto; }
+
+.tag-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.tag-btn {
+  padding: 5px 14px;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  border: 1px solid var(--border-dim);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.tag-btn:hover { border-color: var(--gold); color: var(--gold); }
+.tag-btn.active-c { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.tag-btn.active-b { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+/* ── 統計 ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-item {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 16px;
+  text-align: center;
+}
+.stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-style: italic;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-val.consume { color: var(--red); }
+.stat-val.build { color: var(--green); }
+.stat-label { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.15em; }
+
+/* ── 資訊審計 ── */
+.info-list { display: flex; flex-direction: column; gap: 8px; }
+.info-item {
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 14px 16px;
+  transition: all 0.2s;
+}
+.info-item.active-a { border-color: rgba(74,153,96,0.4); background: var(--green-dim); }
+.info-item.active-p { border-color: rgba(180,68,68,0.4); background: var(--red-dim); }
+
+.info-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.info-row input { flex: 1; min-height: auto; }
+
+.ap-row { display: flex; gap: 6px; }
+.ap-btn {
+  padding: 5px 14px;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  border: 1px solid var(--border-dim);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.ap-btn:hover { border-color: var(--gold); }
+.ap-btn.active-a { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.ap-btn.active-p { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+.add-row { display: flex; gap: 8px; margin-top: 10px; }
+.add-row input { flex: 1; min-height: auto; }
+.add-sm {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-size: 1.1rem;
+  width: 42px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.add-sm:hover { background: var(--gold-dim); }
+
+/* ── 齋戒設計 ── */
+.time-grid { display: grid; gap: 8px; margin-bottom: 12px; }
+.time-item {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 16px;
+}
+.time-label { font-size: 0.68rem; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 8px; }
+.time-row { display: flex; gap: 10px; align-items: center; }
+.time-row input { flex: 1; min-height: auto; }
+.time-row .time-sep { color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
+
+/* 不可妥協條款 */
+.commitment {
+  border: 2px solid var(--gold);
+  padding: 24px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.commitment-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  font-weight: 900;
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+.commitment-content {
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--cream);
+  font-style: italic;
+  text-align: left;
+  min-height: 60px;
+}
+.commitment-sign {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 16px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* 金色分隔線 */
+.gold-div { width: 40px; height: 1px; background: var(--gold); opacity: 0.35; margin: 24px 0; }
+
+/* 複製框 */
+.copy-box {
+  border: 1px solid var(--border);
+  padding: 20px;
+  background: var(--dark-2);
+  margin-top: 24px;
+}
+.copy-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.88rem;
+  color: var(--gold-light);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.copy-desc { font-size: 0.76rem; color: var(--muted); margin-bottom: 14px; line-height: 1.7; }
+.copy-preview {
+  background: var(--dark-3);
+  padding: 14px;
+  font-size: 0.76rem;
+  color: #555;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.copy-preview.has-content { color: var(--cream); }
+.copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--dark);
+  border: none;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: var(--gold-light); }
+.copy-btn.copied { background: var(--green); color: white; }
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.68rem;
+  color: #3a3a3a;
+  line-height: 1.8;
+}
+.footer strong { color: var(--gold); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media(max-width:480px){
+  .section { padding: 28px 14px; }
+  .stat-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('t1')">① 慾望結構分析</button>
+  <button class="nav-tab" onclick="showTab('t2')">② 資訊輸入審計</button>
+  <button class="nav-tab" onclick="showTab('t3')">③ 多巴胺齋戒設計</button>
+</nav>
+
+<!-- ══ ① 慾望結構分析 ══ -->
+<div id="t1" class="section active">
+  <span class="sec-eyebrow">分頁 01 · 慾望結構分析</span>
+  <h1 class="sec-title">你的慾望是<span>借來的</span>還是<span>賺來的</span>？</h1>
+  <p class="sec-desc">列出你現在最想要的5件事，然後標記它是消費型（C）還是建造型（B）。消費型是你想要擁有的東西，建造型是你想要成為的人或培養的能力。不用評判，先看清楚自己的慾望結構。</p>
+
+  <div class="card">
+    <div class="card-num">— 你的慾望清單</div>
+    <div class="card-title">現在最想要的5件事，逐一標記C或B</div>
+    <div class="card-hint">C = 消費型（想要擁有）→ 買東西、享樂、得到某個結果，爽一下然後空虛<br>B = 建造型（想要成為）→ 培養能力、建立系統、持續成長，先苦後真實的滿足感</div>
+    <div class="desire-list" id="desireList"></div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-item">
+      <div class="stat-val consume" id="cCount">0</div>
+      <div class="stat-label">消費型 C（借來的快樂）</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val build" id="bCount">0</div>
+      <div class="stat-label">建造型 B（賺來的快樂）</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 你看到了什麼？</div>
+    <div class="card-title">標記完之後，你發現了什麼？</div>
+    <div class="card-hint">如果消費型佔了大多數，你的多巴胺系統就會一直在「爽一下、空虛、再爽一下」的循環裡打轉。不是要你把消費型全部砍掉，是先看清楚比例。</div>
+    <textarea id="desire-reflection" placeholder="我發現我的慾望清單裡___是消費型，___是建造型。我注意到___..." oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 轉換練習</div>
+    <div class="card-title">選一個消費型慾望，你能不能把它轉換成建造型？</div>
+    <div class="card-hint">例如：「我想買那門課」（消費型）→「我要把讀完的書輸出成影片，然後辦一次讀書會分享」（建造型）。轉換不是放棄那個慾望，是找到一個讓你真正有成長的實現方式。</div>
+    <textarea id="desire-convert" placeholder="我想把___（消費型）轉換成___（建造型）。具體的做法是___..." oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的慾望結構分析</div>
+    <p class="copy-desc">貼到Skool社群，讓大家看到你發現了什麼。</p>
+    <div class="copy-preview" id="t1-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="t1-btn" onclick="copySection('t1')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ② 資訊輸入審計 ══ -->
+<div id="t2" class="section">
+  <span class="sec-eyebrow">分頁 02 · 資訊輸入審計</span>
+  <h1 class="sec-title">你的資訊是<span>你選的</span>還是<span>演算法選的</span>？</h1>
+  <p class="sec-desc">列出你昨天消費的主要資訊，然後標記它是主動輸入（A）還是被動輸入（P）。主動是你主動去找的，被動是演算法或通知把你拉進去的。找出你的演算法陷阱在哪裡。</p>
+
+  <div class="card">
+    <div class="card-num">— 昨天消費的資訊</div>
+    <div class="card-title">昨天你看了什麼？逐一標記A或P</div>
+    <div class="card-hint">A = 主動輸入（你決定的）→ 你主動搜尋、主動選擇看的內容<br>P = 被動輸入（演算法決定的）→ 通知把你拉進去、無意識往下滑到的、推薦給你的內容</div>
+    <div class="info-list" id="infoList"></div>
+    <div class="add-row">
+      <input type="text" id="infoInput" placeholder="新增一條昨天看過的內容..." onkeydown="if(event.key==='Enter')addInfo()">
+      <button class="add-sm" onclick="addInfo()">＋</button>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-item">
+      <div class="stat-val build" id="aCount">0</div>
+      <div class="stat-label">主動輸入 A（你選的）</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val consume" id="pCount">0</div>
+      <div class="stat-label">被動輸入 P（演算法選的）</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 你的演算法陷阱</div>
+    <div class="card-title">哪個App最容易把你拉進被動輸入的狀態？</div>
+    <div class="card-hint">賭場的目的不是讓你快樂，是讓你不想離開。演算法的目的也不是讓你變好，只是讓你繼續看。找出那個最容易把你吸進去的App，這就是你要設計的第一個觸發點。</div>
+    <textarea id="trap-app" placeholder="最容易把我拉進被動輸入的是___。通常發生在___的時候。那個觸發點是___..." oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 你的主動輸入計畫</div>
+    <div class="card-title">這週你打算主動輸入什麼？</div>
+    <div class="card-hint">不是靠意志力不去滑，是設計一個主動輸入的時間。例如：每天一部NBA賽評、一篇財經文章、一章書。把主動輸入排進你的時間表，被動輸入的空間自然就少了。</div>
+    <textarea id="active-plan" placeholder="這週我打算主動輸入：&#10;• ___（每天___分鐘）&#10;• ___（每天___分鐘）&#10;• ___（每天___分鐘）" oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的資訊輸入審計</div>
+    <p class="copy-desc">貼到Skool，讓大家看到你的演算法陷阱在哪裡。</p>
+    <div class="copy-preview" id="t2-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="t2-btn" onclick="copySection('t2')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ③ 多巴胺齋戒設計 ══ -->
+<div id="t3" class="section">
+  <span class="sec-eyebrow">分頁 03 · 多巴胺齋戒設計</span>
+  <h1 class="sec-title">設計你的<span>齋戒系統</span></h1>
+  <p class="sec-desc">多巴胺齋戒不是要你清心寡慾，是讓你有意識地設計哪些刺激進得來、什麼時候進來。不是靠意志力，是靠系統設計。</p>
+
+  <div class="card">
+    <div class="card-num">— 飲食齋戒</div>
+    <div class="card-title">你的飲食計畫</div>
+    <div class="card-hint">16/8間歇性斷食是一個溫和的起點——每天16個小時不進食，8個小時的進食窗口。目的不是減重，是讓身體每天有一段時間進入低刺激的狀態，讓多巴胺水平自然校正回來。</div>
+    <div class="time-grid">
+      <div class="time-item">
+        <div class="time-label">進食窗口</div>
+        <div class="time-row">
+          <input type="text" id="eat-start" placeholder="開始時間，例如 12:00" oninput="updateCommitment()">
+          <span class="time-sep">→</span>
+          <input type="text" id="eat-end" placeholder="結束時間，例如 20:00" oninput="updateCommitment()">
+        </div>
+      </div>
+    </div>
+    <textarea id="food-plan" placeholder="我的飲食計畫：以原型食物為主，盡量避免___。每週安排一頓作弊餐在___，那天要完成___訓練..." oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 資訊齋戒</div>
+    <div class="card-title">你的主動輸入時間段</div>
+    <div class="card-hint">把主動輸入集中在固定的時間窗口，其他時間不主動去滑任何平台。工作時間每100分鐘一個區塊，區塊結束後可以休息15分鐘。固定時間查看社群，不是隨時都可以看。</div>
+    <div class="time-grid">
+      <div class="time-item">
+        <div class="time-label">工作區塊</div>
+        <div class="time-row">
+          <input type="text" id="work-duration" placeholder="專注時間，例如 100分鐘" oninput="updateCommitment()">
+          <span class="time-sep">＋</span>
+          <input type="text" id="rest-duration" placeholder="休息時間，例如 15分鐘" oninput="updateCommitment()">
+        </div>
+      </div>
+      <div class="time-item">
+        <div class="time-label">社群查看時間</div>
+        <div class="time-row">
+          <input type="text" id="social-time" placeholder="例如：11:30 和 17:30，各30分鐘" oninput="updateCommitment()">
+        </div>
+      </div>
+    </div>
+    <textarea id="info-quota" placeholder="我的每日資訊配額：&#10;• NBA相關：___部&#10;• 財經/商業：___部&#10;• 其他：___" oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-num">— 早晨系統</div>
+    <div class="card-title">起床的第一件事不是看手機</div>
+    <div class="card-hint">早上用賺來的多巴胺開始你的一天——在世界開始對你提出要求之前，先為自己做一件重要的事。這個時候你得到的多巴胺，不是靠任何即時滿足換來的，而且帶著這個狀態去上班，整天都會不太一樣。</div>
+    <div class="time-grid">
+      <div class="time-item">
+        <div class="time-label">起床時間</div>
+        <div class="time-row">
+          <input type="text" id="wake-time" placeholder="例如：05:30" oninput="updateCommitment()">
+        </div>
+      </div>
+    </div>
+    <textarea id="morning-plan" placeholder="起床後第一件事：___&#10;不看手機，直到___點之後&#10;早晨系統：___分鐘讀書 ＋ ___分鐘運動" oninput="saveAll()"></textarea>
+  </div>
+
+  <div class="commitment">
+    <div class="commitment-title">不可妥協條款</div>
+    <div class="commitment-content" id="commitment-text">填完上方三個區塊後，你的不可妥協條款會自動生成在這裡。</div>
+    <div class="commitment-sign">我承諾按照以上條款執行，並在Skool社群公開宣示。</div>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的多巴胺齋戒設計</div>
+    <p class="copy-desc">貼到Skool公開宣示，讓問責夥伴每天問你有沒有做到。</p>
+    <div class="copy-preview" id="t3-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="t3-btn" onclick="copySection('t3')">複製條款，前往Skool公開宣示</button>
+  </div>
+
+  <div class="footer">
+    多巴胺自我審計模板 · 由 <strong>Steven</strong> 製作<br>
+    加入免費Skool自律實戰社群，和同樣在設計自律系統的人一起前進。
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let desires = [
+  { text:'', type:'' },
+  { text:'', type:'' },
+  { text:'', type:'' },
+  { text:'', type:'' },
+  { text:'', type:'' },
+];
+let infos = [];
+let data = {};
+
+// ── LOAD ──
+function load() {
+  try {
+    const s = localStorage.getItem('dopamine_audit_v1');
+    if (!s) return;
+    const d = JSON.parse(s);
+    desires = d.desires || desires;
+    infos = d.infos || [];
+    data = d.data || {};
+    const ids = ['desire-reflection','desire-convert','trap-app','active-plan',
+      'food-plan','eat-start','eat-end','work-duration','rest-duration',
+      'social-time','info-quota','wake-time','morning-plan'];
+    ids.forEach(id => { const el = document.getElementById(id); if(el && data[id]) el.value = data[id]; });
+  } catch(e){}
+}
+
+function saveAll() {
+  const ids = ['desire-reflection','desire-convert','trap-app','active-plan',
+    'food-plan','eat-start','eat-end','work-duration','rest-duration',
+    'social-time','info-quota','wake-time','morning-plan'];
+  ids.forEach(id => { const el = document.getElementById(id); if(el) data[id] = el.value; });
+  try {
+    localStorage.setItem('dopamine_audit_v1', JSON.stringify({ desires, infos, data }));
+  } catch(e){}
+  updatePreviews();
+}
+
+// ── TABS ──
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── DESIRES ──
+function renderDesires() {
+  const list = document.getElementById('desireList');
+  list.innerHTML = '';
+  desires.forEach((d, i) => {
+    const item = document.createElement('div');
+    item.className = 'desire-item' + (d.type === 'C' ? ' consume' : d.type === 'B' ? ' build' : '');
+    item.innerHTML = `
+      <div class="desire-row">
+        <div class="desire-num">${i+1}</div>
+        <input type="text" value="${d.text}" placeholder="你想要的第${i+1}件事..." oninput="desires[${i}].text=this.value;saveAll()">
+      </div>
+      <div class="tag-row">
+        <button class="tag-btn ${d.type==='C'?'active-c':''}" onclick="setDesireType(${i},'C')">C 消費型（借來的快樂）</button>
+        <button class="tag-btn ${d.type==='B'?'active-b':''}" onclick="setDesireType(${i},'B')">B 建造型（賺來的快樂）</button>
+      </div>`;
+    list.appendChild(item);
+  });
+  updateDesireStat();
+}
+
+function setDesireType(i, type) {
+  desires[i].type = desires[i].type === type ? '' : type;
+  renderDesires();
+  saveAll();
+}
+
+function updateDesireStat() {
+  const c = desires.filter(d=>d.type==='C').length;
+  const b = desires.filter(d=>d.type==='B').length;
+  document.getElementById('cCount').textContent = c;
+  document.getElementById('bCount').textContent = b;
+}
+
+// ── INFOS ──
+function renderInfos() {
+  const list = document.getElementById('infoList');
+  list.innerHTML = '';
+  infos.forEach((info, i) => {
+    const item = document.createElement('div');
+    item.className = 'info-item' + (info.type==='A' ? ' active-a' : info.type==='P' ? ' active-p' : '');
+    item.innerHTML = `
+      <div class="info-row">
+        <input type="text" value="${info.text}" placeholder="內容名稱..." oninput="infos[${i}].text=this.value;saveAll()">
+      </div>
+      <div class="ap-row">
+        <button class="ap-btn ${info.type==='A'?'active-a':''}" onclick="setInfoType(${i},'A')">A 主動（我選的）</button>
+        <button class="ap-btn ${info.type==='P'?'active-p':''}" onclick="setInfoType(${i},'P')">P 被動（演算法選的）</button>
+      </div>`;
+    list.appendChild(item);
+  });
+  updateInfoStat();
+}
+
+function addInfo() {
+  const input = document.getElementById('infoInput');
+  if (!input.value.trim()) return;
+  infos.push({ text: input.value.trim(), type: '' });
+  input.value = '';
+  renderInfos();
+  saveAll();
+}
+
+function setInfoType(i, type) {
+  infos[i].type = infos[i].type === type ? '' : type;
+  renderInfos();
+  saveAll();
+}
+
+function updateInfoStat() {
+  const a = infos.filter(i=>i.type==='A').length;
+  const p = infos.filter(i=>i.type==='P').length;
+  document.getElementById('aCount').textContent = a;
+  document.getElementById('pCount').textContent = p;
+}
+
+// ── COMMITMENT ──
+function updateCommitment() {
+  const eatStart = g('eat-start');
+  const eatEnd = g('eat-end');
+  const workDur = g('work-duration');
+  const restDur = g('rest-duration');
+  const socialTime = g('social-time');
+  const wakeTime = g('wake-time');
+
+  const lines = [];
+  if (wakeTime) lines.push(`每天 ${wakeTime} 起床，起床後第一件事不是看手機。`);
+  if (eatStart && eatEnd) lines.push(`進食窗口：${eatStart} 到 ${eatEnd}，其他時間不進食。`);
+  if (workDur && restDur) lines.push(`工作區塊：專注 ${workDur}，休息 ${restDur}，循環執行。`);
+  if (socialTime) lines.push(`社群查看時間：${socialTime}，其他時間不主動查看。`);
+  lines.push('這是我對自己的承諾，不可妥協。');
+
+  const el = document.getElementById('commitment-text');
+  if (lines.length > 1) {
+    el.textContent = lines.join('\n');
+  }
+  saveAll();
+}
+
+// ── PREVIEWS ──
+function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function updatePreviews() {
+  updateDesireStat();
+  updateInfoStat();
+
+  // T1
+  const desireLines = desires.map((d,i) => d.text ? `${i+1}. ${d.text}【${d.type||'未標記'}】` : '').filter(Boolean).join('\n');
+  const cCount = desires.filter(d=>d.type==='C').length;
+  const bCount = desires.filter(d=>d.type==='B').length;
+  const t1 = ['【多巴胺審計 · 慾望結構】','',
+    desireLines ? '我的5個慾望：\n' + desireLines : '',
+    '',
+    `消費型C：${cCount}個　建造型B：${bCount}個`,
+    '',
+    g('desire-reflection') ? '我發現：\n' + g('desire-reflection') : '',
+    g('desire-convert') ? '轉換練習：\n' + g('desire-convert') : '',
+    '','——','來自 Steven 的多巴胺自我審計模板'
+  ].filter(Boolean).join('\n');
+  setPreview('t1-preview', t1, desireLines.length > 0);
+
+  // T2
+  const infoLines = infos.map(i => i.text ? `• ${i.text}【${i.type||'未標記'}】` : '').filter(Boolean).join('\n');
+  const aCount = infos.filter(i=>i.type==='A').length;
+  const pCount = infos.filter(i=>i.type==='P').length;
+  const t2 = ['【多巴胺審計 · 資訊輸入】','',
+    infoLines ? '昨天消費的資訊：\n' + infoLines : '',
+    '',
+    infos.length ? `主動A：${aCount}條　被動P：${pCount}條` : '',
+    '',
+    g('trap-app') ? '我的演算法陷阱：\n' + g('trap-app') : '',
+    g('active-plan') ? '主動輸入計畫：\n' + g('active-plan') : '',
+    '','——','來自 Steven 的多巴胺自我審計模板'
+  ].filter(Boolean).join('\n');
+  setPreview('t2-preview', t2, infos.length > 0);
+
+  // T3
+  const commitEl = document.getElementById('commitment-text');
+  const commitText = commitEl ? commitEl.textContent : '';
+  const t3 = ['【多巴胺審計 · 齋戒設計】','',
+    commitText && commitText !== '填完上方三個區塊後，你的不可妥協條款會自動生成在這裡。' ? '不可妥協條款：\n' + commitText : '',
+    '',
+    g('food-plan') ? '飲食計畫：\n' + g('food-plan') : '',
+    g('info-quota') ? '資訊配額：\n' + g('info-quota') : '',
+    g('morning-plan') ? '早晨系統：\n' + g('morning-plan') : '',
+    '','——','來自 Steven 的多巴胺自我審計模板'
+  ].filter(Boolean).join('\n');
+  setPreview('t3-preview', t3, g('wake-time').length > 0 || g('eat-start').length > 0);
+}
+
+function setPreview(id, text, hasContent) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (hasContent) { el.textContent = text; el.classList.add('has-content'); }
+}
+
+function copySection(sec) {
+  const preview = document.getElementById(sec+'-preview');
+  const btn = document.getElementById(sec+'-btn');
+  if (!preview.classList.contains('has-content')) { alert('請先填寫內容！'); return; }
+  navigator.clipboard.writeText(preview.textContent).then(() => {
+    btn.textContent = '✓ 已複製！前往Skool貼上';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = sec === 't3' ? '複製條款，前往Skool公開宣示' : '複製，前往Skool分享';
+      btn.classList.remove('copied');
+    }, 3000);
+  });
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  load();
+  renderDesires();
+  renderInfos();
+  updateCommitment();
+  updatePreviews();
+
+  const textIds = ['desire-reflection','desire-convert','trap-app','active-plan',
+    'food-plan','info-quota','morning-plan'];
+  textIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', saveAll);
+  });
+
+  const timeIds = ['eat-start','eat-end','work-duration','rest-duration','social-time','wake-time'];
+  timeIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateCommitment);
+  });
+});
+</script>
+</body>
+</html>
