@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上班前一小時系統 — Steven</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #0F0F0F;
+  --dark-2: #161616;
+  --dark-3: #1E1E1E;
+  --dark-4: #262626;
+  --gold: #C9A84C;
+  --gold-light: #E8D5A3;
+  --gold-dim: rgba(201,168,76,0.12);
+  --cream: #F5F0E8;
+  --muted: #666;
+  --border: rgba(201,168,76,0.2);
+  --border-dim: rgba(201,168,76,0.07);
+  --green: #4a9960;
+  --green-dim: rgba(74,153,96,0.12);
+  --red: #b44444;
+  --red-dim: rgba(180,68,68,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--dark-2);
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  padding: 16px 22px;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.nav-tab:hover { color: var(--gold-light); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.section { display: none; padding: 36px 24px; max-width: 680px; margin: 0 auto; }
+.section.active { display: block; animation: fadeUp 0.4s forwards; }
+
+.sec-eyebrow {
+  font-size: 0.62rem;
+  letter-spacing: 0.45em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+.sec-title {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: clamp(1.5rem,5vw,2.2rem);
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.sec-title span { color: var(--gold); }
+.sec-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 28px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+}
+
+.card {
+  background: var(--dark-2);
+  border: 1px solid var(--border-dim);
+  padding: 24px 20px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.card:focus-within { border-color: var(--gold); }
+
+.card-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.92rem;
+  color: var(--cream);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.card-hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(201,168,76,0.25);
+  font-style: italic;
+}
+
+textarea, input[type="text"], input[type="number"] {
+  width: 100%;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  color: var(--cream);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  padding: 11px 13px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.8;
+}
+textarea { min-height: 68px; }
+textarea:focus, input:focus { border-color: var(--gold); background: #1c1c1c; }
+textarea::placeholder, input::placeholder { color: #3a3a3a; font-size: 0.78rem; }
+
+/* ── 版本選擇 ── */
+.version-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.version-btn {
+  flex: 1;
+  padding: 12px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  color: var(--muted);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.version-btn:hover { border-color: var(--gold); color: var(--gold); }
+.version-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+.version-content { display: none; }
+.version-content.active { display: block; }
+
+/* ── 時間區塊 ── */
+.time-block {
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 16px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+.time-block:focus-within { border-color: var(--gold); }
+.time-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.time-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+.time-row input[type="text"] { flex: 1; min-height: auto; }
+.time-sep { color: var(--muted); font-size: 0.8rem; flex-shrink: 0; }
+.time-block textarea { min-height: 48px; }
+
+/* ── 系統區塊（固定三格） ── */
+.system-block {
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 16px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.system-block:focus-within { border-color: var(--gold); }
+.system-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  font-style: italic;
+  min-width: 24px;
+  padding-top: 10px;
+}
+.system-right { flex: 1; }
+.system-right input { margin-bottom: 6px; min-height: auto; }
+.system-right textarea { min-height: 48px; }
+
+/* ── 睡前紀錄 ── */
+.day-selector {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.day-btn {
+  padding: 8px 12px;
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  color: var(--muted);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+  min-width: 60px;
+}
+.day-btn:hover { border-color: var(--gold); color: var(--gold); }
+.day-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+.day-btn.done { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.day-btn.done.active { background: var(--green-dim); border-color: var(--green); }
+
+.commitment-item {
+  background: var(--dark-3);
+  border: 1px solid var(--border-dim);
+  padding: 16px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: all 0.2s;
+}
+.commitment-item.completed { border-color: rgba(74,153,96,0.4); background: var(--green-dim); }
+.commitment-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  font-style: italic;
+  min-width: 24px;
+  padding-top: 10px;
+}
+.commitment-right { flex: 1; }
+.commitment-right textarea { min-height: 52px; margin-bottom: 8px; }
+.done-btn {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: 1px solid var(--border-dim);
+  color: var(--muted);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.done-btn:hover { border-color: var(--green); color: var(--green); }
+.done-btn.completed { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+.progress-bar-wrap { height: 4px; background: var(--dark-4); margin-bottom: 16px; }
+.progress-bar-fill { height: 100%; background: var(--green); transition: width 0.4s; }
+
+.date-display {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+  letter-spacing: 0.1em;
+}
+
+/* ── 不可妥協條款 ── */
+.commitment-box {
+  border: 2px solid var(--gold);
+  padding: 24px;
+  margin: 16px 0;
+}
+.commitment-box-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  color: var(--gold);
+  font-weight: 900;
+  margin-bottom: 14px;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+.commitment-box-body {
+  font-size: 0.82rem;
+  line-height: 2;
+  color: var(--cream);
+  font-style: italic;
+  min-height: 60px;
+}
+.commitment-box-body.empty { color: #3a3a3a; }
+.commitment-sign {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 14px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.gold-div { width: 40px; height: 1px; background: var(--gold); opacity: 0.35; margin: 24px 0; }
+
+.copy-box {
+  border: 1px solid var(--border);
+  padding: 20px;
+  background: var(--dark-2);
+  margin-top: 24px;
+}
+.copy-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.88rem;
+  color: var(--gold-light);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.copy-desc { font-size: 0.76rem; color: var(--muted); margin-bottom: 14px; line-height: 1.7; }
+.copy-preview {
+  background: var(--dark-3);
+  padding: 14px;
+  font-size: 0.76rem;
+  color: #555;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.copy-preview.has-content { color: var(--cream); }
+.copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--dark);
+  border: none;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: var(--gold-light); }
+.copy-btn.copied { background: var(--green); color: white; }
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.68rem;
+  color: #3a3a3a;
+  line-height: 1.8;
+}
+.footer strong { color: var(--gold); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media(max-width:480px){
+  .section { padding: 28px 14px; }
+  .version-tabs { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('s1')">① 設計你的上班前一小時</button>
+  <button class="nav-tab" onclick="showTab('s2')">② 今晚的不可妥協條款</button>
+  <button class="nav-tab" onclick="showTab('s3')">③ 公開宣示</button>
+</nav>
+
+<!-- ══ ① 設計你的上班前一小時 ══ -->
+<div id="s1" class="section active">
+  <span class="sec-eyebrow">步驟 01 · 設計你的上班前一小時</span>
+  <h1 class="sec-title">那一小時<span>要做什麼</span>？</h1>
+  <p class="sec-desc">上班前那一小時是上班族唯一不被打擾的時間窗口。沒有電話、沒有主管、沒有下屬，世界還沒開始對你提出要求。現在設計你自己的版本。</p>
+
+  <div class="card">
+    <div class="card-num">— 選擇你的版本</div>
+    <div class="card-title">你現在的狀態是哪一種？</div>
+    <div class="card-hint">如果你已經有明確的12週目標，直接用「我的版本」設計最有價值的一小時。如果你還在摸索，可以先參考上班族基本版或SAVERS框架。</div>
+
+    <div class="version-tabs">
+      <button class="version-btn active" onclick="switchVersion('basic')">上班族基本版</button>
+      <button class="version-btn" onclick="switchVersion('savers')">SAVERS框架</button>
+      <button class="version-btn" onclick="switchVersion('custom')">自定義</button>
+    </div>
+
+    <!-- 上班族基本版 -->
+    <div id="v-basic" class="version-content active">
+      <div class="time-block">
+        <div class="time-label">起床時間</div>
+        <div class="time-row">
+          <input type="text" id="basic-wake" placeholder="例如：06:00" oninput="saveAll();buildCommitment()">
+          <span class="time-sep">→ 上班時間</span>
+          <input type="text" id="basic-work" placeholder="例如：09:00" oninput="saveAll();buildCommitment()">
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">1</div>
+        <div class="system-right">
+          <input type="text" value="目標宣言" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="basic-1" placeholder="把你的12週目標大聲念出來，提醒自己今天為什麼要早起。3分鐘就夠了。" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">2</div>
+        <div class="system-right">
+          <input type="text" value="閱讀 30分鐘" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="basic-2" placeholder="讀和你目標直接相關的書。這週我要讀：___" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">3</div>
+        <div class="system-right">
+          <input type="text" value="運動 30分鐘" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="basic-3" placeholder="在家做伏地挺身、深蹲、拉單槓。目的是讓身體醒過來，帶著這個狀態去上班。" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="card" style="background:var(--dark-3);border-color:var(--red);margin-top:10px">
+        <div class="card-num">— 忙碌的時候使用</div>
+        <textarea id="basic-min" placeholder="忙到不行的時候：10頁書 ＋ 15分鐘運動。縮小但不停止。" oninput="saveAll()"></textarea>
+      </div>
+    </div>
+
+    <!-- SAVERS框架 -->
+    <div id="v-savers" class="version-content">
+      <div class="time-block">
+        <div class="time-label">起床時間</div>
+        <div class="time-row">
+          <input type="text" id="savers-wake" placeholder="例如：06:00" oninput="saveAll();buildCommitment()">
+          <span class="time-sep">→ 上班時間</span>
+          <input type="text" id="savers-work" placeholder="例如：09:00" oninput="saveAll();buildCommitment()">
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">S</div>
+        <div class="system-right">
+          <input type="text" value="靜心冥想" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="savers-s1" placeholder="幾分鐘？用什麼App或方式？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">A</div>
+        <div class="system-right">
+          <input type="text" value="肯定語句" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="savers-a" placeholder="寫下你的肯定語句，大聲念出來。例如：我有能力達成我的目標。" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">V</div>
+        <div class="system-right">
+          <input type="text" value="觀想目標" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="savers-v" placeholder="閉上眼睛，想像你達成目標之後的生活是什麼樣子。幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">E</div>
+        <div class="system-right">
+          <input type="text" value="運動" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="savers-e" placeholder="做什麼運動？幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">R</div>
+        <div class="system-right">
+          <input type="text" value="閱讀" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="savers-r" placeholder="讀什麼書？幾頁或幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">S</div>
+        <div class="system-right">
+          <input type="text" value="書寫記錄" readonly style="color:var(--gold);border-color:transparent;background:transparent;padding-left:0">
+          <textarea id="savers-s2" placeholder="寫日記、感恩清單、或是今天的目標。幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 我的版本 -->
+    <div id="v-custom" class="version-content">
+      <div class="time-block">
+        <div class="time-label">起床時間</div>
+        <div class="time-row">
+          <input type="text" id="custom-wake" placeholder="例如：05:30" oninput="saveAll();buildCommitment()">
+          <span class="time-sep">→ 上班時間</span>
+          <input type="text" id="custom-work" placeholder="例如：09:00" oninput="saveAll();buildCommitment()">
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">1</div>
+        <div class="system-right">
+          <input type="text" id="custom-name-1" placeholder="行動名稱，例如：冥想" oninput="saveAll()">
+          <textarea id="custom-detail-1" placeholder="具體做什麼？幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">2</div>
+        <div class="system-right">
+          <input type="text" id="custom-name-2" placeholder="行動名稱，例如：跑步" oninput="saveAll()">
+          <textarea id="custom-detail-2" placeholder="具體做什麼？幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="system-block">
+        <div class="system-num">3</div>
+        <div class="system-right">
+          <input type="text" id="custom-name-3" placeholder="行動名稱（選填）" oninput="saveAll()">
+          <textarea id="custom-detail-3" placeholder="具體做什麼？幾分鐘？" oninput="saveAll()"></textarea>
+        </div>
+      </div>
+      <div class="card" style="background:var(--dark-3);border-color:var(--red);margin-top:10px">
+        <div class="card-num">— 忙碌的時候使用</div>
+        <textarea id="custom-min" placeholder="忙到不行的時候，最少要做什麼？縮小但不停止。" oninput="saveAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製我的早晨系統</div>
+    <p class="copy-desc">貼到Skool，讓問責夥伴追蹤你有沒有每天執行。</p>
+    <div class="copy-preview" id="s1-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s1-btn" onclick="copySection('s1')">複製，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ② 今晚的不可妥協條款 ══ -->
+<div id="s2" class="section">
+  <span class="sec-eyebrow">步驟 02 · 今晚的不可妥協條款</span>
+  <h1 class="sec-title">明天最重要的<span>三件事</span></h1>
+  <p class="sec-desc">早晨系統從昨晚睡前就開始了。每天睡前寫下明天最重要的三件事——這三件事做完之前，其他事情都要等。不超過五分鐘，今晚開始。</p>
+
+  <div class="card">
+    <div class="card-num">— 選擇今天是第幾天</div>
+    <div class="card-title">連續七天的不可妥協條款</div>
+    <div class="card-hint">每天晚上睡前填一次，填完打勾。七天後你的早晨系統已經開始運作了。</div>
+    <div class="day-selector" id="daySelector"></div>
+    <div class="date-display" id="dateDisplay"></div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="dailyCommitments"></div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製今晚的不可妥協條款</div>
+    <p class="copy-desc">貼到Skool，讓問責夥伴明天早上來問你做到了沒有。</p>
+    <div class="copy-preview" id="s2-preview">填完後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s2-btn" onclick="copySection('s2')">複製今晚條款，前往Skool分享</button>
+  </div>
+</div>
+
+<!-- ══ ③ 公開宣示 ══ -->
+<div id="s3" class="section">
+  <span class="sec-eyebrow">步驟 03 · 公開宣示</span>
+  <h1 class="sec-title">把系統<span>簽下來</span></h1>
+  <p class="sec-desc">把你的早晨系統公開宣示。問責夥伴的存在讓你更難找藉口。</p>
+
+  <div class="commitment-box">
+    <div class="commitment-box-title">我的上班前一小時不可妥協條款</div>
+    <div class="commitment-box-body empty" id="commitBody">填完步驟一的內容後，你的條款會自動生成在這裡。</div>
+    <div class="commitment-sign">我承諾按照以上條款執行，並在Skool社群公開宣示。</div>
+  </div>
+
+  <div class="gold-div"></div>
+  <div class="copy-box">
+    <div class="copy-title">複製完整條款，前往Skool公開宣示</div>
+    <p class="copy-desc">貼到Skool，讓問責夥伴每天問你有沒有做到。</p>
+    <div class="copy-preview" id="s3-preview">填完步驟一後內容會自動出現在這裡。</div>
+    <button class="copy-btn" id="s3-btn" onclick="copySection('s3')">複製條款，前往Skool公開宣示</button>
+  </div>
+
+  <div class="footer">
+    上班前一小時系統模板 · 由 <strong>Steven</strong> 製作<br>
+    加入免費Skool自律實戰社群，和同樣在執行12週計畫的人一起前進。
+  </div>
+</div>
+
+<script>
+let data = { version: 'basic', days: {}, currentDay: 1 };
+
+function load() {
+  try {
+    const s = localStorage.getItem('morning_system_v1');
+    if (!s) return;
+    data = JSON.parse(s);
+    const ids = ['basic-wake','basic-work','basic-1','basic-2','basic-3','basic-min',
+      'savers-wake','savers-work','savers-s1','savers-a','savers-v','savers-e','savers-r','savers-s2',
+      'custom-wake','custom-work','custom-name-1','custom-detail-1','custom-name-2','custom-detail-2',
+      'custom-name-3','custom-detail-3','custom-min'];
+    ids.forEach(id => { const el = document.getElementById(id); if(el && data[id]) el.value = data[id]; });
+    if (data.version) switchVersion(data.version, false);
+  } catch(e){}
+}
+
+function saveAll() {
+  const ids = ['basic-wake','basic-work','basic-1','basic-2','basic-3','basic-min',
+    'savers-wake','savers-work','savers-s1','savers-a','savers-v','savers-e','savers-r','savers-s2',
+    'custom-wake','custom-work','custom-name-1','custom-detail-1','custom-name-2','custom-detail-2',
+    'custom-name-3','custom-detail-3','custom-min'];
+  ids.forEach(id => { const el = document.getElementById(id); if(el) data[id] = el.value; });
+  try { localStorage.setItem('morning_system_v1', JSON.stringify(data)); } catch(e){}
+  updatePreviews();
+}
+
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function switchVersion(v, save=true) {
+  data.version = v;
+  document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.version-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('v-' + v).classList.add('active');
+  const btns = document.querySelectorAll('.version-btn');
+  const map = { basic: 0, savers: 1, custom: 2 };
+  btns[map[v]].classList.add('active');
+  if (save) { saveAll(); buildCommitment(); }
+}
+
+function buildCommitment() {
+  const v = data.version;
+  let wake = '', workTime = '', lines = [];
+
+  if (v === 'basic') {
+    wake = g('basic-wake'); workTime = g('basic-work');
+    if (g('basic-1')) lines.push(`① 目標宣言：${g('basic-1').split('\n')[0]}`);
+    if (g('basic-2')) lines.push(`② 閱讀30分鐘：${g('basic-2').split('\n')[0]}`);
+    if (g('basic-3')) lines.push(`③ 運動30分鐘：${g('basic-3').split('\n')[0]}`);
+    if (g('basic-min')) lines.push(`忙季最小版：${g('basic-min').split('\n')[0]}`);
+  } else if (v === 'savers') {
+    wake = g('savers-wake'); workTime = g('savers-work');
+    if (g('savers-s1')) lines.push(`S 靜心冥想：${g('savers-s1').split('\n')[0]}`);
+    if (g('savers-e')) lines.push(`E 運動：${g('savers-e').split('\n')[0]}`);
+    if (g('savers-r')) lines.push(`R 閱讀：${g('savers-r').split('\n')[0]}`);
+  } else {
+    wake = g('custom-wake'); workTime = g('custom-work');
+    if (g('custom-name-1')) lines.push(`① ${g('custom-name-1')}：${g('custom-detail-1').split('\n')[0]}`);
+    if (g('custom-name-2')) lines.push(`② ${g('custom-name-2')}：${g('custom-detail-2').split('\n')[0]}`);
+    if (g('custom-name-3')) lines.push(`③ ${g('custom-name-3')}：${g('custom-detail-3').split('\n')[0]}`);
+    if (g('custom-min')) lines.push(`忙季最小版：${g('custom-min').split('\n')[0]}`);
+  }
+
+  const el = document.getElementById('commitBody');
+  if (!wake && lines.length === 0) {
+    el.className = 'commitment-box-body empty';
+    el.textContent = '填完步驟一的內容後，你的條款會自動生成在這裡。';
+    return;
+  }
+
+  const result = [
+    wake && workTime ? `每天 ${wake} 起床，在 ${workTime} 上班前完成以下行動：` : '',
+    ...lines,
+    '',
+    '這三件事做完之前，其他事情都要等。不可妥協。'
+  ].filter(Boolean).join('\n');
+
+  el.className = 'commitment-box-body';
+  el.textContent = result;
+  saveAll();
+}
+
+// ── 每日條款 ──
+function buildDaySelector() {
+  const container = document.getElementById('daySelector');
+  container.innerHTML = '';
+  for (let d = 1; d <= 7; d++) {
+    const btn = document.createElement('button');
+    const isDone = data.days[d] && data.days[d].done;
+    btn.className = 'day-btn' + (d === data.currentDay ? ' active' : '') + (isDone ? ' done' : '');
+    btn.textContent = `Day ${d}`;
+    btn.onclick = () => switchDay(d);
+    container.appendChild(btn);
+  }
+  const doneDays = Object.values(data.days).filter(d => d && d.done).length;
+  document.getElementById('progressBar').style.width = (doneDays / 7 * 100) + '%';
+}
+
+function switchDay(d) {
+  saveDayData();
+  data.currentDay = d;
+  buildDaySelector();
+  renderDayCommitments();
+}
+
+function renderDayCommitments() {
+  const day = data.currentDay;
+  const dayData = data.days[day] || { items: ['', '', ''], done: false };
+  if (!data.days[day]) data.days[day] = dayData;
+
+  const dateEl = document.getElementById('dateDisplay');
+  dateEl.textContent = `Day ${day} 的不可妥協條款`;
+
+  const container = document.getElementById('dailyCommitments');
+  container.innerHTML = '';
+
+  for (let i = 0; i < 3; i++) {
+    const item = document.createElement('div');
+    item.className = 'commitment-item' + (dayData.items[i] && dayData.done ? ' completed' : '');
+    item.innerHTML = `
+      <div class="commitment-num">${i + 1}</div>
+      <div class="commitment-right">
+        <textarea id="day-${day}-item-${i}" placeholder="明天最重要的第${i+1}件事——做完這件事之前，其他事情都要等" oninput="saveDayData();updateS2Preview()">${dayData.items[i] || ''}</textarea>
+        ${i === 2 ? `<button class="done-btn ${dayData.done ? 'completed' : ''}" onclick="toggleDone(${day})">${dayData.done ? '✓ 今天三件事全部完成' : '今天三件事全部完成，打勾'}</button>` : ''}
+      </div>`;
+    container.appendChild(item);
+  }
+  updateS2Preview();
+}
+
+function saveDayData() {
+  const day = data.currentDay;
+  if (!data.days[day]) data.days[day] = { items: ['', '', ''], done: false };
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById(`day-${day}-item-${i}`);
+    if (el) data.days[day].items[i] = el.value;
+  }
+  try { localStorage.setItem('morning_system_v1', JSON.stringify(data)); } catch(e){}
+}
+
+function toggleDone(day) {
+  saveDayData();
+  data.days[day].done = !data.days[day].done;
+  try { localStorage.setItem('morning_system_v1', JSON.stringify(data)); } catch(e){}
+  buildDaySelector();
+  renderDayCommitments();
+}
+
+function updateS2Preview() {
+  const day = data.currentDay;
+  const dayData = data.days[day] || { items: ['', '', ''], done: false };
+  const items = [];
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById(`day-${day}-item-${i}`);
+    if (el && el.value.trim()) items.push(`${i+1}. ${el.value.trim()}`);
+  }
+  const s2 = [
+    `【Day ${day} 不可妥協條款】`,
+    '',
+    '明天最重要的三件事，做完之前其他事情都要等：',
+    ...items,
+    '',
+    dayData.done ? '✓ 今天三件事全部完成' : '（明天完成後回來打勾）',
+    '',
+    '——',
+    '來自 Steven 的上班前一小時系統模板'
+  ].filter(Boolean).join('\n');
+
+  const preview = document.getElementById('s2-preview');
+  if (items.length > 0) {
+    preview.textContent = s2;
+    preview.classList.add('has-content');
+  }
+}
+
+function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function updatePreviews() {
+  const v = data.version;
+  let wake = '', workTime = '', systemLines = [];
+
+  if (v === 'basic') {
+    wake = g('basic-wake'); workTime = g('basic-work');
+    if (g('basic-1')) systemLines.push(`① 目標宣言：${g('basic-1')}`);
+    if (g('basic-2')) systemLines.push(`② 閱讀30分鐘：${g('basic-2')}`);
+    if (g('basic-3')) systemLines.push(`③ 運動30分鐘：${g('basic-3')}`);
+    if (g('basic-min')) systemLines.push(`忙季最小版：${g('basic-min')}`);
+  } else if (v === 'savers') {
+    wake = g('savers-wake'); workTime = g('savers-work');
+    ['s1','a','v','e','r','s2'].forEach(k => {
+      const labels = {s1:'S靜心',a:'A肯定',v:'V觀想',e:'E運動',r:'R閱讀',s2:'S書寫'};
+      if (g(`savers-${k}`)) systemLines.push(`${labels[k]}：${g(`savers-${k}`)}`);
+    });
+  } else {
+    wake = g('custom-wake'); workTime = g('custom-work');
+    for (let i = 1; i <= 3; i++) {
+      const name = g(`custom-name-${i}`);
+      const detail = g(`custom-detail-${i}`);
+      if (name || detail) systemLines.push(`${i}. ${name}：${detail}`);
+    }
+    if (g('custom-min')) systemLines.push(`忙季最小版：${g('custom-min')}`);
+  }
+
+  const s1 = [
+    '【上班前一小時系統】',
+    '',
+    wake && workTime ? `起床：${wake}　上班：${workTime}` : '',
+    '',
+    ...systemLines,
+    '',
+    '——',
+    '來自 Steven 的上班前一小時系統模板'
+  ].filter(Boolean).join('\n');
+
+  setPreview('s1-preview', s1, wake.length > 0 || systemLines.length > 0);
+
+  const commitEl = document.getElementById('commitBody');
+  const commitText = commitEl && !commitEl.classList.contains('empty') ? commitEl.textContent : '';
+  const s3 = [
+    '【上班前一小時不可妥協條款】',
+    '',
+    commitText,
+    '',
+    '——',
+    '來自 Steven 的上班前一小時系統模板'
+  ].filter(Boolean).join('\n');
+  setPreview('s3-preview', s3, commitText.length > 0);
+}
+
+function setPreview(id, text, hasContent) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (hasContent) { el.textContent = text; el.classList.add('has-content'); }
+}
+
+function copySection(sec) {
+  const preview = document.getElementById(sec + '-preview');
+  const btn = document.getElementById(sec + '-btn');
+  if (!preview.classList.contains('has-content')) { alert('請先填寫內容！'); return; }
+  navigator.clipboard.writeText(preview.textContent).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ 已複製！前往Skool貼上';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 3000);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  load();
+  buildDaySelector();
+  renderDayCommitments();
+  buildCommitment();
+  updatePreviews();
+});
+</script>
+</body>
+</html>
