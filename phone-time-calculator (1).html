@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手機時間計算機 — 目標清算俱樂部</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1C1C1E;
+  --surface: #2C2C2E;
+  --surface-2: #3A3A3C;
+  --gold: #C9A84C;
+  --gold-dim: rgba(201,168,76,0.15);
+  --gold-light: #E8D5A3;
+  --green: #4CAF74;
+  --green-dim: rgba(76,175,116,0.15);
+  --red: #FF6B6B;
+  --red-dim: rgba(255,107,107,0.12);
+  --cream: #F5F0E8;
+  --muted: #8E8E93;
+  --border: rgba(255,255,255,0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: -apple-system, 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  min-height: 100vh;
+  padding: 24px 16px 60px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.container { max-width: 680px; margin: 0 auto; }
+
+/* Header */
+.header { text-align: center; margin-bottom: 32px; }
+.header-badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: 800;
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.header p { font-size: 14px; color: var(--muted); }
+
+/* Section */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* Slider */
+.slider-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+.slider-value {
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--cream);
+  line-height: 1;
+}
+.slider-unit { font-size: 18px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  outline: none;
+  margin-bottom: 12px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(201,168,76,0.4);
+}
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+.stat-box {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+}
+.stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.stat-value { font-size: 20px; font-weight: 800; color: var(--red); }
+.stat-value.highlight { color: var(--gold); }
+
+/* Warning banner */
+.warning-banner {
+  background: var(--red-dim);
+  border: 1px solid rgba(255,107,107,0.25);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #ff9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.warning-banner span { color: var(--red); font-weight: 700; }
+
+/* Alternative tabs */
+.alt-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.alt-tab {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.alt-tab:hover { border-color: var(--gold); color: var(--gold); }
+.alt-tab.active { background: var(--gold); border-color: var(--gold); color: #1C1C1E; font-weight: 700; }
+
+/* Alt content */
+.alt-content { display: none; }
+.alt-content.active { display: block; }
+
+.alt-hero {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.alt-icon {
+  font-size: 52px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.alt-info { flex: 1; }
+.alt-title { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+.alt-big { font-size: 36px; font-weight: 900; color: var(--green); line-height: 1; }
+.alt-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.alt-level {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+.alt-level-label { font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.alt-level-value { font-size: 28px; font-weight: 900; color: var(--gold); }
+.alt-level-xp { font-size: 12px; color: var(--muted); }
+
+.alt-desc {
+  background: var(--green-dim);
+  border: 1px solid rgba(76,175,116,0.2);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #a0d4b4;
+  line-height: 1.7;
+}
+.alt-desc strong { color: var(--green); }
+
+/* Skill tree */
+.skill-tree { display: flex; flex-direction: column; gap: 14px; }
+.skill-row { display: flex; align-items: center; gap: 12px; }
+.skill-name { font-size: 13px; color: var(--muted); width: 56px; flex-shrink: 0; }
+.skill-bar-wrap { flex: 1; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.skill-bar { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.skill-bar.green { background: var(--green); }
+.skill-bar.gold { background: var(--gold); }
+.skill-level { font-size: 12px; color: var(--muted); width: 36px; text-align: right; flex-shrink: 0; }
+
+/* Action summary */
+.action-textarea {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--cream);
+  font-size: 13px;
+  line-height: 1.8;
+  padding: 16px;
+  min-height: 220px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+.action-textarea:focus { border-color: var(--gold); }
+
+.copy-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: #1C1C1E;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.copy-btn:hover { background: var(--gold-light); }
+.copy-btn.copied { background: var(--green); color: white; }
+
+/* Footer */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.check-item:has(input:checked) {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+}
+.check-item input[type="checkbox"] { display: none; }
+.check-icon { font-size: 20px; }
+.check-label { font-size: 14px; color: var(--cream); }
+.check-item:has(input:checked) .check-label { color: var(--gold); font-weight: 700; }
+
+.footer {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 12px;
+  color: #444;
+}
+.footer strong { color: var(--gold); }
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .alt-hero { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">目標清算俱樂部</div>
+    <h1>你的手機<br>每年偷走你多少時間？</h1>
+    <p>拖動滑桿，看看你的時間真正流去哪裡</p>
+  </div>
+
+  <!-- Step 1: Input -->
+  <div class="section">
+    <div class="section-label">每天使用手機</div>
+    <div class="slider-header">
+      <div>
+        <span class="slider-value" id="displayHours">3</span>
+        <span class="slider-unit">小時 / 天</span>
+      </div>
+    </div>
+    <input type="range" id="hoursSlider" min="0.5" max="12" step="0.5" value="3">
+    <div class="slider-labels">
+      <span>0.5h</span>
+      <span>3h</span>
+      <span>6h</span>
+      <span>9h</span>
+      <span>12h</span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">每週損失</div>
+        <div class="stat-value" id="weeklyLoss">21h</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">每月損失</div>
+        <div class="stat-value" id="monthlyLoss">90h</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">一年損失</div>
+        <div class="stat-value highlight" id="yearlyLoss">1,095h</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">等同工作天</div>
+        <div class="stat-value highlight" id="workDays">137天</div>
+        <div class="stat-label" style="margin-top:4px">以8h/天計</div>
+      </div>
+    </div>
+
+    <div class="warning-banner">
+      ⏳ 一年 <span id="warningHours">1,095</span> 小時，相當於你的生命裡有
+      <span id="warningDays">137</span> 個完整工作天，全部消失在螢幕裡。
+    </div>
+  </div>
+
+  <!-- Step 2: Alternative -->
+  <div class="section">
+    <div class="section-label">如果這些時間拿去做別的事...</div>
+    <div class="alt-tabs">
+      <button class="alt-tab active" onclick="switchAlt('read')">📚 讀書</button>
+      <button class="alt-tab" onclick="switchAlt('exercise')">🏃 運動</button>
+      <button class="alt-tab" onclick="switchAlt('language')">🗣 學語言</button>
+      <button class="alt-tab" onclick="switchAlt('skill')">💡 學技能</button>
+      <button class="alt-tab" onclick="switchAlt('side')">💰 副業</button>
+    </div>
+
+    <!-- 讀書 -->
+    <div id="alt-read" class="alt-content active">
+      <div class="alt-hero">
+        <div class="alt-icon">📚</div>
+        <div class="alt-info">
+          <div class="alt-title">可以讀完</div>
+          <div class="alt-big" id="booksCount">274 本</div>
+          <div class="alt-sub">每本 4h</div>
+        </div>
+        <div class="alt-level">
+          <div class="alt-level-label">知識力等級</div>
+          <div class="alt-level-value" id="readLevel">Lv.9</div>
+          <div class="alt-level-xp" id="readXP">21,900 XP</div>
+        </div>
+      </div>
+      <div class="alt-desc" id="readDesc">
+        閱讀 <strong id="readBooksInline">274</strong> 本書——相當於頂尖投資人年均閱讀量的 5 倍。詞彙、思維框架大幅升級。
+      </div>
+    </div>
+
+    <!-- 運動 -->
+    <div id="alt-exercise" class="alt-content">
+      <div class="alt-hero">
+        <div class="alt-icon">🏃</div>
+        <div class="alt-info">
+          <div class="alt-title">可以完成</div>
+          <div class="alt-big" id="exerciseCount">1,095 次</div>
+          <div class="alt-sub">每次 1h 訓練</div>
+        </div>
+        <div class="alt-level">
+          <div class="alt-level-label">體力等級</div>
+          <div class="alt-level-value" id="exerciseLevel">Lv.9</div>
+          <div class="alt-level-xp" id="exerciseXP">16,425 XP</div>
+        </div>
+      </div>
+      <div class="alt-desc" id="exerciseDesc">
+        <strong id="exerciseCountInline">1,095</strong> 次訓練——一年每天都去健身，體態、體能、心理素質全面提升。
+      </div>
+    </div>
+
+    <!-- 學語言 -->
+    <div id="alt-language" class="alt-content">
+      <div class="alt-hero">
+        <div class="alt-icon">🗣</div>
+        <div class="alt-info">
+          <div class="alt-title">可以學習</div>
+          <div class="alt-big" id="langHours">1,095 h</div>
+          <div class="alt-sub">語言學習時數</div>
+        </div>
+        <div class="alt-level">
+          <div class="alt-level-label">語言力等級</div>
+          <div class="alt-level-value" id="langLevel">Lv.9</div>
+          <div class="alt-level-xp" id="langXP">21,900 XP</div>
+        </div>
+      </div>
+      <div class="alt-desc" id="langDesc">
+        <strong id="langHoursInline">1,095</strong> 小時語言學習——達到英語 B2 流利程度需要約 600-750 小時，你已經超過了。
+      </div>
+    </div>
+
+    <!-- 學技能 -->
+    <div id="alt-skill" class="alt-content">
+      <div class="alt-hero">
+        <div class="alt-icon">💡</div>
+        <div class="alt-info">
+          <div class="alt-title">可以投入</div>
+          <div class="alt-big" id="skillHours">1,095 h</div>
+          <div class="alt-sub">技能學習時數</div>
+        </div>
+        <div class="alt-level">
+          <div class="alt-level-label">技能力等級</div>
+          <div class="alt-level-value" id="skillLevel">Lv.9</div>
+          <div class="alt-level-xp" id="skillXP">21,900 XP</div>
+        </div>
+      </div>
+      <div class="alt-desc" id="skillDesc">
+        <strong id="skillHoursInline">1,095</strong> 小時技能學習——Malcolm Gladwell 的一萬小時法則，你已經完成了 <strong id="skillPct">10.9%</strong>。
+      </div>
+    </div>
+
+    <!-- 副業 -->
+    <div id="alt-side" class="alt-content">
+      <div class="alt-hero">
+        <div class="alt-icon">💰</div>
+        <div class="alt-info">
+          <div class="alt-title">可以累積</div>
+          <div class="alt-big" id="sideHours">1,095 h</div>
+          <div class="alt-sub">副業工作時數</div>
+        </div>
+        <div class="alt-level">
+          <div class="alt-level-label">財力等級</div>
+          <div class="alt-level-value" id="sideLevel">Lv.8</div>
+          <div class="alt-level-xp" id="sideXP">13,140 XP</div>
+        </div>
+      </div>
+      <div class="alt-desc" id="sideDesc">
+        <strong id="sideHoursInline">1,095</strong> 小時副業時數——以時薪 300 元計算，一年可以多賺 <strong id="sideMoney">328,500 元</strong>。
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Skill Tree -->
+  <div class="section">
+    <div class="section-label">綜合人生技能樹</div>
+    <div class="skill-tree">
+      <div class="skill-row">
+        <div class="skill-name">知識力</div>
+        <div class="skill-bar-wrap"><div class="skill-bar green" id="bar-know" style="width:0%"></div></div>
+        <div class="skill-level" id="lv-know">Lv.1</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">體力</div>
+        <div class="skill-bar-wrap"><div class="skill-bar green" id="bar-body" style="width:0%"></div></div>
+        <div class="skill-level" id="lv-body">Lv.1</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">語言力</div>
+        <div class="skill-bar-wrap"><div class="skill-bar green" id="bar-lang" style="width:0%"></div></div>
+        <div class="skill-level" id="lv-lang">Lv.1</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">技能力</div>
+        <div class="skill-bar-wrap"><div class="skill-bar gold" id="bar-skill" style="width:0%"></div></div>
+        <div class="skill-level" id="lv-skill">Lv.1</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-name">財力</div>
+        <div class="skill-bar-wrap"><div class="skill-bar gold" id="bar-money" style="width:0%"></div></div>
+        <div class="skill-level" id="lv-money">Lv.1</div>
+      </div>
+    </div>
+
+    <!-- XP Table -->
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;letter-spacing:0.2em;color:var(--gold);margin-bottom:12px;">XP 計算基準</div>
+      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px 16px;font-size:13px;">
+        <span style="color:var(--muted)">讀書</span><span style="background:var(--green-dim);color:var(--green);padding:2px 8px;border-radius:4px;font-size:11px;">知識力</span><span style="color:var(--cream)">20 XP/h</span>
+        <span style="color:var(--muted)">運動</span><span style="background:var(--green-dim);color:var(--green);padding:2px 8px;border-radius:4px;font-size:11px;">體力</span><span style="color:var(--cream)">15 XP/h</span>
+        <span style="color:var(--muted)">學語言</span><span style="background:var(--green-dim);color:var(--green);padding:2px 8px;border-radius:4px;font-size:11px;">語言力</span><span style="color:var(--cream)">20 XP/h</span>
+        <span style="color:var(--muted)">學技能</span><span style="background:var(--green-dim);color:var(--green);padding:2px 8px;border-radius:4px;font-size:11px;">技能力</span><span style="color:var(--cream)">20 XP/h</span>
+        <span style="color:var(--muted)">副業工作</span><span style="background:var(--gold-dim);color:var(--gold);padding:2px 8px;border-radius:4px;font-size:11px;">財力</span><span style="color:var(--cream)">12 XP/h</span>
+        <span style="color:var(--muted)">滑手機</span><span style="background:rgba(255,107,107,0.1);color:#ff9999;padding:2px 8px;border-radius:4px;font-size:11px;">浪費</span><span style="color:var(--cream)">1 XP/h</span>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted)">升級公式：每升一級需要 100 × 等級² XP</div>
+    </div>
+  </div>
+
+  <!-- Step 4: Action Summary -->
+  <div class="section">
+    <div class="section-label">產生我的行動總結</div>
+
+    <div style="font-size:14px;color:var(--cream);font-weight:700;margin-bottom:6px;">選擇你想改善的方向</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">勾選後即時產生你的專屬行動計畫</div>
+
+    <div class="check-grid">
+      <label class="check-item">
+        <input type="checkbox" value="read" onchange="updateSummaryFromChecks()">
+        <span class="check-icon">📚</span>
+        <span class="check-label">讀書</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" value="exercise" onchange="updateSummaryFromChecks()">
+        <span class="check-icon">🏃</span>
+        <span class="check-label">運動</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" value="language" onchange="updateSummaryFromChecks()">
+        <span class="check-icon">🗣</span>
+        <span class="check-label">學語言</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" value="skill" onchange="updateSummaryFromChecks()">
+        <span class="check-icon">💡</span>
+        <span class="check-label">學技能</span>
+      </label>
+      <label class="check-item">
+        <input type="checkbox" value="side" onchange="updateSummaryFromChecks()">
+        <span class="check-icon">💰</span>
+        <span class="check-label">副業</span>
+      </label>
+    </div>
+
+    <div id="summaryPlaceholder" style="background:var(--surface-2);border-radius:10px;padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-top:12px;">
+      請先勾選至少一個方向...
+    </div>
+
+    <div id="summaryBlock" style="display:none;margin-top:12px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:12px;color:var(--gold);letter-spacing:0.1em;">↻ 換一句鼓勵語</span>
+        <span onclick="refreshMotivation()" style="cursor:pointer;font-size:12px;color:var(--gold);text-decoration:underline;">點此換</span>
+      </div>
+      <div id="motivText" style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:14px 16px;background:var(--surface-2);border-radius:10px;"></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">寫下你此刻的感受，它會跟著行動總結一起被複製下來...</div>
+      <textarea id="feelingText" placeholder="寫下你此刻的感受，它會跟著行動總結一起被複製下來…" style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;color:var(--cream);font-size:13px;line-height:1.8;padding:14px;min-height:90px;resize:none;outline:none;font-family:inherit;margin-bottom:12px;" oninput="buildFinalText()"></textarea>
+      <textarea class="action-textarea" id="summaryText" readonly style="min-height:280px;"></textarea>
+      <button class="copy-btn" id="copyBtn" onclick="copyText()">複製文字，貼到 Skool 分享</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    手機時間計算機 · 由 <strong>目標清算俱樂部 Steven</strong> 製作<br>
+    把你的結果貼到社群，讓大家看到你的潛在資產有多大。
+  </div>
+</div>
+
+<script>
+let currentAlt = 'read';
+let currentHours = 3;
+
+const altData = {
+  read:     { xpRate: 20, hoursPerUnit: 4,  unitLabel: '本書',   icon: '📚' },
+  exercise: { xpRate: 15, hoursPerUnit: 1,  unitLabel: '次訓練', icon: '🏃' },
+  language: { xpRate: 20, hoursPerUnit: 1,  unitLabel: 'h',      icon: '🗣' },
+  skill:    { xpRate: 20, hoursPerUnit: 1,  unitLabel: 'h',      icon: '💡' },
+  side:     { xpRate: 12, hoursPerUnit: 1,  unitLabel: 'h',      icon: '💰' },
+};
+
+function calcLevel(xp) {
+  let lv = 1;
+  while (xp >= 100 * lv * lv) { xp -= 100 * lv * lv; lv++; }
+  return lv;
+}
+
+function levelToWidth(lv) {
+  return Math.min(100, (lv / 10) * 100);
+}
+
+function fmt(n) {
+  return n.toLocaleString();
+}
+
+function update() {
+  const h = currentHours;
+  const weekly = h * 7;
+  const monthly = Math.round(h * 30.4);
+  const yearly = Math.round(h * 365);
+  const workDays = Math.round(yearly / 8);
+
+  document.getElementById('displayHours').textContent = h % 1 === 0 ? h : h.toFixed(1);
+  document.getElementById('weeklyLoss').textContent = fmt(weekly) + 'h';
+  document.getElementById('monthlyLoss').textContent = fmt(monthly) + 'h';
+  document.getElementById('yearlyLoss').textContent = fmt(yearly) + 'h';
+  document.getElementById('workDays').textContent = fmt(workDays) + '天';
+  document.getElementById('warningHours').textContent = fmt(yearly);
+  document.getElementById('warningDays').textContent = fmt(workDays);
+
+  // 讀書
+  const books = Math.floor(yearly / 4);
+  const readXP = yearly * 20;
+  const readLv = calcLevel(readXP);
+  document.getElementById('booksCount').textContent = fmt(books) + ' 本';
+  document.getElementById('readLevel').textContent = 'Lv.' + readLv;
+  document.getElementById('readXP').textContent = fmt(readXP) + ' XP';
+  document.getElementById('readBooksInline').textContent = fmt(books);
+  const readMult = (books / 50).toFixed(1);
+  document.getElementById('readDesc').innerHTML = `閱讀 <strong>${fmt(books)}</strong> 本書——相當於頂尖投資人年均閱讀量的 ${readMult} 倍。詞彙、思維框架大幅升級。`;
+
+  // 運動
+  const exCount = yearly;
+  const exXP = yearly * 15;
+  const exLv = calcLevel(exXP);
+  document.getElementById('exerciseCount').textContent = fmt(exCount) + ' 次';
+  document.getElementById('exerciseLevel').textContent = 'Lv.' + exLv;
+  document.getElementById('exerciseXP').textContent = fmt(exXP) + ' XP';
+  document.getElementById('exerciseCountInline').textContent = fmt(exCount);
+  document.getElementById('exerciseDesc').innerHTML = `<strong>${fmt(exCount)}</strong> 次訓練——一年每天都去健身，體態、體能、心理素質全面提升。`;
+
+  // 語言
+  const langXP = yearly * 20;
+  const langLv = calcLevel(langXP);
+  document.getElementById('langHours').textContent = fmt(yearly) + ' h';
+  document.getElementById('langLevel').textContent = 'Lv.' + langLv;
+  document.getElementById('langXP').textContent = fmt(langXP) + ' XP';
+  document.getElementById('langHoursInline').textContent = fmt(yearly);
+  document.getElementById('langDesc').innerHTML = `<strong>${fmt(yearly)}</strong> 小時語言學習——達到英語 B2 流利程度需要約 600-750 小時，你已經${yearly >= 675 ? '超過了' : `完成了 ${Math.round(yearly/675*100)}%`}。`;
+
+  // 技能
+  const skillXP = yearly * 20;
+  const skillLv = calcLevel(skillXP);
+  const skillPct = (yearly / 10000 * 100).toFixed(1);
+  document.getElementById('skillHours').textContent = fmt(yearly) + ' h';
+  document.getElementById('skillLevel').textContent = 'Lv.' + skillLv;
+  document.getElementById('skillXP').textContent = fmt(skillXP) + ' XP';
+  document.getElementById('skillHoursInline').textContent = fmt(yearly);
+  document.getElementById('skillPct').textContent = skillPct + '%';
+  document.getElementById('skillDesc').innerHTML = `<strong>${fmt(yearly)}</strong> 小時技能學習——Malcolm Gladwell 的一萬小時法則，你已經完成了 <strong>${skillPct}%</strong>。`;
+
+  // 副業
+  const sideXP = yearly * 12;
+  const sideLv = calcLevel(sideXP);
+  const sideMoney = yearly * 300;
+  document.getElementById('sideHours').textContent = fmt(yearly) + ' h';
+  document.getElementById('sideLevel').textContent = 'Lv.' + sideLv;
+  document.getElementById('sideXP').textContent = fmt(sideXP) + ' XP';
+  document.getElementById('sideHoursInline').textContent = fmt(yearly);
+  document.getElementById('sideMoney').textContent = fmt(sideMoney) + ' 元';
+  document.getElementById('sideDesc').innerHTML = `<strong>${fmt(yearly)}</strong> 小時副業時數——以時薪 300 元計算，一年可以多賺 <strong>${fmt(sideMoney)} 元</strong>。`;
+
+  // Skill tree
+  const skills = [
+    { id: 'know',  xp: readXP },
+    { id: 'body',  xp: yearly * 15 },
+    { id: 'lang',  xp: langXP },
+    { id: 'skill', xp: skillXP },
+    { id: 'money', xp: sideXP },
+  ];
+  skills.forEach(s => {
+    const lv = calcLevel(s.xp);
+    document.getElementById('bar-' + s.id).style.width = levelToWidth(lv) + '%';
+    document.getElementById('lv-' + s.id).textContent = 'Lv.' + lv;
+  });
+
+  updateSummary(h, yearly, workDays, books, exCount, readLv, exLv);
+}
+
+const motivations = [
+  '當你看到你被偷走的時間，以及你的潛在資產、你的時間、你的潛力之後，你有什麼感受呢？會不會覺得自己其實非常厲害、很有潛力呢？',
+  '每一分鐘的選擇，都在決定一年後你是誰。你已經看到數字了，接下來只差一個決定。',
+  '不是你沒有時間，是你的時間一直在消失在螢幕裡。現在你知道了，這就是改變的起點。',
+  '那些你羨慕的人，只是比你早一點把時間放在對的地方。你現在也可以開始。',
+  '看完這個數字，你有什麼感受？把它寫下來。那個感受，就是你最強的執行動力。',
+];
+
+let motivIndex = 0;
+
+function refreshMotivation() {
+  motivIndex = (motivIndex + 1) % motivations.length;
+  document.getElementById('motivText').textContent = motivations[motivIndex];
+}
+
+const actionPlans = {
+  read: {
+    label: '📚 讀書',
+    plan: `5 分鐘版
+1. 拿起書翻到書籤處，讀 5 分鐘。不要逛書，隨便一本。
+2. 重讀昨天讀的最後一段，讓記憶接上。
+
+15 分鐘版
+1. 設計 15 分鐘的閱讀衝刺：讀完一節或一個章節。
+2. 讀完後用 1 句話寫下最重要的概念（貼到便利貼或備忘錄）。`,
+  },
+  exercise: {
+    label: '🏃 運動',
+    plan: `5 分鐘版
+1. 現在就做 10 個深蹲 + 10 個伏地挺身，不需要換衣服。
+2. 設定明天早上的鬧鐘，比平常早 30 分鐘。
+
+15 分鐘版
+1. 下載一個跑步或健身 App，記錄今天的第一次訓練。
+2. 把訓練時間固定在一天中同一個時段，讓它變成習慣。`,
+  },
+  language: {
+    label: '🗣 學語言',
+    plan: `5 分鐘版
+1. 打開 Duolingo 或 YouTube，看一段 5 分鐘的語言學習影片。
+2. 學 5 個新單字，用造句的方式記下來。
+
+15 分鐘版
+1. 找一部有字幕的外語影片，先看一遍，再看一遍只聽不看字幕。
+2. 把今天學到的表達方式寫在備忘錄，睡前複習一次。`,
+  },
+  skill: {
+    label: '💡 學技能',
+    plan: `5 分鐘版
+1. 打開你想學的技能課程，看完一個單元，哪怕只有 5 分鐘。
+2. 把今天學到的重點用自己的話寫下來一句話。
+
+15 分鐘版
+1. 設計一個「微型練習」：用 15 分鐘只練一個技能的一個環節。
+2. 做完後記錄今天練了什麼，明天接著做下一個環節。`,
+  },
+  side: {
+    label: '💰 副業',
+    plan: `5 分鐘版
+1. 打開備忘錄，寫下你有哪三個技能可以換成收入。
+2. 搜尋「[你的技能] 接案」，看看市場行情是什麼。
+
+15 分鐘版
+1. 找到一個平台（104外包、Fiverr、Freelancer），建立一個簡單的個人頁面。
+2. 今天聯繫一個可能需要你技能的人，不用成交，只是開始對話。`,
+  },
+};
+
+function updateSummaryFromChecks() {
+  const checked = Array.from(document.querySelectorAll('.check-grid input:checked')).map(i => i.value);
+  const placeholder = document.getElementById('summaryPlaceholder');
+  const block = document.getElementById('summaryBlock');
+
+  if (checked.length === 0) {
+    placeholder.style.display = 'block';
+    block.style.display = 'none';
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  block.style.display = 'block';
+  document.getElementById('motivText').textContent = motivations[motivIndex];
+  buildFinalText();
+}
+
+function buildFinalText() {
+  const h = currentHours;
+  const yearly = Math.round(h * 365);
+  const workDays = Math.round(yearly / 8);
+  const checked = Array.from(document.querySelectorAll('.check-grid input:checked')).map(i => i.value);
+  const feeling = document.getElementById('feelingText') ? document.getElementById('feelingText').value.trim() : '';
+
+  const hDisplay = h % 1 === 0 ? h : h.toFixed(1);
+
+  let altLines = [];
+  checked.forEach(key => {
+    const yearly2 = yearly;
+    if (key === 'read') {
+      const books = Math.floor(yearly2 / 4);
+      altLines.push(`◆ 讀書\n閱讀 ${fmt(books)} 本書——相當於頂尖投資人年均閱讀量的 ${(books/50).toFixed(1)} 倍。`);
+    } else if (key === 'exercise') {
+      altLines.push(`◆ 運動\n完成 ${fmt(yearly2)} 次訓練——體態、體能、心理素質全面提升。`);
+    } else if (key === 'language') {
+      altLines.push(`◆ 學語言\n累積 ${fmt(yearly2)} 小時語言學習——已超過英語 B2 流利所需時數。`);
+    } else if (key === 'skill') {
+      altLines.push(`◆ 學技能\n累積 ${fmt(yearly2)} 小時技能學習——完成一萬小時法則的 ${(yearly2/10000*100).toFixed(1)}%。`);
+    } else if (key === 'side') {
+      altLines.push(`◆ 副業\n累積 ${fmt(yearly2)} 小時副業工作——以時薪 300 元計，一年多賺 ${fmt(yearly2*300)} 元。`);
+    }
+  });
+
+  let planLines = [];
+  checked.forEach(key => {
+    planLines.push(`【${actionPlans[key].label}】\n${actionPlans[key].plan}`);
+  });
+
+  const feelingLine = feeling ? `\n我此刻的感受：\n${feeling}\n` : '';
+
+  const text = `【我被偷走的時間】
+我每天滑 ${hDisplay} 小時手機，一年累積 ${fmt(yearly)} 小時，
+相當於 ${fmt(workDays)} 個完整工作天，全部消失在螢幕裡。
+
+雖然過去浪費了這麼多時間，
+但只要我把這些時間全部轉換成提升自己，
+我就能成為理想中的樣子——
+
+${altLines.join('\n\n')}
+${feelingLine}
+────────────────
+我要顛覆的行動計畫
+
+${planLines.join('\n\n')}
+
+加入目標清算俱樂部，我們一起把時間還給自己。
+#目標清算俱樂部 #手機時間 #自我提升`;
+
+  document.getElementById('summaryText').value = text;
+}
+
+function updateSummary(h, yearly, workDays, books, exCount, readLv, exLv) {
+  buildFinalText();
+}
+
+function switchAlt(key) {
+  document.querySelectorAll('.alt-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.alt-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('alt-' + key).classList.add('active');
+  currentAlt = key;
+}
+
+function copyText() {
+  const text = document.getElementById('summaryText').value;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ 已複製！前往 Skool 貼上';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '複製文字，貼到 Skool 分享';
+      btn.classList.remove('copied');
+    }, 3000);
+  });
+}
+
+document.getElementById('hoursSlider').addEventListener('input', function() {
+  currentHours = parseFloat(this.value);
+  update();
+});
+
+update();
+</script>
+</body>
+</html>
